@@ -1,0 +1,16 @@
+name = "smartpolice-shop"
+main = "src/index.js"
+compatibility_date = "2026-01-07"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "smartpolice-shop-db"
+database_id = "86f34575-33a8-4b02-adfa-612a4d88e38e"
+
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "smartpolice-shop-images"
+
+[vars]
+APP_URL = "https://shop.smartpolice.net"
+RESEND_FROM_EMAIL = "order@smartpolice.net"
