@@ -20,6 +20,14 @@
     .preview-image { width: 100%; height: 150px; object-fit: cover; border-radius: 5px; }
     .loading-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 10000; }
     .loading-content { background: white; padding: 3rem; border-radius: 10px; text-align: center; }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(100%); opacity: 0; }
+    }
   </style>
 </head>
 <body>
@@ -115,9 +123,49 @@
     let adminToken = null;
     let analyzedProduct = null;
 
+    // Notification クラス
+    class Notification {
+      static success(message) {
+        this.show(message, 'success');
+      }
+      
+      static error(message) {
+        this.show(message, 'error');
+      }
+      
+      static show(message, type) {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          padding: 1rem 1.5rem;
+          background: ${type === 'success' ? '#4caf50' : '#f44336'};
+          color: white;
+          border-radius: 5px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          z-index: 10000;
+          animation: slideIn 0.3s ease-out;
+          max-width: 400px;
+        `;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+          notification.style.animation = 'slideOut 0.3s ease-out';
+          setTimeout(() => notification.remove(), 300);
+        }, 3000);
+      }
+    }
+
     async function login() {
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
+      
+      if (!email || !password) {
+        Notification.error('メールアドレスとパスワードを入力してください');
+        return;
+      }
       
       try {
         const response = await fetch('/api/admin/login', {
@@ -126,7 +174,16 @@
           body: JSON.stringify({ email, password })
         });
         
-        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const text = await response.text();
+        if (!text) {
+          throw new Error('サーバーから空のレスポンスが返されました');
+        }
+        
+        const data = JSON.parse(text);
         
         if (data.success) {
           adminToken = data.data.token;
@@ -135,9 +192,10 @@
           document.getElementById('admin-panel').style.display = 'block';
           Notification.success('ログインしました');
         } else {
-          Notification.error('ログインに失敗しました');
+          Notification.error(data.error || 'ログインに失敗しました');
         }
       } catch (error) {
+        console.error('Login error:', error);
         Notification.error('エラー: ' + error.message);
       }
     }
@@ -167,13 +225,16 @@
       document.getElementById('loading-overlay').style.display = 'flex';
 
       try {
-        const response = await fetch('/api/admin/products/analyze-alibaba', {
+        const response = await fetch('/api/admin/alibaba/analyze', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${adminToken}`
           },
-          body: JSON.stringify({ alibabaUrl, marginRate })
+          body: JSON.stringify({ 
+            alibaba_url: alibabaUrl, 
+            profit_margin: marginRate 
+          })
         });
 
         const data = await response.json();
