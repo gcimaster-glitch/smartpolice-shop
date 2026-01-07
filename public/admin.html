@@ -468,10 +468,14 @@
             <small>カンマ区切り</small>
           </div>
           <div class="form-group">
-            <label>商品画像</label>
-            <div class="preview-images">
-              ${(analyzedProduct.image_urls || []).map(img => `<img src="${img.startsWith('http') ? img : '/images/' + img}" class="preview-image">`).join('')}
+            <label>商品画像URL（Alibabaからコピー）</label>
+            <textarea id="edit-images" rows="3" placeholder="https://sc04.alicdn.com/...jpg&#10;https://sc04.alicdn.com/...jpg&#10;(複数の場合は改行で区切る)">${(analyzedProduct.image_urls || []).join('\n')}</textarea>
+            <small>Alibaba商品ページの画像を右クリック→「画像アドレスをコピー」して貼り付けてください</small>
+            ${(analyzedProduct.image_urls && analyzedProduct.image_urls.length > 0) ? `
+            <div class="preview-images" style="margin-top: 10px;">
+              ${analyzedProduct.image_urls.map(img => `<img src="${img.startsWith('http') ? img : '/images/' + img}" class="preview-image" style="max-width: 150px; margin: 5px;">`).join('')}
             </div>
+            ` : '<p style="color: #666; margin-top: 10px;">⚠️ 画像が自動取得されませんでした。Alibabaページから手動でコピーしてください。</p>'}
           </div>
           <div style="background: #e3f2fd; padding: 1rem; border-radius: 5px; margin-top: 1rem;">
             <strong>元の仕入れ価格:</strong> $${data.data.originalData.minPrice} (約¥${Math.round(data.data.originalData.minPrice * 150)})<br>
@@ -492,6 +496,9 @@
 
     async function registerProduct() {
       // プレビューから編集された値を取得
+      const imageUrlsText = document.getElementById('edit-images').value;
+      const imageUrls = imageUrlsText.split('\n').map(url => url.trim()).filter(url => url.length > 0);
+      
       const productData = {
         name: document.getElementById('edit-name').value,
         description: document.getElementById('edit-description').value,
@@ -500,7 +507,7 @@
         alibaba_url: analyzedProduct.alibaba_url,
         alibaba_price: analyzedProduct.alibaba_price,
         stock_status: 'in_stock',
-        image_urls: analyzedProduct.image_urls,
+        image_urls: imageUrls,
         specifications: analyzedProduct.specifications || {}
       };
 
