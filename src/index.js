@@ -256,6 +256,13 @@ export default {
         });
       }
 
+      // ==================== 静的ファイル配信 ====================
+      
+      // APIルート以外は静的ファイルを返す
+      if (env.ASSETS) {
+        return env.ASSETS.fetch(request);
+      }
+
       // ルートが見つからない
       return errorResponse('エンドポイントが見つかりません', 404);
 
