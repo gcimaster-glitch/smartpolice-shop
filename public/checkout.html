@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>購入手続き | スマートポリスECショップ</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="/" class="logo">🛡️ スマートポリス</a>
+    </nav>
+  </header>
+
+  <section class="section">
+    <div class="container" style="max-width: 800px;">
+      <h1 style="text-align: center; margin-bottom: 2rem;">購入手続き</h1>
+      
+      <div id="checkout-form">
+        <div class="card" style="margin-bottom: 2rem;">
+          <h2 style="margin-bottom: 1.5rem;">お客様情報</h2>
+          <form id="customer-form">
+            <div style="margin-bottom: 1rem;">
+              <label>お名前 *</label>
+              <input type="text" id="name" required style="width: 100%; padding: 0.75rem; border: 2px solid #ddd; border-radius: 5px; margin-top: 0.5rem;">
+            </div>
+            <div style="margin-bottom: 1rem;">
+              <label>メールアドレス *</label>
+              <input type="email" id="email" required style="width: 100%; padding: 0.75rem; border: 2px solid #ddd; border-radius: 5px; margin-top: 0.5rem;">
+            </div>
+            <div style="margin-bottom: 1rem;">
+              <label>電話番号</label>
+              <input type="tel" id="phone" style="width: 100%; padding: 0.75rem; border: 2px solid #ddd; border-radius: 5px; margin-top: 0.5rem;">
+            </div>
+            <div style="margin-bottom: 1rem;">
+              <label>配送先住所 *</label>
+              <textarea id="address" required rows="3" style="width: 100%; padding: 0.75rem; border: 2px solid #ddd; border-radius: 5px; margin-top: 0.5rem;"></textarea>
+            </div>
+          </form>
+        </div>
+
+        <div class="card" style="margin-bottom: 2rem;">
+          <h2 style="margin-bottom: 1.5rem;">注文内容</h2>
+          <div id="order-summary"></div>
+        </div>
+
+        <div class="card">
+          <h2 style="margin-bottom: 1.5rem;">お支払い方法</h2>
+          <div id="card-element" style="padding: 1rem; border: 2px solid #ddd; border-radius: 5px; margin-bottom: 1rem;"></div>
+          <div id="card-errors" style="color: var(--error-color); margin-bottom: 1rem;"></div>
+          <button id="submit-button" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.125rem;">注文を確定する</button>
+        </div>
+      </div>
+
+      <div id="success-message" style="display: none; text-align: center; padding: 4rem 2rem;">
+        <div style="font-size: 4rem; margin-bottom: 1rem;">✅</div>
+        <h2 style="font-size: 2rem; margin-bottom: 1rem;">ご注文ありがとうございます！</h2>
+        <p style="font-size: 1.125rem; color: var(--text-light); margin-bottom: 2rem;">注文番号: <strong id="order-number"></strong></p>
+        <p>確認メールをお送りしました。</p>
+        <a href="/" class="btn btn-primary" style="margin-top: 2rem;">トップページに戻る</a>
+      </div>
+    </div>
+  </section>
+
+  <script src="/js/api.js"></script>
+  <script>
+    const stripe = Stripe('STRIPE_PUBLISHABLE_KEY_PLACEHOLDER');
+    const elements = stripe.elements();
+    const cardElement = elements.create('card');
+    cardElement.mount('#card-element');
+
+    let cart = null;
+
+    function renderOrderSummary() {
+      cart = Cart.get();
+      const container = document.getElementById('order-summary');
+      const shipping = cart.total >= 5000 ? 0 : 500;
+      const total = cart.total + shipping;
+
+      container.innerHTML = `
+        ${cart.items.map(item => `
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+            <span>${item.product.name} × ${item.quantity}</span>
+            <span>${formatPrice(item.product.price * item.quantity)}</span>
+          </div>
+        `).join('')}
+        <div style="border-top: 2px solid #e0e0e0; margin: 1rem 0; padding-top: 1rem;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+            <span>送料</span>
+            <span>${shipping === 0 ? '無料' : formatPrice(shipping)}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 1.25rem; font-weight: 700; margin-top: 1rem;">
+            <span>合計</span>
+            <span style="color: var(--primary-color);">${formatPrice(total)}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    document.getElementById('submit-button').addEventListener('click', async () => {
+      const button = document.getElementById('submit-button');
+      button.disabled = true;
+      button.textContent = '処理中...';
+
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const phone = document.getElementById('phone').value;
+      const address = document.getElementById('address').value;
+
+      if (!name || !email || !address) {
+        Notification.error('必須項目を入力してください');
+        button.disabled = false;
+        button.textContent = '注文を確定する';
+        return;
+      }
+
+      try {
+        // PaymentIntentを作成
+        const shipping = cart.total >= 5000 ? 0 : 500;
+        const total = cart.total + shipping;
+        
+        const intentResponse = await fetch('/api/payment/intent', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: total,
+            description: '商品購入',
+            metadata: { customer_email: email }
+          })
+        });
+        
+        const { clientSecret } = await intentResponse.json();
+
+        // Stripe決済
+        const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+          payment_method: {
+            card: cardElement,
+            billing_details: { name, email }
+          }
+        });
+
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        // 注文を作成
+        const orderData = {
+          customer_name: name,
+          customer_email: email,
+          customer_phone: phone,
+          shipping_address: address,
+          items: cart.items,
+          total_amount: total,
+          stripe_payment_id: paymentIntent.id
+        };
+
+        const orderResponse = await API.createOrder(orderData);
+        
+        // カートをクリア
+        Cart.clear();
+
+        // 成功画面を表示
+        document.getElementById('checkout-form').style.display = 'none';
+        document.getElementById('success-message').style.display = 'block';
+        document.getElementById('order-number').textContent = orderResponse.order.order_number;
+
+      } catch (error) {
+        Notification.error('決済に失敗しました: ' + error.message);
+        button.disabled = false;
+        button.textContent = '注文を確定する';
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const cart = Cart.get();
+      if (cart.items.length === 0) {
+        location.href = '/cart.html';
+        return;
+      }
+      renderOrderSummary();
+    });
+  </script>
+</body>
+</html>

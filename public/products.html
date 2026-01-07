@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="防犯グッズ・セキュリティアイテム商品一覧 - スマートポリスECショップ">
+  <title>商品一覧 | スマートポリスECショップ</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- ヘッダー -->
+  <header>
+    <nav>
+      <a href="/" class="logo">
+        🛡️ スマートポリス
+      </a>
+      <ul class="nav-links">
+        <li><a href="/">ホーム</a></li>
+        <li><a href="/products.html" class="active">商品一覧</a></li>
+        <li><a href="/about.html">会社情報</a></li>
+        <li><a href="/contact.html">お問い合わせ</a></li>
+      </ul>
+      <div class="cart-icon" onclick="location.href='/cart.html'">
+        🛒 <span class="cart-count" style="display:none;">0</span>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ページヘッダー -->
+  <section class="page-header" style="background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%); color: white; padding: 3rem 2rem; text-align: center;">
+    <div class="container">
+      <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">商品一覧</h1>
+      <p style="font-size: 1.125rem;">あなたの安全を守る、厳選された防犯アイテム</p>
+    </div>
+  </section>
+
+  <!-- フィルターとソート -->
+  <section class="section" style="padding: 2rem 0;">
+    <div class="container">
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; justify-content: space-between; margin-bottom: 2rem;">
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <button class="filter-btn active" data-category="all" style="padding: 0.5rem 1rem; border: 2px solid var(--primary-color); background: var(--primary-color); color: white; border-radius: 5px; cursor: pointer; font-weight: 600;">すべて</button>
+          <button class="filter-btn" data-category="個人向け" style="padding: 0.5rem 1rem; border: 2px solid var(--primary-color); background: white; color: var(--primary-color); border-radius: 5px; cursor: pointer; font-weight: 600;">個人向け</button>
+          <button class="filter-btn" data-category="スマートホーム" style="padding: 0.5rem 1rem; border: 2px solid var(--primary-color); background: white; color: var(--primary-color); border-radius: 5px; cursor: pointer; font-weight: 600;">スマートホーム</button>
+          <button class="filter-btn" data-category="車両・バイク" style="padding: 0.5rem 1rem; border: 2px solid var(--primary-color); background: white; color: var(--primary-color); border-radius: 5px; cursor: pointer; font-weight: 600;">車両・バイク</button>
+        </div>
+        <div>
+          <select id="sort-select" style="padding: 0.5rem 1rem; border: 2px solid #ddd; border-radius: 5px; font-size: 1rem;">
+            <option value="default">おすすめ順</option>
+            <option value="price-asc">価格が安い順</option>
+            <option value="price-desc">価格が高い順</option>
+            <option value="name-asc">名前順（A-Z）</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 商品グリッド -->
+      <div id="products-grid" class="product-grid">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- フッター -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>スマートポリス</h3>
+        <p>守る力を、あなたの手に。</p>
+        <p style="margin-top: 1rem; font-size: 0.875rem;">防犯グッズ・セキュリティアイテムの専門ECサイト</p>
+      </div>
+      <div class="footer-section">
+        <h3>ショップ</h3>
+        <ul class="footer-links">
+          <li><a href="/products.html">商品一覧</a></li>
+          <li><a href="/products.html?category=個人向け">個人向けセキュリティ</a></li>
+          <li><a href="/products.html?category=スマートホーム">スマートホーム</a></li>
+          <li><a href="/products.html?category=車両・バイク">車両・バイク防犯</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>サポート</h3>
+        <ul class="footer-links">
+          <li><a href="/about.html">会社情報</a></li>
+          <li><a href="/contact.html">お問い合わせ</a></li>
+          <li><a href="/terms.html">特定商取引法</a></li>
+          <li><a href="/privacy.html">プライバシーポリシー</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>お問い合わせ</h3>
+        <p>📧 order@smartpolice.net</p>
+        <p>🌐 https://shop.smartpolice.net</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 スマートポリスECショップ. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="/js/api.js"></script>
+  <script>
+    let allProducts = [];
+    let currentCategory = 'all';
+    let currentSort = 'default';
+
+    // 商品を読み込み
+    async function loadProducts() {
+      const container = document.getElementById('products-grid');
+      
+      try {
+        const data = await API.getProducts();
+        allProducts = data.products;
+        
+        // URLパラメータからカテゴリを取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const categoryParam = urlParams.get('category');
+        if (categoryParam) {
+          currentCategory = categoryParam;
+          document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.category === categoryParam) {
+              btn.classList.add('active');
+            }
+          });
+        }
+        
+        renderProducts();
+        
+      } catch (error) {
+        container.innerHTML = '<p style="text-align: center; color: var(--error-color);">商品の読み込みに失敗しました</p>';
+      }
+    }
+
+    // 商品を表示
+    function renderProducts() {
+      const container = document.getElementById('products-grid');
+      
+      // フィルター
+      let filtered = allProducts;
+      if (currentCategory !== 'all') {
+        filtered = allProducts.filter(p => p.category === currentCategory);
+      }
+      
+      // ソート
+      if (currentSort === 'price-asc') {
+        filtered.sort((a, b) => a.price - b.price);
+      } else if (currentSort === 'price-desc') {
+        filtered.sort((a, b) => b.price - a.price);
+      } else if (currentSort === 'name-asc') {
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+      }
+      
+      if (filtered.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: var(--text-light); grid-column: 1/-1;">この条件の商品はありません</p>';
+        return;
+      }
+      
+      container.innerHTML = filtered.map(product => `
+        <div class="card product-card" onclick="location.href='/product-detail.html?id=${product.id}'">
+          <div style="height: 250px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 4rem;">
+            ${product.image_urls && product.image_urls[0] ? `<img src="/images/${product.image_urls[0]}" alt="${product.name}" class="product-image">` : '📦'}
+          </div>
+          <div class="product-info">
+            <div class="product-category">${product.category}</div>
+            <h3 class="product-name">${product.name}</h3>
+            <p style="color: var(--text-light); font-size: 0.875rem; margin: 0.5rem 0; line-height: 1.5;">${product.description ? product.description.substring(0, 80) + '...' : ''}</p>
+            <div class="product-price">${formatPrice(product.price)}</div>
+            <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="event.stopPropagation(); addToCart(${product.id}, '${product.name}', ${product.price})">
+              カートに追加
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // カテゴリフィルター
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => {
+          b.classList.remove('active');
+          b.style.background = 'white';
+          b.style.color = 'var(--primary-color)';
+        });
+        btn.classList.add('active');
+        btn.style.background = 'var(--primary-color)';
+        btn.style.color = 'white';
+        
+        currentCategory = btn.dataset.category;
+        renderProducts();
+      });
+    });
+
+    // ソート
+    document.getElementById('sort-select').addEventListener('change', (e) => {
+      currentSort = e.target.value;
+      renderProducts();
+    });
+
+    // カートに追加
+    function addToCart(id, name, price) {
+      const product = allProducts.find(p => p.id === id);
+      Cart.add(product, 1);
+      Notification.success('カートに追加しました');
+    }
+
+    // ページ読み込み時に実行
+    document.addEventListener('DOMContentLoaded', loadProducts);
+  </script>
+</body>
+</html>

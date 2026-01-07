@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>管理画面 | スマートポリス</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="/" class="logo">🛡️ スマートポリス 管理画面</a>
+      <button onclick="logout()" class="btn">ログアウト</button>
+    </nav>
+  </header>
+  <section class="section">
+    <div class="container">
+      <h1>管理画面</h1>
+      <div id="login-form" style="max-width: 400px; margin: 0 auto;">
+        <div class="card">
+          <h2>ログイン</h2>
+          <input type="email" id="email" placeholder="メールアドレス" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 2px solid #ddd; border-radius: 5px;">
+          <input type="password" id="password" placeholder="パスワード" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 2px solid #ddd; border-radius: 5px;">
+          <button onclick="login()" class="btn btn-primary" style="width: 100%;">ログイン</button>
+        </div>
+      </div>
+      <div id="admin-panel" style="display: none;">
+        <h2>商品管理・注文管理</h2>
+        <p>管理機能は開発中です</p>
+      </div>
+    </div>
+  </section>
+  <script src="/js/api.js"></script>
+  <script>
+    async function login() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      try {
+        const response = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await response.json();
+        if (data.success) {
+          localStorage.setItem('admin_token', data.data.token);
+          document.getElementById('login-form').style.display = 'none';
+          document.getElementById('admin-panel').style.display = 'block';
+        } else {
+          alert('ログインに失敗しました');
+        }
+      } catch (error) {
+        alert('エラー: ' + error.message);
+      }
+    }
+    function logout() {
+      localStorage.removeItem('admin_token');
+      location.reload();
+    }
+  </script>
+</body>
+</html>
