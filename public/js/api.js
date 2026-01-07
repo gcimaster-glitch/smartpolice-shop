@@ -100,6 +100,13 @@ class API {
     return await this.get(`/products/${productId}`);
   }
 
+  /**
+   * 商品詳細を取得（エイリアス）
+   */
+  static async getProductById(productId) {
+    return await this.getProduct(productId);
+  }
+
   // ==================== 注文API ====================
   
   /**
@@ -139,61 +146,60 @@ class Cart {
    * カートを取得
    */
   static get() {
-    const cart = localStorage.getItem(this.STORAGE_KEY);
-    return cart ? JSON.parse(cart) : [];
+    const cartData = localStorage.getItem(this.STORAGE_KEY);
+    const items = cartData ? JSON.parse(cartData) : [];
+    const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    return {
+      items,
+      total
+    };
   }
 
   /**
    * カートに商品を追加
    */
   static add(product, quantity = 1) {
-    const cart = this.get();
-    const existing = cart.find(item => item.id === product.id);
+    const { items } = this.get();
+    const existing = items.find(item => item.product && item.product.id === product.id);
 
     if (existing) {
       existing.quantity += quantity;
     } else {
-      cart.push({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.image_urls[0],
-        quantity
+      items.push({
+        product: product,
+        quantity: quantity
       });
     }
 
-    this.save(cart);
+    this.save(items);
     this.updateCartCount();
-    return cart;
+    return this.get();
   }
 
   /**
    * カートから商品を削除
    */
-  static remove(productId) {
-    let cart = this.get();
-    cart = cart.filter(item => item.id !== productId);
-    this.save(cart);
+  static remove(index) {
+    const { items } = this.get();
+    items.splice(index, 1);
+    this.save(items);
     this.updateCartCount();
-    return cart;
+    return this.get();
   }
 
   /**
    * 商品の数量を更新
    */
-  static updateQuantity(productId, quantity) {
-    const cart = this.get();
-    const item = cart.find(item => item.id === productId);
-
-    if (item) {
+  static updateQuantity(index, quantity) {
+    const { items } = this.get();
+    if (items[index]) {
       if (quantity <= 0) {
-        return this.remove(productId);
+        return this.remove(index);
       }
-      item.quantity = quantity;
-      this.save(cart);
+      items[index].quantity = quantity;
+      this.save(items);
     }
-
-    return cart;
+    return this.get();
   }
 
   /**
@@ -215,16 +221,16 @@ class Cart {
    * カート内の商品総数を取得
    */
   static getCount() {
-    const cart = this.get();
-    return cart.reduce((total, item) => total + item.quantity, 0);
+    const { items } = this.get();
+    return items.reduce((total, item) => total + item.quantity, 0);
   }
 
   /**
    * カート合計金額を取得
    */
   static getTotal() {
-    const cart = this.get();
-    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+    const { total } = this.get();
+    return total;
   }
 
   /**

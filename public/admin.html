@@ -4,6 +4,23 @@
   <meta charset="UTF-8">
   <title>管理画面 | スマートポリス</title>
   <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .admin-container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    .admin-tabs { display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 2px solid #e0e0e0; }
+    .admin-tab { padding: 1rem 2rem; cursor: pointer; border: none; background: none; font-size: 1rem; font-weight: 600; color: var(--text-light); }
+    .admin-tab.active { color: var(--primary-color); border-bottom: 3px solid var(--primary-color); margin-bottom: -2px; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .ai-form { background: #f8f9fa; padding: 2rem; border-radius: 10px; margin-bottom: 2rem; }
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group label { display: block; font-weight: 600; margin-bottom: 0.5rem; }
+    .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.75rem; border: 2px solid #ddd; border-radius: 5px; font-size: 1rem; }
+    .preview-card { background: white; padding: 2rem; border-radius: 10px; border: 2px solid #e0e0e0; }
+    .preview-images { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; margin-top: 1rem; }
+    .preview-image { width: 100%; height: 150px; object-fit: cover; border-radius: 5px; }
+    .loading-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 10000; }
+    .loading-content { background: white; padding: 3rem; border-radius: 10px; text-align: center; }
+  </style>
 </head>
 <body>
   <header>
@@ -12,50 +29,263 @@
       <button onclick="logout()" class="btn">ログアウト</button>
     </nav>
   </header>
-  <section class="section">
-    <div class="container">
+
+  <div id="login-form" style="max-width: 400px; margin: 4rem auto;">
+    <div class="card">
+      <h2>管理者ログイン</h2>
+      <div class="form-group">
+        <input type="email" id="email" placeholder="メールアドレス">
+      </div>
+      <div class="form-group">
+        <input type="password" id="password" placeholder="パスワード">
+      </div>
+      <button onclick="login()" class="btn btn-primary" style="width: 100%;">ログイン</button>
+    </div>
+  </div>
+
+  <div id="admin-panel" style="display: none;">
+    <div class="admin-container">
       <h1>管理画面</h1>
-      <div id="login-form" style="max-width: 400px; margin: 0 auto;">
-        <div class="card">
-          <h2>ログイン</h2>
-          <input type="email" id="email" placeholder="メールアドレス" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 2px solid #ddd; border-radius: 5px;">
-          <input type="password" id="password" placeholder="パスワード" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 2px solid #ddd; border-radius: 5px;">
-          <button onclick="login()" class="btn btn-primary" style="width: 100%;">ログイン</button>
+
+      <div class="admin-tabs">
+        <button class="admin-tab active" onclick="switchTab('ai-register')">🤖 AI商品登録</button>
+        <button class="admin-tab" onclick="switchTab('products')">📦 商品管理</button>
+        <button class="admin-tab" onclick="switchTab('orders')">📋 注文管理</button>
+      </div>
+
+      <!-- AI商品登録タブ -->
+      <div id="ai-register-tab" class="tab-content active">
+        <div class="ai-form">
+          <h2>🤖 AI商品登録</h2>
+          <p style="color: var(--text-light); margin-bottom: 2rem;">Alibabaの商品URLを入力すると、AIが自動で商品情報を最適化します。</p>
+
+          <div class="form-group">
+            <label>Alibaba商品URL *</label>
+            <input type="url" id="alibaba-url" placeholder="https://www.alibaba.com/product-detail/..." 
+                   value="https://www.alibaba.com/product-detail/10-Hours-Work-Anti-spy-Bug_1601658778634.html">
+          </div>
+
+          <div class="form-group">
+            <label>マージン率（%） *</label>
+            <input type="number" id="margin-rate" value="100" min="0" max="500" placeholder="100">
+            <small style="color: var(--text-light);">例: 100% = 仕入れ価格の2倍で販売</small>
+          </div>
+
+          <button onclick="analyzeProduct()" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.125rem;">
+            🔍 AI分析を開始
+          </button>
+        </div>
+
+        <div id="preview-section" style="display: none;">
+          <div class="preview-card">
+            <h2>📝 プレビュー</h2>
+            <div id="preview-content"></div>
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+              <button onclick="registerProduct()" class="btn btn-primary" style="flex: 1; padding: 1rem;">✅ この内容で登録</button>
+              <button onclick="cancelPreview()" class="btn" style="flex: 1; padding: 1rem;">❌ キャンセル</button>
+            </div>
+          </div>
         </div>
       </div>
-      <div id="admin-panel" style="display: none;">
-        <h2>商品管理・注文管理</h2>
-        <p>管理機能は開発中です</p>
+
+      <!-- 商品管理タブ -->
+      <div id="products-tab" class="tab-content">
+        <h2>商品管理</h2>
+        <p>開発中...</p>
+      </div>
+
+      <!-- 注文管理タブ -->
+      <div id="orders-tab" class="tab-content">
+        <h2>注文管理</h2>
+        <p>開発中...</p>
       </div>
     </div>
-  </section>
+  </div>
+
+  <div id="loading-overlay" class="loading-overlay" style="display: none;">
+    <div class="loading-content">
+      <div class="spinner" style="width: 60px; height: 60px; margin: 0 auto 1.5rem;"></div>
+      <h3>AI分析中...</h3>
+      <p style="color: var(--text-light);">商品情報を最適化しています（30秒程度）</p>
+    </div>
+  </div>
+
   <script src="/js/api.js"></script>
   <script>
+    let adminToken = null;
+    let analyzedProduct = null;
+
     async function login() {
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
+      
       try {
         const response = await fetch('/api/admin/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
         });
+        
         const data = await response.json();
+        
         if (data.success) {
-          localStorage.setItem('admin_token', data.data.token);
+          adminToken = data.data.token;
+          localStorage.setItem('admin_token', adminToken);
           document.getElementById('login-form').style.display = 'none';
           document.getElementById('admin-panel').style.display = 'block';
+          Notification.success('ログインしました');
         } else {
-          alert('ログインに失敗しました');
+          Notification.error('ログインに失敗しました');
         }
       } catch (error) {
-        alert('エラー: ' + error.message);
+        Notification.error('エラー: ' + error.message);
       }
     }
+
     function logout() {
       localStorage.removeItem('admin_token');
       location.reload();
     }
+
+    function switchTab(tabName) {
+      document.querySelectorAll('.admin-tab').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById(tabName + '-tab').classList.add('active');
+    }
+
+    async function analyzeProduct() {
+      const alibabaUrl = document.getElementById('alibaba-url').value;
+      const marginRate = parseInt(document.getElementById('margin-rate').value);
+
+      if (!alibabaUrl) {
+        Notification.error('Alibaba URLを入力してください');
+        return;
+      }
+
+      document.getElementById('loading-overlay').style.display = 'flex';
+
+      try {
+        const response = await fetch('/api/admin/products/analyze-alibaba', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${adminToken}`
+          },
+          body: JSON.stringify({ alibabaUrl, marginRate })
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+          throw new Error(data.error || 'AI分析に失敗しました');
+        }
+
+        analyzedProduct = data.data.product;
+        
+        // プレビュー表示
+        document.getElementById('preview-content').innerHTML = `
+          <div class="form-group">
+            <label>商品名</label>
+            <input type="text" id="edit-name" value="${analyzedProduct.name}">
+          </div>
+          <div class="form-group">
+            <label>商品説明</label>
+            <textarea id="edit-description" rows="4">${analyzedProduct.description}</textarea>
+          </div>
+          <div class="form-group">
+            <label>販売価格</label>
+            <input type="number" id="edit-price" value="${analyzedProduct.price}">
+          </div>
+          <div class="form-group">
+            <label>カテゴリ</label>
+            <select id="edit-category">
+              <option value="個人向け" ${analyzedProduct.category === '個人向け' ? 'selected' : ''}>個人向け</option>
+              <option value="スマートホーム" ${analyzedProduct.category === 'スマートホーム' ? 'selected' : ''}>スマートホーム</option>
+              <option value="車両・バイク" ${analyzedProduct.category === '車両・バイク' ? 'selected' : ''}>車両・バイク</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>タグ</label>
+            <input type="text" id="edit-tags" value="${(analyzedProduct.tags || []).join(', ')}">
+            <small>カンマ区切り</small>
+          </div>
+          <div class="form-group">
+            <label>商品画像</label>
+            <div class="preview-images">
+              ${(analyzedProduct.image_urls || []).map(img => `<img src="${img.startsWith('http') ? img : '/images/' + img}" class="preview-image">`).join('')}
+            </div>
+          </div>
+          <div style="background: #e3f2fd; padding: 1rem; border-radius: 5px; margin-top: 1rem;">
+            <strong>元の仕入れ価格:</strong> $${data.data.originalData.minPrice} (約¥${Math.round(data.data.originalData.minPrice * 150)})<br>
+            <strong>マージン率:</strong> ${marginRate}%<br>
+            <strong>販売価格:</strong> ¥${analyzedProduct.price}
+          </div>
+        `;
+
+        document.getElementById('preview-section').style.display = 'block';
+        document.getElementById('preview-section').scrollIntoView({ behavior: 'smooth' });
+
+      } catch (error) {
+        Notification.error(error.message);
+      } finally {
+        document.getElementById('loading-overlay').style.display = 'none';
+      }
+    }
+
+    async function registerProduct() {
+      // プレビューから編集された値を取得
+      const productData = {
+        name: document.getElementById('edit-name').value,
+        description: document.getElementById('edit-description').value,
+        price: parseFloat(document.getElementById('edit-price').value),
+        category: document.getElementById('edit-category').value,
+        alibaba_url: analyzedProduct.alibaba_url,
+        alibaba_price: analyzedProduct.alibaba_price,
+        stock_status: 'in_stock',
+        image_urls: analyzedProduct.image_urls,
+        specifications: analyzedProduct.specifications || {}
+      };
+
+      try {
+        const response = await fetch('/api/admin/products', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${adminToken}`
+          },
+          body: JSON.stringify(productData)
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          Notification.success('商品を登録しました！');
+          cancelPreview();
+          document.getElementById('alibaba-url').value = '';
+        } else {
+          throw new Error(data.error);
+        }
+      } catch (error) {
+        Notification.error('商品登録に失敗: ' + error.message);
+      }
+    }
+
+    function cancelPreview() {
+      document.getElementById('preview-section').style.display = 'none';
+      analyzedProduct = null;
+    }
+
+    // ページロード時の処理
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem('admin_token');
+      if (token) {
+        adminToken = token;
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('admin-panel').style.display = 'block';
+      }
+    });
   </script>
 </body>
 </html>
