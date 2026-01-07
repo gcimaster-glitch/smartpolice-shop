@@ -1,0 +1,267 @@
+/**
+ * Cloudflare Workers メインエントリーポイント
+ * スマートポリスECショップ バックエンドAPI
+ */
+
+import { corsResponse, errorResponse } from './utils/response.js';
+import { getProducts, getProductById, createProduct, updateProduct, deleteProduct } from './routes/products.js';
+import { createOrder, getOrderByNumber, getAllOrders, updateOrderStatus } from './routes/orders.js';
+import { createPaymentIntent, verifyWebhookSignature, handleWebhookEvent } from './services/stripe.js';
+import { sendShippingNotificationEmail } from './services/resend.js';
+import { uploadImage, getImage } from './services/r2.js';
+import { requireAdmin, hashPassword, verifyPassword, generateAdminToken } from './utils/auth.js';
+import { isValidImageType, isValidImageSize } from './services/r2.js';
+import { successResponse } from './utils/response.js';
+
+export default {
+  async fetch(request, env, ctx) {
+    const url = new URL(request.url);
+    const path = url.pathname;
+    const method = request.method;
+
+    // CORS プリフライト対応
+    if (method === 'OPTIONS') {
+      return corsResponse();
+    }
+
+    try {
+      // ==================== 商品API ====================
+      
+      // GET /api/products - 商品一覧取得
+      if (path === '/api/products' && method === 'GET') {
+        return await getProducts(request, env);
+      }
+
+      // GET /api/products/:id - 商品詳細取得
+      if (path.match(/^\/api\/products\/\d+$/) && method === 'GET') {
+        const productId = path.split('/').pop();
+        return await getProductById(productId, env);
+      }
+
+      // POST /api/admin/products - 商品作成（管理者用）
+      if (path === '/api/admin/products' && method === 'POST') {
+        return await createProduct(request, env);
+      }
+
+      // PUT /api/admin/products/:id - 商品更新（管理者用）
+      if (path.match(/^\/api\/admin\/products\/\d+$/) && method === 'PUT') {
+        const productId = path.split('/').pop();
+        return await updateProduct(productId, request, env);
+      }
+
+      // DELETE /api/admin/products/:id - 商品削除（管理者用）
+      if (path.match(/^\/api\/admin\/products\/\d+$/) && method === 'DELETE') {
+        const productId = path.split('/').pop();
+        return await deleteProduct(productId, request, env);
+      }
+
+      // ==================== 注文API ====================
+
+      // POST /api/orders - 注文作成
+      if (path === '/api/orders' && method === 'POST') {
+        return await createOrder(request, env);
+      }
+
+      // GET /api/orders/:orderNumber - 注文詳細取得
+      if (path.match(/^\/api\/orders\/SP-/) && method === 'GET') {
+        const orderNumber = path.split('/').pop();
+        return await getOrderByNumber(orderNumber, env);
+      }
+
+      // GET /api/admin/orders - 全注文取得（管理者用）
+      if (path === '/api/admin/orders' && method === 'GET') {
+        return await getAllOrders(request, env);
+      }
+
+      // PUT /api/admin/orders/:id - 注文ステータス更新（管理者用）
+      if (path.match(/^\/api\/admin\/orders\/\d+$/) && method === 'PUT') {
+        const orderId = path.split('/').pop();
+        return await updateOrderStatus(orderId, request, env);
+      }
+
+      // ==================== 決済API（Stripe） ====================
+
+      // POST /api/payment/intent - PaymentIntent作成
+      if (path === '/api/payment/intent' && method === 'POST') {
+        const body = await request.json();
+        const { amount, description, metadata } = body;
+
+        const paymentIntent = await createPaymentIntent({
+          amount,
+          description,
+          metadata
+        }, env.STRIPE_SECRET_KEY);
+
+        return successResponse({
+          clientSecret: paymentIntent.client_secret,
+          paymentIntentId: paymentIntent.id
+        });
+      }
+
+      // POST /api/webhooks/stripe - Stripe Webhook
+      if (path === '/api/webhooks/stripe' && method === 'POST') {
+        const signature = request.headers.get('stripe-signature');
+        const payload = await request.text();
+
+        const isValid = await verifyWebhookSignature(
+          payload,
+          signature,
+          env.STRIPE_WEBHOOK_SECRET
+        );
+
+        if (!isValid) {
+          return errorResponse('Invalid webhook signature', 401);
+        }
+
+        const event = JSON.parse(payload);
+        const result = await handleWebhookEvent(event, env);
+
+        // 決済成功時に注文ステータスを更新
+        if (result.type === 'payment_success' && result.metadata?.order_number) {
+          const { results } = await env.DB.prepare(
+            'SELECT id FROM orders WHERE order_number = ?'
+          ).bind(result.metadata.order_number).all();
+
+          if (results.length > 0) {
+            await env.DB.prepare(
+              'UPDATE orders SET status = ?, stripe_payment_id = ?, stripe_payment_status = ? WHERE id = ?'
+            ).bind('paid', result.paymentIntentId, 'succeeded', results[0].id).run();
+          }
+        }
+
+        return successResponse({ received: true });
+      }
+
+      // ==================== メール送信API ====================
+
+      // POST /api/admin/email/shipping - 発送通知メール送信（管理者用）
+      if (path === '/api/admin/email/shipping' && method === 'POST') {
+        const admin = requireAdmin(request);
+        if (!admin) {
+          return errorResponse('認証が必要です', 401);
+        }
+
+        const body = await request.json();
+        const { to, customerName, orderNumber, trackingNumber, trackingUrl } = body;
+
+        await sendShippingNotificationEmail({
+          to,
+          customerName,
+          orderNumber,
+          trackingNumber,
+          trackingUrl
+        }, env.RESEND_API_KEY, env.RESEND_FROM_EMAIL);
+
+        return successResponse({ message: '発送通知メールを送信しました' });
+      }
+
+      // ==================== 画像管理API（R2） ====================
+
+      // POST /api/admin/images/upload - 画像アップロード（管理者用）
+      if (path === '/api/admin/images/upload' && method === 'POST') {
+        const admin = requireAdmin(request);
+        if (!admin) {
+          return errorResponse('認証が必要です', 401);
+        }
+
+        const formData = await request.formData();
+        const file = formData.get('image');
+
+        if (!file) {
+          return errorResponse('画像ファイルが指定されていません', 400);
+        }
+
+        if (!isValidImageType(file.type)) {
+          return errorResponse('サポートされていない画像形式です', 400);
+        }
+
+        if (!isValidImageSize(file.size)) {
+          return errorResponse('画像サイズが大きすぎます（最大5MB）', 400);
+        }
+
+        const filename = await uploadImage(file, file.name, env.IMAGES);
+
+        return successResponse({
+          message: '画像をアップロードしました',
+          filename,
+          url: `/images/${filename}`
+        });
+      }
+
+      // GET /images/:filename - 画像取得
+      if (path.startsWith('/images/') && method === 'GET') {
+        const filename = path.replace('/images/', '');
+        return await getImage(filename, env.IMAGES);
+      }
+
+      // ==================== 管理者認証API ====================
+
+      // POST /api/admin/login - 管理者ログイン
+      if (path === '/api/admin/login' && method === 'POST') {
+        const body = await request.json();
+        const { email, password } = body;
+
+        const { results } = await env.DB.prepare(
+          'SELECT * FROM admins WHERE email = ?'
+        ).bind(email).all();
+
+        if (results.length === 0) {
+          return errorResponse('メールアドレスまたはパスワードが正しくありません', 401);
+        }
+
+        const admin = results[0];
+        const passwordHash = await hashPassword(password);
+        const isValid = passwordHash === admin.password_hash;
+
+        if (!isValid) {
+          return errorResponse('メールアドレスまたはパスワードが正しくありません', 401);
+        }
+
+        // ログイン時刻を更新
+        await env.DB.prepare(
+          'UPDATE admins SET last_login_at = CURRENT_TIMESTAMP WHERE id = ?'
+        ).bind(admin.id).run();
+
+        const token = generateAdminToken(admin);
+
+        return successResponse({
+          message: 'ログインしました',
+          token,
+          admin: {
+            id: admin.id,
+            email: admin.email,
+            name: admin.name
+          }
+        });
+      }
+
+      // GET /api/admin/me - 管理者情報取得
+      if (path === '/api/admin/me' && method === 'GET') {
+        const admin = requireAdmin(request);
+        if (!admin) {
+          return errorResponse('認証が必要です', 401);
+        }
+
+        return successResponse({ admin });
+      }
+
+      // ==================== その他 ====================
+
+      // GET /api/health - ヘルスチェック
+      if (path === '/api/health' && method === 'GET') {
+        return successResponse({
+          status: 'ok',
+          timestamp: new Date().toISOString(),
+          service: 'smartpolice-shop-api'
+        });
+      }
+
+      // ルートが見つからない
+      return errorResponse('エンドポイントが見つかりません', 404);
+
+    } catch (error) {
+      console.error('Unhandled error:', error);
+      return errorResponse('サーバーエラーが発生しました', 500, error.message);
+    }
+  }
+};
