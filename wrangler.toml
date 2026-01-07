@@ -8,7 +8,7 @@ workers_dev = true
 [[d1_databases]]
 binding = "DB"
 database_name = "smartpolice-shop-db"
-database_id = "YOUR_DATABASE_ID_HERE"
+database_id = "86f34575-33a8-4b02-adfa-612a4d88e38e"
 
 # R2バケット設定
 # 注意: バケット作成後に有効化してください
