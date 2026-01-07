@@ -123,8 +123,8 @@
     let adminToken = null;
     let analyzedProduct = null;
 
-    // Notification クラス
-    class Notification {
+    // AdminNotification クラス（ブラウザ組み込みのNotificationとの競合を避けるため）
+    class AdminNotification {
       static success(message) {
         this.show(message, 'success');
       }
@@ -163,7 +163,7 @@
       const password = document.getElementById('password').value;
       
       if (!email || !password) {
-        Notification.error('メールアドレスとパスワードを入力してください');
+        AdminNotification.error('メールアドレスとパスワードを入力してください');
         return;
       }
       
@@ -190,13 +190,13 @@
           localStorage.setItem('admin_token', adminToken);
           document.getElementById('login-form').style.display = 'none';
           document.getElementById('admin-panel').style.display = 'block';
-          Notification.success('ログインしました');
+          AdminNotification.success('ログインしました');
         } else {
-          Notification.error(data.error || 'ログインに失敗しました');
+          AdminNotification.error(data.error || 'ログインに失敗しました');
         }
       } catch (error) {
         console.error('Login error:', error);
-        Notification.error('エラー: ' + error.message);
+        AdminNotification.error('エラー: ' + error.message);
       }
     }
 
@@ -218,7 +218,7 @@
       const marginRate = parseInt(document.getElementById('margin-rate').value);
 
       if (!alibabaUrl) {
-        Notification.error('Alibaba URLを入力してください');
+        AdminNotification.error('Alibaba URLを入力してください');
         return;
       }
 
@@ -289,7 +289,7 @@
         document.getElementById('preview-section').scrollIntoView({ behavior: 'smooth' });
 
       } catch (error) {
-        Notification.error(error.message);
+        AdminNotification.error(error.message);
       } finally {
         document.getElementById('loading-overlay').style.display = 'none';
       }
@@ -322,14 +322,14 @@
         const data = await response.json();
 
         if (data.success) {
-          Notification.success('商品を登録しました！');
+          AdminNotification.success('商品を登録しました！');
           cancelPreview();
           document.getElementById('alibaba-url').value = '';
         } else {
           throw new Error(data.error);
         }
       } catch (error) {
-        Notification.error('商品登録に失敗: ' + error.message);
+        AdminNotification.error('商品登録に失敗: ' + error.message);
       }
     }
 
