@@ -56,13 +56,96 @@
       <h1>管理画面</h1>
 
       <div class="admin-tabs">
-        <button class="admin-tab active" onclick="switchTab('ai-register')">🤖 AI商品登録</button>
+        <button class="admin-tab active" onclick="switchTab('manual-register')">✍️ 手動商品登録</button>
         <button class="admin-tab" onclick="switchTab('products')">📦 商品管理</button>
         <button class="admin-tab" onclick="switchTab('orders')">📋 注文管理</button>
       </div>
 
-      <!-- AI商品登録タブ -->
-      <div id="ai-register-tab" class="tab-content active">
+      <!-- 手動商品登録タブ -->
+      <div id="manual-register-tab" class="tab-content active">
+        <div class="ai-form">
+          <h2>✍️ 手動商品登録</h2>
+          <p style="color: var(--text-light); margin-bottom: 2rem;">商品情報を直接入力して登録します。正確で確実な方法です。</p>
+
+          <div class="form-group">
+            <label>商品名（日本語） *</label>
+            <input type="text" id="manual-name" placeholder="例: 高性能 GPS追跡デバイス" required>
+          </div>
+
+          <div class="form-group">
+            <label>商品説明（日本語） *</label>
+            <textarea id="manual-description" rows="6" placeholder="商品の特徴、用途、メリットなどを詳しく記載してください。&#10;&#10;例：&#10;・24時間365日リアルタイム追跡&#10;・バッテリー持続時間最大30日&#10;・防水仕様（IP67）&#10;・スマホアプリで簡単管理" required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>販売価格（円） *</label>
+            <input type="number" id="manual-price" placeholder="例: 12800" min="0" required>
+          </div>
+
+          <div class="form-group">
+            <label>カテゴリ *</label>
+            <select id="manual-category" required>
+              <option value="">選択してください</option>
+              <option value="個人向け">個人向け</option>
+              <option value="スマートホーム">スマートホーム</option>
+              <option value="車両・バイク">車両・バイク</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>タグ（カンマ区切り）</label>
+            <input type="text" id="manual-tags" placeholder="例: GPS, 追跡, 防犯, 車両">
+            <small style="color: var(--text-light);">検索やフィルタに使用されます</small>
+          </div>
+
+          <div class="form-group">
+            <label>商品画像URL（1行に1つ、複数可）</label>
+            <textarea id="manual-images" rows="4" placeholder="例:&#10;https://example.com/image1.jpg&#10;https://example.com/image2.jpg"></textarea>
+            <small style="color: var(--text-light);">Alibabaの画像URLをコピー＆ペーストしてください</small>
+          </div>
+
+          <div class="form-group">
+            <label>在庫状況 *</label>
+            <select id="manual-stock" required>
+              <option value="in_stock">在庫あり</option>
+              <option value="out_of_stock">在庫切れ</option>
+              <option value="discontinued">取扱終了</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Alibaba商品URL（記録用）</label>
+            <input type="url" id="manual-alibaba-url" placeholder="https://www.alibaba.com/product-detail/...">
+            <small style="color: var(--text-light);">仕入れ元の記録として保存されます</small>
+          </div>
+
+          <div class="form-group">
+            <label>仕入れ価格（ドル/記録用）</label>
+            <input type="number" id="manual-alibaba-price" placeholder="例: 10.50" min="0" step="0.01">
+            <small style="color: var(--text-light);">利益管理のため記録しておくことを推奨</small>
+          </div>
+
+          <div class="form-group">
+            <label>製品仕様（JSON形式、オプション）</label>
+            <textarea id="manual-specs" rows="6" placeholder='例:&#10;{&#10;  "サイズ": "60×40×20mm",&#10;  "重量": "50g",&#10;  "バッテリー": "30日間",&#10;  "防水": "IP67"&#10;}'></textarea>
+            <small style="color: var(--text-light);">JSON形式で入力してください（入力なしでもOK）</small>
+          </div>
+
+          <button onclick="registerManualProduct()" class="btn btn-primary" style="width: 100%; padding: 1.25rem; font-size: 1.25rem; font-weight: 700;">
+            ✅ 商品を登録する
+          </button>
+        </div>
+      </div>
+
+      <!-- AI商品登録タブ（非推奨） -->
+      <div id="ai-register-tab" class="tab-content" style="display: none;">
+        <div class="ai-form" style="opacity: 0.6;">
+          <h2>🤖 AI商品登録（非推奨）</h2>
+          <p style="color: #d32f2f; margin-bottom: 1rem; font-weight: 600;">
+            ⚠️ この機能は現在正常に動作していません。手動商品登録をご利用ください。
+          </p>
+        </div>
+      </div>
         <div class="ai-form">
           <h2>🤖 AI商品登録</h2>
           <p style="color: var(--text-light); margin-bottom: 2rem;">Alibabaの商品URLを入力すると、AIが自動で商品情報を最適化します。</p>
@@ -211,6 +294,118 @@
       
       event.target.classList.add('active');
       document.getElementById(tabName + '-tab').classList.add('active');
+    }
+
+    // 手動商品登録関数
+    async function registerManualProduct() {
+      // 入力値を取得
+      const name = document.getElementById('manual-name').value.trim();
+      const description = document.getElementById('manual-description').value.trim();
+      const price = parseFloat(document.getElementById('manual-price').value);
+      const category = document.getElementById('manual-category').value;
+      const tagsInput = document.getElementById('manual-tags').value.trim();
+      const imagesInput = document.getElementById('manual-images').value.trim();
+      const stockStatus = document.getElementById('manual-stock').value;
+      const alibabaUrl = document.getElementById('manual-alibaba-url').value.trim();
+      const alibabaPrice = document.getElementById('manual-alibaba-price').value;
+      const specsInput = document.getElementById('manual-specs').value.trim();
+
+      // バリデーション
+      if (!name) {
+        AdminNotification.error('商品名を入力してください');
+        return;
+      }
+      if (!description) {
+        AdminNotification.error('商品説明を入力してください');
+        return;
+      }
+      if (!price || price <= 0) {
+        AdminNotification.error('有効な販売価格を入力してください');
+        return;
+      }
+      if (!category) {
+        AdminNotification.error('カテゴリを選択してください');
+        return;
+      }
+
+      // タグを配列に変換
+      const tags = tagsInput ? tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
+
+      // 画像URLを配列に変換
+      const imageUrls = imagesInput ? imagesInput.split('\n').map(url => url.trim()).filter(url => url) : [];
+
+      // 仕様をJSONとしてパース
+      let specifications = {};
+      if (specsInput) {
+        try {
+          specifications = JSON.parse(specsInput);
+        } catch (e) {
+          AdminNotification.error('製品仕様のJSON形式が正しくありません');
+          return;
+        }
+      }
+
+      // 商品データを構築
+      const productData = {
+        name,
+        description,
+        price,
+        category,
+        stock_status: stockStatus,
+        image_urls: imageUrls,
+        specifications,
+        alibaba_url: alibabaUrl || null,
+        alibaba_price: alibabaPrice ? parseFloat(alibabaPrice) : null
+      };
+
+      // 登録実行
+      try {
+        const response = await fetch('/api/admin/products', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${adminToken}`
+          },
+          body: JSON.stringify(productData)
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const text = await response.text();
+        if (!text) {
+          throw new Error('サーバーから空のレスポンスが返されました');
+        }
+
+        const data = JSON.parse(text);
+
+        if (data.success) {
+          AdminNotification.success('商品を登録しました！');
+          
+          // フォームをクリア
+          document.getElementById('manual-name').value = '';
+          document.getElementById('manual-description').value = '';
+          document.getElementById('manual-price').value = '';
+          document.getElementById('manual-category').value = '';
+          document.getElementById('manual-tags').value = '';
+          document.getElementById('manual-images').value = '';
+          document.getElementById('manual-stock').value = 'in_stock';
+          document.getElementById('manual-alibaba-url').value = '';
+          document.getElementById('manual-alibaba-price').value = '';
+          document.getElementById('manual-specs').value = '';
+          
+          // 3秒後に商品一覧ページを開く
+          setTimeout(() => {
+            window.open('/products.html', '_blank');
+          }, 1500);
+        } else {
+          throw new Error(data.error || '商品登録に失敗しました');
+        }
+      } catch (error) {
+        console.error('Register error:', error);
+        AdminNotification.error('商品登録に失敗: ' + error.message);
+      }
     }
 
     async function analyzeProduct() {
