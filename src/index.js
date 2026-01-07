@@ -56,28 +56,28 @@ export default {
         return await deleteProduct(productId, request, env);
       }
 
-      // POST /api/admin/products/analyze-alibaba - Alibaba商品AI分析（管理者用）
-      if (path === '/api/admin/products/analyze-alibaba' && method === 'POST') {
+      // POST /api/admin/alibaba/analyze - Alibaba商品AI分析（管理者用）
+      if (path === '/api/admin/alibaba/analyze' && method === 'POST') {
         const admin = requireAdmin(request);
         if (!admin) {
           return errorResponse('認証が必要です', 401);
         }
 
         const body = await request.json();
-        const { alibabaUrl, marginRate } = body;
+        const { alibaba_url, profit_margin } = body;
 
-        if (!alibabaUrl) {
+        if (!alibaba_url) {
           return errorResponse('Alibaba URLが必要です', 400);
         }
 
         try {
           // 1. Alibaba商品ページをスクレイピング
-          const scrapedData = await scrapeAlibabaProduct(alibabaUrl);
+          const scrapedData = await scrapeAlibabaProduct(alibaba_url);
 
           // 2. OpenAI APIで分析・最適化
           const analyzedData = await analyzeProductWithAI(
             scrapedData,
-            marginRate || 100,
+            profit_margin || 100,
             env.OPENAI_API_KEY
           );
 
