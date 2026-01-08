@@ -293,6 +293,68 @@ export default {
         return successResponse({ admin });
       }
 
+      // ==================== クーポンAPI ====================
+
+      // POST /api/coupons/validate - クーポン検証
+      if (path === '/api/coupons/validate' && method === 'POST') {
+        const { code, subtotal } = await request.json();
+        
+        if (!code) {
+          return errorResponse('クーポンコードを入力してください', 400);
+        }
+
+        // クーポン取得
+        const coupon = await env.DB.prepare(`
+          SELECT * FROM coupons 
+          WHERE code = ? AND is_active = 1
+        `).bind(code.toUpperCase()).first();
+
+        if (!coupon) {
+          return errorResponse('無効なクーポンコードです', 404);
+        }
+
+        // 有効期限チェック
+        const now = new Date().toISOString();
+        if (coupon.valid_until && coupon.valid_until < now) {
+          return errorResponse('このクーポンは有効期限が切れています', 400);
+        }
+
+        // 利用回数チェック
+        if (coupon.usage_limit && coupon.used_count >= coupon.usage_limit) {
+          return errorResponse('このクーポンは利用上限に達しています', 400);
+        }
+
+        // 最低購入金額チェック
+        if (coupon.min_purchase_amount && subtotal < coupon.min_purchase_amount) {
+          return errorResponse(
+            `このクーポンは${coupon.min_purchase_amount}円以上のご購入で利用できます`,
+            400
+          );
+        }
+
+        // 割引額計算
+        let discountAmount = 0;
+        if (coupon.discount_type === 'percentage') {
+          discountAmount = Math.floor(subtotal * (coupon.discount_value / 100));
+          // 最大割引額の制限
+          if (coupon.max_discount_amount && discountAmount > coupon.max_discount_amount) {
+            discountAmount = coupon.max_discount_amount;
+          }
+        } else if (coupon.discount_type === 'fixed') {
+          discountAmount = coupon.discount_value;
+        }
+
+        return successResponse({
+          coupon: {
+            code: coupon.code,
+            description: coupon.description,
+            discount_type: coupon.discount_type,
+            discount_value: coupon.discount_value,
+            discount_amount: discountAmount
+          }
+        });
+      }
+
       // ==================== その他 ====================
 
       // GET /api/health - ヘルスチェック

@@ -104,19 +104,40 @@
           <div>
             <div class="card" style="position: sticky; top: 2rem;">
               <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem;">注文概要</h3>
+              
+              <!-- クーポンコード入力 -->
+              <div id="coupon-section" style="margin-bottom: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                  <input type="text" id="coupon-code" placeholder="クーポンコード" 
+                         style="flex: 1; padding: 0.75rem; border: 2px solid #ddd; border-radius: 5px; text-transform: uppercase;">
+                  <button onclick="applyCoupon()" class="btn" style="padding: 0.75rem 1.5rem; white-space: nowrap;">適用</button>
+                </div>
+                <div id="coupon-message" style="font-size: 0.875rem; color: #666;"></div>
+                <div id="coupon-applied" style="display: none; margin-top: 0.5rem; padding: 0.5rem; background: #e8f5e9; border-left: 3px solid #4caf50; border-radius: 3px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.875rem; color: #2e7d32; font-weight: 600;" id="coupon-desc"></span>
+                    <button onclick="removeCoupon()" style="background: none; border: none; color: #666; cursor: pointer; padding: 0.25rem;">✕</button>
+                  </div>
+                </div>
+              </div>
+              
               <div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #e0e0e0;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
                   <span>小計</span>
-                  <span>${formatPrice(cart.total)}</span>
+                  <span id="subtotal">${formatPrice(cart.total)}</span>
+                </div>
+                <div id="discount-row" style="display: none; justify-content: space-between; margin-bottom: 0.5rem; color: #4caf50;">
+                  <span>割引</span>
+                  <span id="discount-amount">-¥0</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
                   <span>送料</span>
-                  <span>${cart.total >= 5000 ? '無料' : '¥500'}</span>
+                  <span id="shipping-fee">${cart.total >= 5000 ? '無料' : '¥500'}</span>
                 </div>
               </div>
               <div style="display: flex; justify-content: space-between; font-size: 1.25rem; font-weight: 700; margin-bottom: 2rem;">
                 <span>合計</span>
-                <span style="color: var(--primary-color);">${formatPrice(cart.total + (cart.total >= 5000 ? 0 : 500))}</span>
+                <span id="final-total" style="color: var(--primary-color);">${formatPrice(cart.total + (cart.total >= 5000 ? 0 : 500))}</span>
               </div>
               <button onclick="checkout()" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.125rem;">購入手続きへ</button>
               <a href="/products.html" style="display: block; text-align: center; margin-top: 1rem; color: var(--primary-color);">買い物を続ける</a>
@@ -149,3 +170,64 @@
   </script>
 </body>
 </html>
+
+<script>
+// クーポン機能
+let currentCoupon = null;
+
+async function applyCoupon() {
+  const code = document.getElementById('coupon-code').value.trim().toUpperCase();
+  const cart = Cart.get();
+  
+  if (!code) {
+    document.getElementById('coupon-message').textContent = 'クーポンコードを入力してください';
+    document.getElementById('coupon-message').style.color = '#f44336';
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/coupons/validate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, subtotal: cart.total })
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      currentCoupon = data.data.coupon;
+      document.getElementById('coupon-message').textContent = '✓ ' + currentCoupon.description;
+      document.getElementById('coupon-message').style.color = '#4caf50';
+      document.getElementById('coupon-applied').style.display = 'block';
+      document.getElementById('coupon-desc').textContent = currentCoupon.description;
+      updatePricing();
+    } else {
+      document.getElementById('coupon-message').textContent = data.error;
+      document.getElementById('coupon-message').style.color = '#f44336';
+    }
+  } catch (error) {
+    console.error('Coupon error:', error);
+  }
+}
+
+function removeCoupon() {
+  currentCoupon = null;
+  document.getElementById('coupon-applied').style.display = 'none';
+  document.getElementById('coupon-message').textContent = '';
+  updatePricing();
+}
+
+function updatePricing() {
+  const cart = Cart.get();
+  const discount = currentCoupon ? currentCoupon.discount_amount : 0;
+  const shippingFee = cart.total >= 5000 ? 0 : 500;
+  const total = cart.total - discount + shippingFee;
+  
+  if (discount > 0) {
+    document.getElementById('discount-row').style.display = 'flex';
+    document.getElementById('discount-amount').textContent = '-' + formatPrice(discount);
+  }
+  
+  document.getElementById('final-total').textContent = formatPrice(total);
+}
+</script>
