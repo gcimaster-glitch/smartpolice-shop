@@ -56,7 +56,8 @@
       <h1>管理画面</h1>
 
       <div class="admin-tabs">
-        <button class="admin-tab active" onclick="switchTab('manual-register')">✍️ 手動商品登録</button>
+        <button class="admin-tab active" onclick="switchTab('manual-register')">✍️ 手動商品登録（推奨）</button>
+        <button class="admin-tab" onclick="switchTab('ai-register')">🤖 AI商品登録（ベータ）</button>
         <button class="admin-tab" onclick="switchTab('products')">📦 商品管理</button>
         <button class="admin-tab" onclick="switchTab('orders')">📋 注文管理</button>
       </div>
@@ -137,18 +138,21 @@
         </div>
       </div>
 
-      <!-- AI商品登録タブ（非推奨） -->
+      <!-- AI商品登録タブ -->
       <div id="ai-register-tab" class="tab-content" style="display: none;">
-        <div class="ai-form" style="opacity: 0.6;">
-          <h2>🤖 AI商品登録（非推奨）</h2>
-          <p style="color: #d32f2f; margin-bottom: 1rem; font-weight: 600;">
-            ⚠️ この機能は現在正常に動作していません。手動商品登録をご利用ください。
-          </p>
-        </div>
-      </div>
         <div class="ai-form">
-          <h2>🤖 AI商品登録</h2>
-          <p style="color: var(--text-light); margin-bottom: 2rem;">Alibabaの商品URLを入力すると、AIが自動で商品情報を最適化します。</p>
+          <h2>🤖 AI商品登録（ベータ版）</h2>
+          <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 1rem; margin-bottom: 2rem; border-radius: 4px;">
+            <strong>⚠️ 重要なお知らせ</strong>
+            <p style="margin: 0.5rem 0 0 0;">
+              Alibabaのアクセス制限により、自動取得が失敗する場合があります。<br>
+              <strong>より確実な「✍️ 手動商品登録」の使用を推奨します。</strong>
+            </p>
+          </div>
+          <p style="color: var(--text-light); margin-bottom: 2rem;">
+            Alibabaの商品URLを入力すると、AIが商品情報を日本語に翻訳・最適化します。<br>
+            ただし、価格や画像は手動で確認・入力してください。
+          </p>
 
           <div class="form-group">
             <label>Alibaba商品URL *</label>
