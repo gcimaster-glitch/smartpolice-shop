@@ -4,14 +4,38 @@
 
 /**
  * Alibaba商品ページから情報を抽出（フォールバック戦略使用）
+ * 戦略1: Crawler API（推奨）
+ * 戦略2: 直接fetch
  */
 export async function scrapeAlibabaProduct(url) {
   try {
     console.log('Fetching Alibaba product page:', url);
     
-    // 戦略1: 直接fetch（User-Agentを偽装）
+    // 戦略1: Crawler API（より高度なスクレイピング）
     let content = null;
     let method = 'unknown';
+    
+    try {
+      console.log('Strategy 1: Crawler API...');
+      const crawlerResponse = await fetch(`https://r.jina.ai/${encodeURIComponent(url)}`, {
+        headers: {
+          'Accept': 'text/plain',
+          'X-Return-Format': 'text'
+        }
+      });
+      
+      if (crawlerResponse.ok) {
+        content = await crawlerResponse.text();
+        method = 'crawler-api';
+        console.log('Crawler API successful, length:', content.length);
+      } else {
+        console.log('Crawler API failed:', crawlerResponse.status);
+      }
+    } catch (error) {
+      console.log('Crawler API error:', error.message);
+    }
+    
+    // 戦略2: 直接fetch（User-Agentを偽装）
     
     try {
       console.log('Strategy 1: Direct fetch with User-Agent...');
@@ -56,7 +80,7 @@ export async function scrapeAlibabaProduct(url) {
     
     console.log('Content extraction method:', method);
     
-    // HTMLから情報を抽出
+    // HTMLまたはテキストから情報を抽出
     let title = '';
     let description = '';
     let minPrice = 0;
@@ -64,39 +88,113 @@ export async function scrapeAlibabaProduct(url) {
     let images = [];
     let specifications = {};
     
-    console.log('Starting HTML data extraction...');
+    console.log('Starting data extraction...');
     
-    // タイトルを抽出（複数のパターンを試す）
-    const titlePatterns = [
-      /<h1[^>]*class="[^"]*title[^"]*"[^>]*>([^<]+)<\/h1>/i,
-      /<title>([^<|]+)(?:\||<)/i,
-      /"productName"\s*:\s*"([^"]+)"/i,
-      /"title"\s*:\s*"([^"]+)"/i,
-      /<h1[^>]*>([^<]+)<\/h1>/i,
-      /data-title="([^"]{10,100})"/i
-    ];
+    // Crawler API（テキスト形式）の場合の処理
+    if (method === 'crawler-api') {
+      console.log('Extracting from Crawler API text format...');
+      
+      // タイトルを抽出（最初の行または主要な製品名）
+      const titleLines = content.split('\n').filter(line => line.trim());
+      if (titleLines.length > 0) {
+        // 最初の意味のある行をタイトルとする
+        title = titleLines[0].trim().replace(/\s+on Alibaba\.com$/i, '');
+        console.log('Title from crawler:', title.substring(0, 50));
+      }
+      
+      // 仕様を抽出（「項目:値」形式を探す - 改善版）
+      // 行ごとに処理して、より多くの仕様を抽出
+      const specLines = content.split('\n');
+      
+      for (const line of specLines) {
+        const trimmedLine = line.trim();
+        
+        // パターン1: 「項目:値」形式（中国語/日本語/英語）
+        const colonMatch = trimmedLine.match(/^([^:：]+)[：:]\s*(.+)$/);
+        if (colonMatch && colonMatch[1] && colonMatch[2]) {
+          const key = colonMatch[1].trim();
+          const value = colonMatch[2].trim();
+          
+          // キーと値が有効な長さの場合のみ追加
+          if (key.length > 1 && key.length < 50 && 
+              value.length > 0 && value.length < 200 &&
+              !key.toLowerCase().includes('http') &&
+              !value.toLowerCase().includes('http')) {
+            
+            // 日本語キーに変換（一般的な項目）
+            const keyMap = {
+              '型号': 'モデル',
+              '品牌': 'ブランド',
+              '频率范围': '周波数範囲',
+              '頻率範囲': '周波数範囲',
+              '检测灵敏度': '検出感度',
+              '検出灵敏度': '検出感度',
+              '连续工作时间': '連続動作時間',
+              '連続工作時間': '連続動作時間',
+              '电源': '電源',
+              '電源': '電源',
+              '防水': '防水性',
+              '包装': '梱包',
+              '检测动态范围': '検出ダイナミックレンジ',
+              '倾斜测量范围': '測定範囲',
+              '工作电流': '動作電流'
+            };
+            
+            const japaneseKey = keyMap[key] || key;
+            specifications[japaneseKey] = value;
+          }
+        }
+      }
+      
+      console.log('Specifications found:', Object.keys(specifications).length);
+      
+      // 説明を生成（仕様から）
+      if (Object.keys(specifications).length > 0) {
+        description = Object.entries(specifications)
+          .slice(0, 5)
+          .map(([key, value]) => `${key}: ${value}`)
+          .join('。');
+      } else {
+        description = title;
+      }
+    }
     
-    for (const pattern of titlePatterns) {
-      const match = content.match(pattern);
-      if (match && match[1]) {
-        title = match[1].trim();
-        // HTMLエンティティをデコード
-        title = title.replace(/&amp;/g, '&')
-                     .replace(/&lt;/g, '<')
-                     .replace(/&gt;/g, '>')
-                     .replace(/&quot;/g, '"')
-                     .replace(/&#39;/g, "'")
-                     .replace(/ - Alibaba\.com$/i, '')
-                     .replace(/ \| Alibaba\.com$/i, '')
-                     .replace(/ - .*? on Alibaba\.com$/i, '');
-        if (title.length > 5) {
-          console.log('Title found:', title.substring(0, 50));
-          break;
+    // HTML形式（direct-fetch）の場合の処理
+    if (method === 'direct-fetch') {
+      console.log('Extracting from HTML format...');
+      
+      // タイトルを抽出（複数のパターンを試す）
+      const titlePatterns = [
+        /<h1[^>]*class="[^"]*title[^"]*"[^>]*>([^<]+)<\/h1>/i,
+        /<title>([^<|]+)(?:\||<)/i,
+        /"productName"\s*:\s*"([^"]+)"/i,
+        /"title"\s*:\s*"([^"]+)"/i,
+        /<h1[^>]*>([^<]+)<\/h1>/i,
+        /data-title="([^"]{10,100})"/i
+      ];
+      
+      for (const pattern of titlePatterns) {
+        const match = content.match(pattern);
+        if (match && match[1]) {
+          title = match[1].trim();
+          // HTMLエンティティをデコード
+          title = title.replace(/&amp;/g, '&')
+                       .replace(/&lt;/g, '<')
+                       .replace(/&gt;/g, '>')
+                       .replace(/&quot;/g, '"')
+                       .replace(/&#39;/g, "'")
+                       .replace(/ - Alibaba\.com$/i, '')
+                       .replace(/ \| Alibaba\.com$/i, '')
+                       .replace(/ - .*? on Alibaba\.com$/i, '');
+          if (title.length > 5) {
+            console.log('Title found:', title.substring(0, 50));
+            break;
+          }
         }
       }
     }
     
-    // 価格を抽出（HTMLから）
+    // 共通の価格抽出処理（両方のメソッドで使用）
     const pricePatterns = [
       /US\s*\$\s*(\d+(?:\.\d+)?)\s*-\s*US\s*\$\s*(\d+(?:\.\d+)?)/i,
       /\$\s*(\d+(?:\.\d+)?)\s*-\s*\$\s*(\d+(?:\.\d+)?)/i,
@@ -122,26 +220,7 @@ export async function scrapeAlibabaProduct(url) {
       }
     }
     
-    // 説明を抽出（metaタグまたはJSON-LDから）
-    const descPatterns = [
-      /<meta[^>]+name="description"[^>]+content="([^"]+)"/i,
-      /<meta[^>]+property="og:description"[^>]+content="([^"]+)"/i,
-      /"description"\s*:\s*"([^"]+)"/i
-    ];
-    
-    for (const pattern of descPatterns) {
-      const match = content.match(pattern);
-      if (match && match[1]) {
-        description = match[1].trim().substring(0, 500);
-        break;
-      }
-    }
-    
-    if (!description && title) {
-      description = title;
-    }
-    
-    // 画像URLを抽出（alicdn.comから）
+    // 画像URLを抽出（alicdn.comから、両メソッド共通）
     const imagePattern = /https?:\/\/[^"'\s)]+?\.alicdn\.com[^"'\s)]+?\.(?:jpg|jpeg|png|webp)/gi;
     const allImages = [...content.matchAll(imagePattern)];
     images = [...new Set(allImages.map(m => m[0]))]
@@ -155,19 +234,42 @@ export async function scrapeAlibabaProduct(url) {
     
     console.log('Images found:', images.length);
     
-    // 仕様を抽出（テーブルから）
-    const specsPattern = /<tr[^>]*>[\s\S]*?<td[^>]*>([^<]+)<\/td>[\s\S]*?<td[^>]*>([^<]+)<\/td>[\s\S]*?<\/tr>/gi;
-    const specsMatches = [...content.matchAll(specsPattern)];
+    // 仕様を抽出（HTML形式の場合のみ、テーブルから）
+    if (method === 'direct-fetch' && Object.keys(specifications).length === 0) {
+      const specsPattern = /<tr[^>]*>[\s\S]*?<td[^>]*>([^<]+)<\/td>[\s\S]*?<td[^>]*>([^<]+)<\/td>[\s\S]*?<\/tr>/gi;
+      const specsMatches = [...content.matchAll(specsPattern)];
+      
+      specsMatches.forEach(match => {
+        if (match[1] && match[2]) {
+          const key = match[1].trim().replace(/<[^>]*>/g, '');
+          const value = match[2].trim().replace(/<[^>]*>/g, '');
+          if (key && value && key.length < 50 && value.length < 200) {
+            specifications[key] = value;
+          }
+        }
+      });
+    }
     
-    specsMatches.forEach(match => {
-      if (match[1] && match[2]) {
-        const key = match[1].trim().replace(/<[^>]*>/g, '');
-        const value = match[2].trim().replace(/<[^>]*>/g, '');
-        if (key && value && key.length < 50 && value.length < 200) {
-          specifications[key] = value;
+    // 説明文の抽出（HTML形式の場合のみ、Crawler APIの場合は既に生成済み）
+    if (method === 'direct-fetch' && !description) {
+      const descPatterns = [
+        /<meta[^>]+name="description"[^>]+content="([^"]+)"/i,
+        /<meta[^>]+property="og:description"[^>]+content="([^"]+)"/i,
+        /"description"\s*:\s*"([^"]+)"/i
+      ];
+      
+      for (const pattern of descPatterns) {
+        const match = content.match(pattern);
+        if (match && match[1]) {
+          description = match[1].trim().substring(0, 500);
+          break;
         }
       }
-    });
+      
+      if (!description && title) {
+        description = title;
+      }
+    }
     
     console.log('Specifications found:', Object.keys(specifications).length);
     

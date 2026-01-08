@@ -444,23 +444,41 @@
 
         analyzedProduct = data.data.product;
         
+        // 価格が0の場合の警告メッセージ
+        const priceWarning = analyzedProduct.price === 0 || data.data.originalData.minPrice === 0
+          ? `<div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 1rem; margin-bottom: 1rem; border-radius: 4px;">
+              <strong>⚠️ 重要:</strong> 価格情報が取得できませんでした。<br>
+              Alibabaページで価格を確認し、下記の販売価格を手動で入力してください。
+            </div>`
+          : '';
+        
         // プレビュー表示
         document.getElementById('preview-content').innerHTML = `
+          ${priceWarning}
           <div class="form-group">
-            <label>商品名</label>
-            <input type="text" id="edit-name" value="${analyzedProduct.name}">
+            <label>商品名 *</label>
+            <input type="text" id="edit-name" value="${analyzedProduct.name}" required>
           </div>
           <div class="form-group">
-            <label>商品説明</label>
-            <textarea id="edit-description" rows="4">${analyzedProduct.description}</textarea>
+            <label>商品説明 *</label>
+            <textarea id="edit-description" rows="4" required>${analyzedProduct.description}</textarea>
           </div>
           <div class="form-group">
-            <label>販売価格</label>
-            <input type="number" id="edit-price" value="${analyzedProduct.price}">
+            <label>販売価格（円） * ${analyzedProduct.price === 0 ? '<span style="color: red;">← 必須入力</span>' : ''}</label>
+            <input type="number" id="edit-price" value="${analyzedProduct.price}" min="1" step="100" required 
+                   style="${analyzedProduct.price === 0 ? 'border: 2px solid #ff5722;' : ''}"
+                   placeholder="例: 45800">
+            <small style="color: #666;">Alibabaページで価格を確認し、仕入れ価格 × マージン率で計算してください</small>
           </div>
           <div class="form-group">
-            <label>カテゴリ</label>
-            <select id="edit-category">
+            <label>Alibaba仕入れ価格（参考） *</label>
+            <input type="number" id="edit-alibaba-price" value="${data.data.originalData.minPrice}" step="0.01" 
+                   placeholder="例: 229.33 (USD)" required>
+            <small style="color: #666;">Alibabaページの価格をUSDで入力してください（1 USD ≈ 150円）</small>
+          </div>
+          <div class="form-group">
+            <label>カテゴリ *</label>
+            <select id="edit-category" required>
               <option value="個人向け" ${analyzedProduct.category === '個人向け' ? 'selected' : ''}>個人向け</option>
               <option value="スマートホーム" ${analyzedProduct.category === 'スマートホーム' ? 'selected' : ''}>スマートホーム</option>
               <option value="車両・バイク" ${analyzedProduct.category === '車両・バイク' ? 'selected' : ''}>車両・バイク</option>
@@ -472,19 +490,20 @@
             <small>カンマ区切り</small>
           </div>
           <div class="form-group">
-            <label>商品画像URL（Alibabaからコピー）</label>
-            <textarea id="edit-images" rows="3" placeholder="https://sc04.alicdn.com/...jpg&#10;https://sc04.alicdn.com/...jpg&#10;(複数の場合は改行で区切る)">${(analyzedProduct.image_urls || []).join('\n')}</textarea>
+            <label>商品画像URL（Alibabaからコピー） *</label>
+            <textarea id="edit-images" rows="3" placeholder="https://sc04.alicdn.com/...jpg&#10;https://sc04.alicdn.com/...jpg&#10;(複数の場合は改行で区切る)" required>${(analyzedProduct.image_urls || []).join('\n')}</textarea>
             <small>Alibaba商品ページの画像を右クリック→「画像アドレスをコピー」して貼り付けてください</small>
             ${(analyzedProduct.image_urls && analyzedProduct.image_urls.length > 0) ? `
             <div class="preview-images" style="margin-top: 10px;">
               ${analyzedProduct.image_urls.map(img => `<img src="${img.startsWith('http') ? img : '/images/' + img}" class="preview-image" style="max-width: 150px; margin: 5px;">`).join('')}
             </div>
-            ` : '<p style="color: #666; margin-top: 10px;">⚠️ 画像が自動取得されませんでした。Alibabaページから手動でコピーしてください。</p>'}
+            ` : '<p style="color: #ff5722; margin-top: 10px;"><strong>⚠️ 画像が自動取得されませんでした。Alibabaページから手動でコピーしてください。</strong></p>'}
           </div>
-          <div style="background: #e3f2fd; padding: 1rem; border-radius: 5px; margin-top: 1rem;">
-            <strong>元の仕入れ価格:</strong> $${data.data.originalData.minPrice} (約¥${Math.round(data.data.originalData.minPrice * 150)})<br>
+          <div style="background: ${analyzedProduct.price === 0 ? '#fff3cd' : '#e3f2fd'}; padding: 1rem; border-radius: 5px; margin-top: 1rem;">
+            <strong>元の仕入れ価格:</strong> $${data.data.originalData.minPrice || '0 (未取得)'} 
+            ${data.data.originalData.minPrice > 0 ? `(約¥${Math.round(data.data.originalData.minPrice * 150)})` : '<span style="color: red;">← 手動入力してください</span>'}<br>
             <strong>マージン率:</strong> ${marginRate}%<br>
-            <strong>販売価格:</strong> ¥${analyzedProduct.price}
+            <strong>販売価格:</strong> ${analyzedProduct.price > 0 ? `¥${analyzedProduct.price}` : '<span style="color: red;">未設定 - 上記で入力してください</span>'}
           </div>
         `;
 
@@ -503,13 +522,41 @@
       const imageUrlsText = document.getElementById('edit-images').value;
       const imageUrls = imageUrlsText.split('\n').map(url => url.trim()).filter(url => url.length > 0);
       
+      const name = document.getElementById('edit-name').value.trim();
+      const description = document.getElementById('edit-description').value.trim();
+      const price = parseFloat(document.getElementById('edit-price').value);
+      const alibabaPrice = parseFloat(document.getElementById('edit-alibaba-price').value) || 0;
+      
+      // バリデーション
+      if (!name) {
+        AdminNotification.error('商品名を入力してください');
+        return;
+      }
+      
+      if (!description) {
+        AdminNotification.error('商品説明を入力してください');
+        return;
+      }
+      
+      if (!price || price <= 0) {
+        AdminNotification.error('販売価格を入力してください（0円より大きい値）');
+        document.getElementById('edit-price').focus();
+        return;
+      }
+      
+      if (imageUrls.length === 0) {
+        AdminNotification.error('最低1枚の商品画像URLを入力してください');
+        document.getElementById('edit-images').focus();
+        return;
+      }
+      
       const productData = {
-        name: document.getElementById('edit-name').value,
-        description: document.getElementById('edit-description').value,
-        price: parseFloat(document.getElementById('edit-price').value),
+        name,
+        description,
+        price,
         category: document.getElementById('edit-category').value,
         alibaba_url: analyzedProduct.alibaba_url,
-        alibaba_price: analyzedProduct.alibaba_price,
+        alibaba_price: alibabaPrice,  // 手動入力された仕入れ価格を使用
         stock_status: 'in_stock',
         image_urls: imageUrls,
         specifications: analyzedProduct.specifications || {}
