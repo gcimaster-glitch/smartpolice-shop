@@ -175,6 +175,19 @@
 // クーポン機能
 let currentCoupon = null;
 
+// 初回購入チェック & 自動10%OFF適用
+function checkFirstTimePurchase() {
+  const hasOrdered = localStorage.getItem('has_ordered');
+  if (!hasOrdered && !currentCoupon) {
+    // 初回購入者に自動でFIRST10クーポンを適用
+    setTimeout(() => {
+      document.getElementById('coupon-code').value = 'FIRST10';
+      applyCoupon();
+      showNotification('🎉 初回購入特典10%OFFが自動適用されました！', 'success');
+    }, 1000);
+  }
+}
+
 async function applyCoupon() {
   const code = document.getElementById('coupon-code').value.trim().toUpperCase();
   const cart = Cart.get();
@@ -230,4 +243,33 @@ function updatePricing() {
   
   document.getElementById('final-total').textContent = formatPrice(total);
 }
+
+function showNotification(message, type = 'info') {
+  const notification = document.createElement('div');
+  const colors = {
+    success: '#4caf50',
+    error: '#f44336',
+    info: '#2196f3'
+  };
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 1rem 1.5rem;
+    background: ${colors[type] || colors.info};
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 10000;
+  `;
+  notification.textContent = message;
+  document.body.appendChild(notification);
+  setTimeout(() => notification.remove(), 4000);
+}
+
+// ページ読み込み時に初回購入チェック
+window.addEventListener('DOMContentLoaded', () => {
+  renderCart();
+  checkFirstTimePurchase();
+});
 </script>

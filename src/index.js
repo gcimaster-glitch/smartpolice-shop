@@ -355,6 +355,85 @@ export default {
         });
       }
 
+      // ==================== レビューAPI ====================
+
+      // GET /api/products/:id/reviews - 商品レビュー取得
+      if (path.match(/^\/api\/products\/\d+\/reviews$/) && method === 'GET') {
+        const productId = path.split('/')[3];
+        
+        const reviews = await env.DB.prepare(`
+          SELECT * FROM reviews 
+          WHERE product_id = ? 
+          ORDER BY created_at DESC
+        `).bind(productId).all();
+
+        const rating = await env.DB.prepare(`
+          SELECT * FROM product_ratings WHERE product_id = ?
+        `).bind(productId).first();
+
+        return successResponse({
+          reviews: reviews.results || [],
+          review_count: rating?.review_count || 0,
+          average_rating: rating?.average_rating || 0,
+          rating_breakdown: {
+            five_star: rating?.five_star || 0,
+            four_star: rating?.four_star || 0,
+            three_star: rating?.three_star || 0,
+            two_star: rating?.two_star || 0,
+            one_star: rating?.one_star || 0
+          }
+        });
+      }
+
+      // POST /api/products/:id/reviews - レビュー投稿
+      if (path.match(/^\/api\/products\/\d+\/reviews$/) && method === 'POST') {
+        const productId = path.split('/')[3];
+        const { customer_name, customer_email, rating, title, comment } = await request.json();
+
+        if (!customer_name || !customer_email || !rating) {
+          return errorResponse('必須項目を入力してください', 400);
+        }
+
+        if (rating < 1 || rating > 5) {
+          return errorResponse('評価は1-5の範囲で指定してください', 400);
+        }
+
+        const result = await env.DB.prepare(`
+          INSERT INTO reviews (product_id, customer_name, customer_email, rating, title, comment)
+          VALUES (?, ?, ?, ?, ?, ?)
+        `).bind(productId, customer_name, customer_email, rating, title || '', comment || '').run();
+
+        return successResponse({
+          message: 'レビューを投稿しました',
+          review_id: result.meta.last_row_id
+        });
+      }
+
+      // ==================== お気に入りAPI ====================
+
+      // GET /api/favorites - お気に入り一覧取得
+      if (path === '/api/favorites' && method === 'GET') {
+        const url = new URL(request.url);
+        const productIds = url.searchParams.get('ids');
+        
+        if (!productIds) {
+          return successResponse({ favorites: [] });
+        }
+
+        const ids = productIds.split(',').map(id => parseInt(id)).filter(id => !isNaN(id));
+        
+        if (ids.length === 0) {
+          return successResponse({ favorites: [] });
+        }
+
+        const placeholders = ids.map(() => '?').join(',');
+        const products = await env.DB.prepare(`
+          SELECT * FROM products WHERE id IN (${placeholders})
+        `).bind(...ids).all();
+
+        return successResponse({ favorites: products.results || [] });
+      }
+
       // ==================== その他 ====================
 
       // GET /api/health - ヘルスチェック

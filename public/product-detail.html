@@ -467,8 +467,12 @@
       display: block;
     }
     
-    /* レスポンシブ */
+    /* レスポンシブ & モバイル最適化 */
     @media (max-width: 768px) {
+      .product-detail-container {
+        padding: 1rem;
+      }
+      
       .product-main {
         grid-template-columns: 1fr;
         gap: 2rem;
@@ -493,6 +497,41 @@
       .spec-item {
         grid-template-columns: 1fr;
         gap: 0.5rem;
+      }
+      
+      /* モバイル用タッチ最適化 */
+      .btn {
+        min-height: 48px;
+        font-size: 1rem;
+        padding: 0.875rem 1.5rem;
+      }
+      
+      .quantity-btn {
+        min-width: 48px;
+        min-height: 48px;
+        font-size: 1.5rem;
+      }
+      
+      .quantity-value {
+        min-width: 70px;
+        height: 48px;
+        font-size: 1.125rem;
+      }
+      
+      /* タップ領域を拡大 */
+      .thumbnail {
+        min-height: 80px;
+        min-width: 80px;
+      }
+      
+      /* フォント拡大 */
+      body {
+        font-size: 16px;
+      }
+      
+      /* スクロールスムーズ */
+      * {
+        -webkit-overflow-scrolling: touch;
       }
     }
   </style>
@@ -860,6 +899,58 @@
     }
 
     document.addEventListener('DOMContentLoaded', loadProduct);
+  </script>
+  <script src="/js/features.js"></script>
+  <script>
+    // レビュー、お気に入り、関連商品の統合
+    window.addEventListener('DOMContentLoaded', () => {
+      const productId = new URLSearchParams(window.location.search).get('id');
+      if (!productId) return;
+      
+      // レビューセクションを追加
+      const mainContainer = document.querySelector('.product-detail-container');
+      if (mainContainer) {
+        const reviewsSection = document.createElement('div');
+        reviewsSection.style.marginTop = '4rem';
+        reviewsSection.innerHTML = `
+          <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 2rem;">⭐ カスタマーレビュー</h2>
+          <div id="reviews-container"></div>
+        `;
+        mainContainer.appendChild(reviewsSection);
+        
+        // レビュー読み込み
+        Reviews.load(productId, document.getElementById('reviews-container'));
+        
+        // 関連商品セクションを追加  
+        const relatedSection = document.createElement('div');
+        relatedSection.style.marginTop = '4rem';
+        relatedSection.innerHTML = `
+          <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 2rem;">🔗 関連商品</h2>
+          <div id="related-products-container"></div>
+        `;
+        mainContainer.appendChild(relatedSection);
+        
+        // 商品情報取得後に関連商品を表示
+        setTimeout(() => {
+          if (window.currentProduct && window.currentProduct.category) {
+            RelatedProducts.load(
+              productId, 
+              window.currentProduct.category,
+              document.getElementById('related-products-container')
+            );
+          }
+        }, 1000);
+      }
+      
+      // お気に入りボタンを追加
+      const addToCartBox = document.querySelector('.add-to-cart-box');
+      if (addToCartBox) {
+        const favoriteContainer = document.createElement('div');
+        favoriteContainer.style.marginTop = '1rem';
+        Favorites.renderButton(parseInt(productId), favoriteContainer);
+        addToCartBox.appendChild(favoriteContainer);
+      }
+    });
   </script>
 </body>
 </html>
