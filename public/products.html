@@ -36,22 +36,59 @@
     </div>
   </section>
 
-  <!-- フィルターとソート -->
+  <!-- 検索・フィルター・ソート -->
   <section class="section" style="padding: 2rem 0;">
     <div class="container">
-      <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; justify-content: space-between; margin-bottom: 2rem;">
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-          <button class="filter-btn active" data-category="all" style="padding: 0.5rem 1rem; border: 2px solid var(--primary-color); background: var(--primary-color); color: white; border-radius: 5px; cursor: pointer; font-weight: 600;">すべて</button>
-          <button class="filter-btn" data-category="個人向け" style="padding: 0.5rem 1rem; border: 2px solid var(--primary-color); background: white; color: var(--primary-color); border-radius: 5px; cursor: pointer; font-weight: 600;">個人向け</button>
-          <button class="filter-btn" data-category="スマートホーム" style="padding: 0.5rem 1rem; border: 2px solid var(--primary-color); background: white; color: var(--primary-color); border-radius: 5px; cursor: pointer; font-weight: 600;">スマートホーム</button>
-          <button class="filter-btn" data-category="車両・バイク" style="padding: 0.5rem 1rem; border: 2px solid var(--primary-color); background: white; color: var(--primary-color); border-radius: 5px; cursor: pointer; font-weight: 600;">車両・バイク</button>
+      <!-- 検索バー（新機能） -->
+      <div style="margin-bottom: 2rem; position: relative;">
+        <div style="display: flex; gap: 0.5rem; align-items: center; background: white; border: 2px solid #ddd; border-radius: 10px; padding: 0.75rem 1rem; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: all 0.3s;">
+          <span style="font-size: 1.25rem;">🔍</span>
+          <input 
+            type="text" 
+            id="search-input" 
+            placeholder="商品名・説明・タグで検索..." 
+            style="flex: 1; border: none; outline: none; font-size: 1rem; padding: 0.25rem;"
+            autocomplete="off">
+          <button id="clear-search" style="display: none; background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #999; padding: 0.25rem 0.5rem;">✕</button>
         </div>
+        <!-- オートコンプリート候補（新機能） -->
+        <div id="search-suggestions" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 2px solid #ddd; border-top: none; border-radius: 0 0 10px 10px; max-height: 300px; overflow-y: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1); z-index: 100; margin-top: -2px;">
+          <!-- 候補がここに表示される -->
+        </div>
+        <div id="search-results-count" style="margin-top: 0.5rem; color: #666; font-size: 0.875rem; display: none;">
+          <!-- 検索結果数がここに表示される -->
+        </div>
+      </div>
+
+      <!-- カテゴリフィルターと価格フィルター -->
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; justify-content: space-between; margin-bottom: 2rem;">
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+          <!-- カテゴリフィルター -->
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button class="filter-btn active" data-category="all" style="padding: 0.5rem 1rem; border: 2px solid var(--primary-color); background: var(--primary-color); color: white; border-radius: 5px; cursor: pointer; font-weight: 600; transition: all 0.3s;">すべて</button>
+            <button class="filter-btn" data-category="個人向け" style="padding: 0.5rem 1rem; border: 2px solid var(--primary-color); background: white; color: var(--primary-color); border-radius: 5px; cursor: pointer; font-weight: 600; transition: all 0.3s;">個人向け</button>
+            <button class="filter-btn" data-category="スマートホーム" style="padding: 0.5rem 1rem; border: 2px solid var(--primary-color); background: white; color: var(--primary-color); border-radius: 5px; cursor: pointer; font-weight: 600; transition: all 0.3s;">スマートホーム</button>
+            <button class="filter-btn" data-category="車両・バイク" style="padding: 0.5rem 1rem; border: 2px solid var(--primary-color); background: white; color: var(--primary-color); border-radius: 5px; cursor: pointer; font-weight: 600; transition: all 0.3s;">車両・バイク</button>
+          </div>
+          
+          <!-- 価格フィルター（新機能） -->
+          <div style="display: flex; gap: 0.5rem; align-items: center; padding: 0.5rem; background: #f8f9fa; border-radius: 5px;">
+            <span style="font-size: 0.875rem; color: #666;">価格:</span>
+            <input type="number" id="price-min" placeholder="最小" style="width: 80px; padding: 0.25rem 0.5rem; border: 1px solid #ddd; border-radius: 3px; font-size: 0.875rem;">
+            <span style="color: #999;">〜</span>
+            <input type="number" id="price-max" placeholder="最大" style="width: 80px; padding: 0.25rem 0.5rem; border: 1px solid #ddd; border-radius: 3px; font-size: 0.875rem;">
+            <button id="apply-price-filter" style="padding: 0.25rem 0.75rem; background: var(--primary-color); color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 0.875rem; font-weight: 600;">適用</button>
+          </div>
+        </div>
+        
+        <!-- ソート -->
         <div>
-          <select id="sort-select" style="padding: 0.5rem 1rem; border: 2px solid #ddd; border-radius: 5px; font-size: 1rem;">
+          <select id="sort-select" style="padding: 0.5rem 1rem; border: 2px solid #ddd; border-radius: 5px; font-size: 1rem; cursor: pointer;">
             <option value="default">おすすめ順</option>
             <option value="price-asc">価格が安い順</option>
             <option value="price-desc">価格が高い順</option>
             <option value="name-asc">名前順（A-Z）</option>
+            <option value="newest">新着順</option>
           </select>
         </div>
       </div>
@@ -136,6 +173,11 @@
 
     // 商品を表示
     function renderProducts() {
+      // 検索機能が有効な場合は新しい関数を使用
+      if (typeof renderProductsWithSearch === 'function') {
+        return renderProductsWithSearch();
+      }
+      
       const container = document.getElementById('products-grid');
       
       // フィルター
@@ -207,7 +249,17 @@
     }
 
     // ページ読み込み時に実行
-    document.addEventListener('DOMContentLoaded', loadProducts);
+    document.addEventListener('DOMContentLoaded', () => {
+      loadProducts();
+      // 検索機能を初期化
+      if (typeof initializeSearch === 'function') {
+        initializeSearch();
+      }
+      if (typeof initializePriceFilter === 'function') {
+        initializePriceFilter();
+      }
+    });
   </script>
+  <script src="/js/search-filter.js"></script>
 </body>
 </html>
