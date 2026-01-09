@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SmartPolice - 新規登録">
+  <title>新規登録 | SmartPolice</title>
+  <link rel="stylesheet" href="/css/store.css">
+</head>
+<body>
+  <!-- ナビゲーション -->
+  <nav class="nav">
+    <div class="nav-content">
+      <a href="/" class="nav-logo">
+        <img src="/images/logo.png" alt="SmartPolice">
+        <span class="nav-service-label">SERVICE & PRODUCTS</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/info.html">INFO</a></li>
+        <li><a href="/service.html">SERVICE</a></li>
+        <li><a href="/products.html">PRODUCTS</a></li>
+        <li><a href="/faq.html">FAQ</a></li>
+        <li><a href="/support.html">SUPPORT</a></li>
+        <li><a href="/about.html">ABOUT US</a></li>
+        <li><a href="/contact.html">CONTACT</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="/cart.html" class="nav-cart">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="21" r="1"/>
+            <circle cx="20" cy="21" r="1"/>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ページヘッダー -->
+  <section class="page-header">
+    <div class="container">
+      <h1>新規登録</h1>
+      <p>アカウントを作成してご利用を開始</p>
+    </div>
+  </section>
+
+  <!-- 登録フォーム -->
+  <section class="auth-section">
+    <div class="container">
+      <div class="auth-container">
+        <div class="auth-card">
+          <form id="register-form" class="auth-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="last-name">姓</label>
+                <input type="text" id="last-name" name="lastName" required placeholder="山田">
+              </div>
+              <div class="form-group">
+                <label for="first-name">名</label>
+                <input type="text" id="first-name" name="firstName" required placeholder="太郎">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="email">メールアドレス</label>
+              <input type="email" id="email" name="email" required placeholder="example@smartpolice.net">
+            </div>
+
+            <div class="form-group">
+              <label for="phone">電話番号</label>
+              <input type="tel" id="phone" name="phone" placeholder="090-1234-5678">
+            </div>
+
+            <div class="form-group">
+              <label for="company">会社名・団体名（法人の場合）</label>
+              <input type="text" id="company" name="company" placeholder="株式会社〇〇">
+            </div>
+
+            <div class="form-group">
+              <label for="password">パスワード</label>
+              <input type="password" id="password" name="password" required placeholder="8文字以上">
+              <small class="form-hint">英数字を含む8文字以上</small>
+            </div>
+
+            <div class="form-group">
+              <label for="password-confirm">パスワード（確認）</label>
+              <input type="password" id="password-confirm" name="passwordConfirm" required placeholder="もう一度入力">
+            </div>
+
+            <div class="form-group">
+              <label class="checkbox-label">
+                <input type="checkbox" name="agree" required>
+                <span><a href="/terms.html" target="_blank">利用規約</a>と<a href="/privacy.html" target="_blank">プライバシーポリシー</a>に同意する</span>
+              </label>
+            </div>
+
+            <button type="submit" class="btn-primary btn-full">アカウント作成</button>
+
+            <div class="divider">または</div>
+
+            <div class="social-login">
+              <button type="button" class="btn-social btn-google">
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Googleで登録
+              </button>
+            </div>
+
+            <div class="auth-switch">
+              既にアカウントをお持ちの方は <a href="/login.html">ログイン</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- フッター -->
+  <footer class="footer-new">
+    <div class="container">
+      <div class="footer-main">
+        <div class="footer-brand">
+          <img src="/images/logo.png" alt="SmartPolice" class="footer-logo-img">
+          <p class="footer-tagline">守る力を、あなたの手に。</p>
+        </div>
+        
+        <div class="footer-links-grid">
+          <div class="footer-column">
+            <h4>サービス</h4>
+            <a href="/service.html">サービス一覧</a>
+            <a href="/service.html?category=企業">企業向け</a>
+            <a href="/service.html?category=学校">学校・教育機関向け</a>
+          </div>
+          
+          <div class="footer-column">
+            <h4>製品</h4>
+            <a href="/products.html">製品一覧</a>
+            <a href="/products.html?category=企業・オフィス">企業・オフィス</a>
+            <a href="/products.html?category=学校・教育機関">学校・教育機関</a>
+          </div>
+          
+          <div class="footer-column">
+            <h4>サポート</h4>
+            <a href="/faq.html">よくある質問</a>
+            <a href="/support.html">お問い合わせ</a>
+            <a href="/contact.html">資料請求</a>
+          </div>
+          
+          <div class="footer-column">
+            <h4>企業情報</h4>
+            <a href="/about.html">会社概要</a>
+            <a href="https://smartpolice.co.jp" target="_blank">コーポレートサイト</a>
+            <a href="/info.html">お知らせ</a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <div class="footer-bottom-content">
+          <p class="copyright">© 2026 SmartPolice. All rights reserved.</p>
+          <div class="footer-bottom-links">
+            <a href="/terms.html">利用規約</a>
+            <a href="/privacy.html">プライバシーポリシー</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/register.js"></script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>会社概要 | SmartPolice</title>
+  <title>お知らせ | SmartPolice</title>
   <link rel="stylesheet" href="/css/store.css">
 </head>
 <body>
@@ -14,7 +14,7 @@
         <span class="nav-service-label">SERVICE & PRODUCTS</span>
       </a>
       <ul class="nav-links">
-        <li><a href="/info.html">INFO</a></li>
+        <li><a href="/info.html" class="active">INFO</a></li>
         <li><a href="/service.html">SERVICE</a></li>
         <li><a href="/products.html">PRODUCTS</a></li>
         <li><a href="/faq.html">FAQ</a></li>
@@ -59,47 +59,55 @@
       </div>
     </div>
   </nav>
+
   <section class="page-header">
     <div class="container">
-      <h1>会社概要</h1>
-      <p>SmartPoliceについて</p>
+      <h1>お知らせ</h1>
+      <p>SmartPoliceからの最新情報</p>
     </div>
   </section>
+
   <section class="content-section">
     <div class="container">
-      <div class="about-content">
-        <h2>私たちについて</h2>
-        <p>SmartPoliceは、企業・学校・団体向けに最先端のセキュリティソリューションを提供する総合防犯サービス企業です。</p>
-        <p>24時間365日の監視体制、プロフェッショナルグレードの機器、そして経験豊富な専門家による万全のサポート体制で、お客様の安全と安心を実現します。</p>
-        
-        <h3>会社情報</h3>
-        <table class="info-table">
-          <tr>
-            <th>会社名</th>
-            <td>株式会社SmartPolice</td>
-          </tr>
-          <tr>
-            <th>設立</th>
-            <td>2015年4月1日</td>
-          </tr>
-          <tr>
-            <th>資本金</th>
-            <td>1億円</td>
-          </tr>
-          <tr>
-            <th>従業員数</th>
-            <td>120名</td>
-          </tr>
-          <tr>
-            <th>事業内容</th>
-            <td>セキュリティサービス、防犯機器販売、監視システム構築</td>
-          </tr>
-        </table>
+      <div class="info-list">
+        <article class="info-item">
+          <div class="info-date">2026.01.09</div>
+          <div class="info-category info-category-news">お知らせ</div>
+          <h2><a href="#news1">新春キャンペーン実施中！防犯カメラ設置サービス20%OFF</a></h2>
+          <p>2026年1月1日〜1月31日まで、防犯カメラ設置サービスが20%OFFになるキャンペーンを実施中です。この機会にぜひご検討ください。</p>
+        </article>
 
-        <p class="cta-text">詳細は<a href="https://smartpolice.co.jp" target="_blank">コーポレートサイト</a>をご覧ください。</p>
+        <article class="info-item">
+          <div class="info-date">2026.01.05</div>
+          <div class="info-category info-category-service">サービス</div>
+          <h2><a href="#news2">学校・教育機関向けセキュリティパッケージをリリース</a></h2>
+          <p>子どもたちの安全を守るため、学校・教育機関向けの総合セキュリティパッケージをリリースしました。不審者検知、入退室管理、緊急通報システムを一体化。</p>
+        </article>
+
+        <article class="info-item">
+          <div class="info-date">2025.12.28</div>
+          <div class="info-category info-category-product">製品</div>
+          <h2><a href="#news3">最新AI搭載防犯カメラシリーズが入荷しました</a></h2>
+          <p>AI技術により不審者を自動検知する最新防犯カメラシリーズが入荷。顔認識、行動分析、自動アラート機能を搭載しています。</p>
+        </article>
+
+        <article class="info-item">
+          <div class="info-date">2025.12.15</div>
+          <div class="info-category info-category-news">お知らせ</div>
+          <h2><a href="#news4">年末年始の営業日のご案内</a></h2>
+          <p>誠に勝手ながら、2025年12月29日〜2026年1月3日まで休業とさせていただきます。1月4日より通常営業いたします。</p>
+        </article>
+
+        <article class="info-item">
+          <div class="info-date">2025.12.01</div>
+          <div class="info-category info-category-service">サービス</div>
+          <h2><a href="#news5">24時間365日監視サービスの提供を開始</a></h2>
+          <p>企業・施設向けに、専門スタッフによる24時間365日の遠隔監視サービスの提供を開始しました。異常を検知した際は即座に対応いたします。</p>
+        </article>
       </div>
     </div>
   </section>
+
   <footer class="footer-new">
     <div class="container">
       <div class="footer-main">
@@ -111,6 +119,7 @@
           <div class="footer-column">
             <h4>サービス</h4>
             <a href="/service.html">サービス一覧</a>
+            <a href="/service.html?category=企業">企業向け</a>
           </div>
           <div class="footer-column">
             <h4>製品</h4>
@@ -119,10 +128,12 @@
           <div class="footer-column">
             <h4>サポート</h4>
             <a href="/faq.html">よくある質問</a>
+            <a href="/support.html">お問い合わせ</a>
           </div>
           <div class="footer-column">
             <h4>企業情報</h4>
             <a href="/about.html">会社概要</a>
+            <a href="https://smartpolice.co.jp" target="_blank">コーポレートサイト</a>
           </div>
         </div>
       </div>
@@ -133,6 +144,7 @@
       </div>
     </div>
   </footer>
+
   <script src="/js/user-menu.js"></script>
 </body>
 </html>

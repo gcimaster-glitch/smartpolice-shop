@@ -1,13 +1,7 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>会社概要 | SmartPolice</title>
-  <link rel="stylesheet" href="/css/store.css">
-</head>
-<body>
-  <nav class="nav">
+#!/bin/bash
+
+# 共通のナビゲーションHTMLを変数に格納
+NAV_HTML='<nav class="nav">
     <div class="nav-content">
       <a href="/" class="nav-logo">
         <img src="/images/logo.png" alt="SmartPolice">
@@ -58,7 +52,105 @@
         </a>
       </div>
     </div>
-  </nav>
+  </nav>'
+
+# 共通フッター
+FOOTER_HTML='<footer class="footer-new">
+    <div class="container">
+      <div class="footer-main">
+        <div class="footer-brand">
+          <img src="/images/logo.png" alt="SmartPolice" class="footer-logo-img">
+          <p class="footer-tagline">守る力を、あなたの手に。</p>
+        </div>
+        <div class="footer-links-grid">
+          <div class="footer-column">
+            <h4>サービス</h4>
+            <a href="/service.html">サービス一覧</a>
+          </div>
+          <div class="footer-column">
+            <h4>製品</h4>
+            <a href="/products.html">製品一覧</a>
+          </div>
+          <div class="footer-column">
+            <h4>サポート</h4>
+            <a href="/faq.html">よくある質問</a>
+          </div>
+          <div class="footer-column">
+            <h4>企業情報</h4>
+            <a href="/about.html">会社概要</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-bottom-content">
+          <p class="copyright">© 2026 SmartPolice. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="/js/user-menu.js"></script>'
+
+echo "Creating remaining pages..."
+
+# FAQ ページ
+cat > faq.html << FAQEOF
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>よくある質問 | SmartPolice</title>
+  <link rel="stylesheet" href="/css/store.css">
+</head>
+<body>
+  $NAV_HTML
+  <section class="page-header">
+    <div class="container">
+      <h1>よくある質問</h1>
+      <p>SmartPoliceに関するよくあるご質問</p>
+    </div>
+  </section>
+  <section class="content-section">
+    <div class="container">
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary>製品の保証期間はどのくらいですか？</summary>
+          <p>すべての製品には1年間のメーカー保証が付属しています。延長保証プランもご用意しております。</p>
+        </details>
+        <details class="faq-item">
+          <summary>設置工事は含まれていますか？</summary>
+          <p>製品購入には設置工事は含まれておりません。別途、設置サービスをお申し込みいただけます。</p>
+        </details>
+        <details class="faq-item">
+          <summary>支払い方法は何がありますか？</summary>
+          <p>クレジットカード、銀行振込、請求書払い（法人のみ）に対応しています。</p>
+        </details>
+        <details class="faq-item">
+          <summary>返品・交換は可能ですか？</summary>
+          <p>未開封の商品に限り、商品到着後7日以内であれば返品・交換が可能です。</p>
+        </details>
+      </div>
+    </div>
+  </section>
+  $FOOTER_HTML
+</body>
+</html>
+FAQEOF
+
+echo "faq.html created"
+
+# About ページ
+cat > about.html << ABOUTEOF
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>会社概要 | SmartPolice</title>
+  <link rel="stylesheet" href="/css/store.css">
+</head>
+<body>
+  $NAV_HTML
   <section class="page-header">
     <div class="container">
       <h1>会社概要</h1>
@@ -100,39 +192,76 @@
       </div>
     </div>
   </section>
-  <footer class="footer-new">
+  $FOOTER_HTML
+</body>
+</html>
+ABOUTEOF
+
+echo "about.html created"
+
+# Contact ページ
+cat > contact.html << CONTACTEOF
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>お問い合わせ | SmartPolice</title>
+  <link rel="stylesheet" href="/css/store.css">
+</head>
+<body>
+  $NAV_HTML
+  <section class="page-header">
     <div class="container">
-      <div class="footer-main">
-        <div class="footer-brand">
-          <img src="/images/logo.png" alt="SmartPolice" class="footer-logo-img">
-          <p class="footer-tagline">守る力を、あなたの手に。</p>
-        </div>
-        <div class="footer-links-grid">
-          <div class="footer-column">
-            <h4>サービス</h4>
-            <a href="/service.html">サービス一覧</a>
-          </div>
-          <div class="footer-column">
-            <h4>製品</h4>
-            <a href="/products.html">製品一覧</a>
-          </div>
-          <div class="footer-column">
-            <h4>サポート</h4>
-            <a href="/faq.html">よくある質問</a>
-          </div>
-          <div class="footer-column">
-            <h4>企業情報</h4>
-            <a href="/about.html">会社概要</a>
-          </div>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <div class="footer-bottom-content">
-          <p class="copyright">© 2026 SmartPolice. All rights reserved.</p>
+      <h1>お問い合わせ</h1>
+      <p>ご質問・ご相談はこちらから</p>
+    </div>
+  </section>
+  <section class="auth-section">
+    <div class="container">
+      <div class="auth-container" style="max-width: 640px;">
+        <div class="auth-card">
+          <form id="contact-form" class="auth-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="name">お名前 *</label>
+                <input type="text" id="name" required>
+              </div>
+              <div class="form-group">
+                <label for="email">メールアドレス *</label>
+                <input type="email" id="email" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="phone">電話番号</label>
+              <input type="tel" id="phone">
+            </div>
+            <div class="form-group">
+              <label for="subject">件名 *</label>
+              <input type="text" id="subject" required>
+            </div>
+            <div class="form-group">
+              <label for="message">お問い合わせ内容 *</label>
+              <textarea id="message" rows="6" required></textarea>
+            </div>
+            <button type="submit" class="btn-primary btn-full">送信する</button>
+          </form>
         </div>
       </div>
     </div>
-  </footer>
-  <script src="/js/user-menu.js"></script>
+  </section>
+  $FOOTER_HTML
+  <script>
+    document.getElementById('contact-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert('お問い合わせを受け付けました。\n担当者より折り返しご連絡いたします。');
+      e.target.reset();
+    });
+  </script>
 </body>
 </html>
+CONTACTEOF
+
+echo "contact.html created"
+
+echo "All pages created successfully!"
