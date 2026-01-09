@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="SmartPolice - プロフェッショナルグレードの防犯・セキュリティ製品">
-  <title>SmartPolice - 防犯・セキュリティ製品ストア</title>
+  <meta name="description" content="SmartPolice - 企業・学校・団体向けセキュリティサービス＆製品">
+  <title>SmartPolice | SERVICE & PRODUCTS</title>
   <link rel="stylesheet" href="/css/store.css">
 </head>
 <body>
@@ -16,17 +16,103 @@
         <span class="nav-service-label">SERVICE & PRODUCTS</span>
       </a>
       <ul class="nav-links">
-        <li><a href="/products.html">製品</a></li>
-        <li><a href="/about.html">企業情報</a></li>
-        <li><a href="/contact.html">サポート</a></li>
+        <li><a href="/info.html">INFO</a></li>
+        <li><a href="/service.html">SERVICE</a></li>
+        <li><a href="/products.html">PRODUCTS</a></li>
+        <li><a href="/faq.html">FAQ</a></li>
+        <li><a href="/support.html">SUPPORT</a></li>
+        <li><a href="/about.html">ABOUT US</a></li>
+        <li><a href="/contact.html">CONTACT</a></li>
       </ul>
-      <a href="/cart.html" class="nav-cart">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="9" cy="21" r="1"/>
-          <circle cx="20" cy="21" r="1"/>
-          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-        </svg>
-      </a>
+      <div class="nav-actions">
+        <!-- ログイン前 -->
+        <div class="nav-guest" id="nav-guest">
+          <a href="/login.html" class="nav-link-btn">ログイン</a>
+          <a href="/register.html" class="nav-link-btn primary">新規登録</a>
+        </div>
+        
+        <!-- ログイン後 -->
+        <div class="nav-user" id="nav-user" style="display: none;">
+          <div class="nav-user-menu">
+            <button class="nav-user-button" id="user-menu-button">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+              <span id="user-name">ユーザー</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </button>
+            <div class="nav-user-dropdown" id="user-dropdown" style="display: none;">
+              <a href="/mypage.html" class="dropdown-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+                マイページ
+              </a>
+              <a href="/profile.html" class="dropdown-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+                個人情報編集
+              </a>
+              <a href="/orders.html" class="dropdown-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                  <line x1="3" y1="6" x2="21" y2="6"/>
+                  <path d="M16 10a4 4 0 0 1-8 0"/>
+                </svg>
+                購入履歴
+              </a>
+              <a href="/nda.html" class="dropdown-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/>
+                  <line x1="16" y1="17" x2="8" y2="17"/>
+                  <polyline points="10 9 9 9 8 9"/>
+                </svg>
+                NDA契約
+              </a>
+              <a href="/customer-support.html" class="dropdown-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                サポート
+              </a>
+              <a href="/chat.html" class="dropdown-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                チャット
+              </a>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item logout-btn" id="logout-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                  <polyline points="16 17 21 12 16 7"/>
+                  <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                ログアウト
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <a href="/cart.html" class="nav-cart">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="21" r="1"/>
+            <circle cx="20" cy="21" r="1"/>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+          </svg>
+          <span class="cart-badge" id="cart-badge" style="display: none;">0</span>
+        </a>
+      </div>
     </div>
   </nav>
 
@@ -37,165 +123,219 @@
     </video>
     <div class="hero-overlay"></div>
     <div class="hero-content">
-      <h1>最先端のテクノロジーで、あなたの大切なものを守る。</h1>
-      <p>個人から企業まで、幅広いニーズに応える防犯ソリューション</p>
+      <h1>最先端のテクノロジーで、<br>あなたの大切なものを守る。</h1>
+      <p>企業・学校・団体向けセキュリティサービス＆製品</p>
       <div class="hero-buttons">
-        <a href="/products.html" class="btn-primary">製品を見る</a>
-        <a href="#categories" class="btn-secondary">さらに詳しく</a>
+        <a href="/service.html" class="btn-primary">サービスを見る</a>
+        <a href="/products.html" class="btn-secondary">製品を見る</a>
       </div>
     </div>
   </section>
 
-  <!-- カテゴリー -->
-  <section class="categories" id="categories">
+  <!-- サービス説明ブロック -->
+  <section class="intro-section">
     <div class="container">
-      <div class="section-header">
-        <h2>製品カテゴリー</h2>
-        <p>用途に合わせた最適なセキュリティソリューションをご提案</p>
-      </div>
-
-      <div class="category-grid">
-        <!-- 企業・オフィス -->
-        <a href="/products.html?category=企業・オフィス" class="category-card">
-          <div class="category-image" style="background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80') center/cover;">
+      <div class="intro-content">
+        <div class="intro-badge">SmartPolice SERVICE & PRODUCTS</div>
+        <h2>企業・学校・団体の安全を守る<br>総合セキュリティソリューション</h2>
+        <p>SmartPoliceは、企業オフィス、教育機関、公共施設などの組織向けに、最先端のセキュリティサービスと防犯製品を提供しています。24時間365日の監視体制、プロフェッショナルグレードの機器、そして経験豊富な専門家による万全のサポート体制で、お客様の安全と安心を実現します。</p>
+        <div class="intro-features">
+          <div class="intro-feature-item">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <span>24時間365日監視</span>
           </div>
-          <div class="category-info">
-            <h3>企業・オフィス向け</h3>
-            <p>防犯カメラ、入退室管理、監視システム</p>
-            <span class="category-link">製品を見る →</span>
+          <div class="intro-feature-item">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <span>プロフェッショナル対応</span>
           </div>
-        </a>
-
-        <!-- 学校・教育機関 -->
-        <a href="/products.html?category=学校・教育機関" class="category-card">
-          <div class="category-image" style="background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&q=80') center/cover;">
+          <div class="intro-feature-item">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            <span>実績豊富な信頼性</span>
           </div>
-          <div class="category-info">
-            <h3>学校・教育機関向け</h3>
-            <p>校門監視、不審者検知、緊急通報装置</p>
-            <span class="category-link">製品を見る →</span>
-          </div>
-        </a>
-
-        <!-- 個人・家庭 -->
-        <a href="/products.html?category=個人・家庭" class="category-card">
-          <div class="category-image" style="background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80') center/cover;">
-          </div>
-          <div class="category-info">
-            <h3>個人・家庭向け</h3>
-            <p>スマートホーム、防犯ブザー、個人用GPS</p>
-            <span class="category-link">製品を見る →</span>
-          </div>
-        </a>
-
-        <!-- 車両・物流 -->
-        <a href="/products.html?category=車両・物流" class="category-card">
-          <div class="category-image" style="background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=800&q=80') center/cover;">
-          </div>
-          <div class="category-info">
-            <h3>車両・物流向け</h3>
-            <p>GPS追跡、ドライブレコーダー、盗難防止</p>
-            <span class="category-link">製品を見る →</span>
-          </div>
-        </a>
-
-        <!-- 盗聴・盗撮対策 -->
-        <a href="/products.html?category=盗聴・盗撮対策" class="category-card">
-          <div class="category-image" style="background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?w=800&q=80') center/cover;">
-          </div>
-          <div class="category-info">
-            <h3>盗聴・盗撮対策</h3>
-            <p>盗聴器発見器、隠しカメラ探知機</p>
-            <span class="category-link">製品を見る →</span>
-          </div>
-        </a>
-
-        <!-- その他 -->
-        <a href="/products.html?category=その他" class="category-card">
-          <div class="category-image" style="background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80') center/cover;">
-          </div>
-          <div class="category-info">
-            <h3>その他・アクセサリー</h3>
-            <p>センサー、警告ステッカー、補助用品</p>
-            <span class="category-link">製品を見る →</span>
-          </div>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- 特徴 -->
-  <section class="features">
-    <div class="container">
-      <div class="section-header">
-        <h2>SmartPoliceが選ばれる理由</h2>
-      </div>
-      <div class="features-grid">
-        <div class="feature">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-          </svg>
-          <h3>最短2日でお届け</h3>
-          <p>迅速な配送で、すぐに安全を手に入れられます</p>
-        </div>
-        <div class="feature">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-          </svg>
-          <h3>品質保証</h3>
-          <p>厳選された高品質商品のみを取り扱い</p>
-        </div>
-        <div class="feature">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-            <line x1="1" y1="10" x2="23" y2="10"/>
-          </svg>
-          <h3>安全な決済</h3>
-          <p>Stripe決済で最高水準のセキュリティ</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- CTA -->
-  <section class="cta">
+  <!-- お知らせ -->
+  <section class="news-section">
     <div class="container">
-      <h2>今すぐ、安心を始めよう。</h2>
-      <a href="/products.html" class="btn-cta">製品を見る</a>
+      <div class="section-title-row">
+        <h2>お知らせ</h2>
+        <a href="/info.html" class="view-all">すべて見る →</a>
+      </div>
+      <div class="news-grid">
+        <a href="/info.html#news1" class="news-card">
+          <div class="news-date">2026.01.09</div>
+          <div class="news-category">お知らせ</div>
+          <h3>新春キャンペーン実施中！防犯カメラ設置サービス20%OFF</h3>
+        </a>
+        <a href="/info.html#news2" class="news-card">
+          <div class="news-date">2026.01.05</div>
+          <div class="news-category">サービス</div>
+          <h3>学校・教育機関向けセキュリティパッケージをリリース</h3>
+        </a>
+        <a href="/info.html#news3" class="news-card">
+          <div class="news-date">2025.12.28</div>
+          <div class="news-category">製品</div>
+          <h3>最新AI搭載防犯カメラシリーズが入荷しました</h3>
+        </a>
+      </div>
     </div>
   </section>
 
-  <!-- フッター -->
-  <footer class="footer">
+  <!-- 新着商品 -->
+  <section class="featured-products-section">
     <div class="container">
-      <div class="footer-logo">
-        <img src="/images/logo.png" alt="SmartPolice">
+      <div class="section-title-row">
+        <h2>新着製品</h2>
+        <a href="/products.html?sort=newest" class="view-all">すべて見る →</a>
       </div>
-      <div class="footer-links">
-        <div class="footer-column">
-          <h4>製品</h4>
-          <a href="/products.html">すべての製品</a>
-          <a href="/products.html?category=企業・オフィス">企業・オフィス</a>
-          <a href="/products.html?category=学校・教育機関">学校・教育機関</a>
+      <div class="featured-products-grid" id="featured-products">
+        <div class="loading">読み込み中...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ピックアップバナー -->
+  <section class="pickup-banners">
+    <div class="container">
+      <div class="pickup-grid">
+        <a href="/service.html?category=企業" class="pickup-banner" style="background: linear-gradient(135deg, rgba(30,58,138,0.9), rgba(59,130,246,0.9)), url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80') center/cover;">
+          <div class="pickup-content">
+            <h3>企業向けセキュリティサービス</h3>
+            <p>オフィス・店舗の総合防犯対策</p>
+            <span class="pickup-link">詳しく見る →</span>
+          </div>
+        </a>
+        <a href="/service.html?category=学校" class="pickup-banner" style="background: linear-gradient(135deg, rgba(21,128,61,0.9), rgba(34,197,94,0.9)), url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&q=80') center/cover;">
+          <div class="pickup-content">
+            <h3>学校・教育機関向けサービス</h3>
+            <p>子どもたちの安全を守る</p>
+            <span class="pickup-link">詳しく見る →</span>
+          </div>
+        </a>
+        <a href="/products.html?category=盗聴・盗撮対策" class="pickup-banner" style="background: linear-gradient(135deg, rgba(190,18,60,0.9), rgba(244,63,94,0.9)), url('https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?w=800&q=80') center/cover;">
+          <div class="pickup-content">
+            <h3>盗聴・盗撮対策製品</h3>
+            <p>プライバシーを守る専門機器</p>
+            <span class="pickup-link">詳しく見る →</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SmartPoliceへのリンク -->
+  <section class="external-link-banner">
+    <div class="container">
+      <a href="https://smartpolice.co.jp" target="_blank" class="external-banner">
+        <div class="external-banner-content">
+          <div class="external-banner-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <div class="external-banner-text">
+            <h3>SmartPolice 公式サイト</h3>
+            <p>会社情報・採用情報・IR情報はこちら</p>
+          </div>
+          <div class="external-banner-arrow">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </div>
         </div>
-        <div class="footer-column">
-          <h4>サポート</h4>
-          <a href="/about.html">企業情報</a>
-          <a href="/contact.html">お問い合わせ</a>
-          <a href="/terms.html">利用規約</a>
+      </a>
+    </div>
+  </section>
+
+  <!-- 新しいフッター -->
+  <footer class="footer-new">
+    <div class="container">
+      <div class="footer-main">
+        <div class="footer-brand">
+          <img src="/images/logo.png" alt="SmartPolice" class="footer-logo-img">
+          <p class="footer-tagline">守る力を、あなたの手に。</p>
+          <div class="footer-social">
+            <a href="#" class="social-link">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              </svg>
+            </a>
+            <a href="#" class="social-link">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+              </svg>
+            </a>
+            <a href="#" class="social-link">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+              </svg>
+            </a>
+          </div>
         </div>
-        <div class="footer-column">
-          <h4>お問い合わせ</h4>
-          <p>order@smartpolice.net</p>
-          <p>shop.smartpolice.net</p>
+        
+        <div class="footer-links-grid">
+          <div class="footer-column">
+            <h4>サービス</h4>
+            <a href="/service.html">サービス一覧</a>
+            <a href="/service.html?category=企業">企業向け</a>
+            <a href="/service.html?category=学校">学校・教育機関向け</a>
+            <a href="/service.html?category=公共">公共施設向け</a>
+          </div>
+          
+          <div class="footer-column">
+            <h4>製品</h4>
+            <a href="/products.html">製品一覧</a>
+            <a href="/products.html?category=企業・オフィス">企業・オフィス</a>
+            <a href="/products.html?category=学校・教育機関">学校・教育機関</a>
+            <a href="/products.html?category=個人・家庭">個人・家庭</a>
+          </div>
+          
+          <div class="footer-column">
+            <h4>サポート</h4>
+            <a href="/faq.html">よくある質問</a>
+            <a href="/support.html">お問い合わせ</a>
+            <a href="/contact.html">資料請求</a>
+            <a href="/terms.html">利用規約</a>
+            <a href="/privacy.html">プライバシーポリシー</a>
+          </div>
+          
+          <div class="footer-column">
+            <h4>企業情報</h4>
+            <a href="/about.html">会社概要</a>
+            <a href="https://smartpolice.co.jp" target="_blank">コーポレートサイト</a>
+            <a href="/info.html">お知らせ</a>
+            <a href="/contact.html">お問い合わせ</a>
+          </div>
         </div>
       </div>
+      
       <div class="footer-bottom">
-        <p>© 2026 SmartPolice. All rights reserved.</p>
+        <div class="footer-bottom-content">
+          <p class="copyright">© 2026 SmartPolice. All rights reserved.</p>
+          <div class="footer-bottom-links">
+            <a href="/terms.html">利用規約</a>
+            <a href="/privacy.html">プライバシーポリシー</a>
+            <a href="/sitemap.html">サイトマップ</a>
+          </div>
+        </div>
       </div>
     </div>
   </footer>
 
   <script src="/js/cart.js"></script>
+  <script src="/js/home.js"></script>
+  <script src="/js/user-menu.js"></script>
 </body>
 </html>
