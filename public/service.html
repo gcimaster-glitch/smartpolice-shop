@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SmartPolice - セキュリティサービス一覧">
+  <title>サービス一覧 | SmartPolice</title>
+  <link rel="stylesheet" href="/css/store.css">
+</head>
+<body>
+  <!-- ナビゲーション -->
+  <nav class="nav">
+    <div class="nav-content">
+      <a href="/" class="nav-logo">
+        <img src="/images/logo.png" alt="SmartPolice">
+        <span class="nav-service-label">SERVICE & PRODUCTS</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/info.html">INFO</a></li>
+        <li><a href="/service.html" class="active">SERVICE</a></li>
+        <li><a href="/products.html">PRODUCTS</a></li>
+        <li><a href="/faq.html">FAQ</a></li>
+        <li><a href="/support.html">SUPPORT</a></li>
+        <li><a href="/about.html">ABOUT US</a></li>
+        <li><a href="/contact.html">CONTACT</a></li>
+      </ul>
+      <div class="nav-actions">
+        <div class="nav-guest" id="nav-guest">
+          <a href="/login.html" class="nav-link-btn">ログイン</a>
+          <a href="/register.html" class="nav-link-btn primary">新規登録</a>
+        </div>
+        <div class="nav-user" id="nav-user" style="display: none;">
+          <div class="nav-user-menu">
+            <button class="nav-user-button" id="user-menu-button">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+              </svg>
+              <span id="user-name">ユーザー</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </button>
+            <div class="nav-user-dropdown" id="user-dropdown" style="display: none;">
+              <a href="/mypage.html" class="dropdown-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>マイページ</a>
+              <a href="/profile.html" class="dropdown-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>個人情報編集</a>
+              <a href="/orders.html" class="dropdown-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>購入履歴</a>
+              <a href="/nda.html" class="dropdown-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>NDA契約</a>
+              <a href="/customer-support.html" class="dropdown-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/></svg>サポート</a>
+              <a href="/chat.html" class="dropdown-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>チャット</a>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item logout-btn" id="logout-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>ログアウト</button>
+            </div>
+          </div>
+        </div>
+        <a href="/cart.html" class="nav-cart">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+          </svg>
+          <span class="cart-badge" id="cart-badge" style="display: none;">0</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ページヘッダー -->
+  <section class="page-header">
+    <div class="container">
+      <h1>セキュリティサービス</h1>
+      <p>企業・学校・団体向けの総合防犯ソリューション</p>
+    </div>
+  </section>
+
+  <!-- サービスカテゴリー -->
+  <section class="content-section">
+    <div class="container">
+      
+      <!-- 企業・オフィス向け -->
+      <div class="service-category">
+        <div class="service-category-header">
+          <h2>企業・オフィス向けサービス</h2>
+          <p>オフィス・店舗の総合防犯対策</p>
+        </div>
+        <div class="service-grid">
+          <div class="service-card">
+            <div class="service-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+              </svg>
+            </div>
+            <h3>24時間遠隔監視サービス</h3>
+            <p>専門スタッフによる24時間365日の遠隔監視。異常を検知した際は即座に対応します。</p>
+            <ul class="service-features">
+              <li>リアルタイム監視</li>
+              <li>異常検知アラート</li>
+              <li>緊急対応サポート</li>
+            </ul>
+            <div class="service-price">月額 ¥50,000〜</div>
+            <button class="btn-primary" onclick="applyService(this, '24時間遠隔監視サービス')">申し込む</button>
+          </div>
+
+          <div class="service-card">
+            <div class="service-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+              </svg>
+            </div>
+            <h3>入退室管理システム</h3>
+            <p>ICカード・生体認証による入退室管理。誰がいつ入退室したか履歴を記録します。</p>
+            <ul class="service-features">
+              <li>ICカード認証</li>
+              <li>顔認証・指紋認証</li>
+              <li>入退室履歴管理</li>
+            </ul>
+            <div class="service-price">初期費用 ¥300,000〜</div>
+            <button class="btn-primary" onclick="applyService(this, '入退室管理システム')">申し込む</button>
+          </div>
+
+          <div class="service-card">
+            <div class="service-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
+              </svg>
+            </div>
+            <h3>防犯カメラ設置・運用</h3>
+            <p>最新AI搭載カメラの設置から運用までトータルサポート。不審者検知・顔認識機能付き。</p>
+            <ul class="service-features">
+              <li>AI不審者検知</li>
+              <li>クラウド録画</li>
+              <li>スマホ遠隔確認</li>
+            </ul>
+            <div class="service-price">¥150,000〜／台</div>
+            <button class="btn-primary" onclick="applyService(this, '防犯カメラ設置・運用')">申し込む</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 学校・教育機関向け -->
+      <div class="service-category">
+        <div class="service-category-header">
+          <h2>学校・教育機関向けサービス</h2>
+          <p>子どもたちの安全を守る総合セキュリティ</p>
+        </div>
+        <div class="service-grid">
+          <div class="service-card">
+            <div class="service-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
+              </svg>
+            </div>
+            <h3>校門監視システム</h3>
+            <p>登下校時の校門を24時間監視。不審者の侵入を検知し、即座に警報を発します。</p>
+            <ul class="service-features">
+              <li>顔認証入退管理</li>
+              <li>不審者検知アラート</li>
+              <li>保護者通知システム</li>
+            </ul>
+            <div class="service-price">月額 ¥80,000〜</div>
+            <button class="btn-primary" onclick="applyService(this, '校門監視システム')">申し込む</button>
+          </div>
+
+          <div class="service-card">
+            <div class="service-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+            </div>
+            <h3>緊急通報システム</h3>
+            <p>教室・職員室から緊急時に即座に通報できるシステム。警察・消防との連携も可能。</p>
+            <ul class="service-features">
+              <li>ワンタッチ緊急通報</li>
+              <li>警察・消防連携</li>
+              <li>全館放送連動</li>
+            </ul>
+            <div class="service-price">初期費用 ¥200,000〜</div>
+            <button class="btn-primary" onclick="applyService(this, '緊急通報システム')">申し込む</button>
+          </div>
+
+          <div class="service-card">
+            <div class="service-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <h3>総合セキュリティパッケージ</h3>
+            <p>校門監視、防犯カメラ、緊急通報を統合した学校向けトータルセキュリティソリューション。</p>
+            <ul class="service-features">
+              <li>カメラ＋入退管理＋通報</li>
+              <li>24時間監視サポート</li>
+              <li>定期メンテナンス</li>
+            </ul>
+            <div class="service-price">月額 ¥150,000〜</div>
+            <button class="btn-primary" onclick="applyService(this, '総合セキュリティパッケージ')">申し込む</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- その他サービス -->
+      <div class="service-category">
+        <div class="service-category-header">
+          <h2>その他の専門サービス</h2>
+          <p>お客様のニーズに合わせたカスタマイズサービス</p>
+        </div>
+        <div class="service-grid">
+          <div class="service-card">
+            <div class="service-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>
+              </svg>
+            </div>
+            <h3>セキュリティコンサルティング</h3>
+            <p>施設の現状調査から最適なセキュリティプランをご提案。専門家が丁寧にサポートします。</p>
+            <ul class="service-features">
+              <li>現地調査・診断</li>
+              <li>最適プラン提案</li>
+              <li>導入後サポート</li>
+            </ul>
+            <div class="service-price">¥100,000〜</div>
+            <button class="btn-primary" onclick="applyService(this, 'セキュリティコンサルティング')">申し込む</button>
+          </div>
+
+          <div class="service-card">
+            <div class="service-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+              </svg>
+            </div>
+            <h3>保守・メンテナンス</h3>
+            <p>設置後の定期点検、故障対応、システムアップデートまで万全のサポート体制。</p>
+            <ul class="service-features">
+              <li>定期点検（月1回）</li>
+              <li>24時間故障対応</li>
+              <li>無償アップデート</li>
+            </ul>
+            <div class="service-price">月額 ¥20,000〜</div>
+            <button class="btn-primary" onclick="applyService(this, '保守・メンテナンス')">申し込む</button>
+          </div>
+
+          <div class="service-card">
+            <div class="service-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+            <h3>研修・トレーニング</h3>
+            <p>セキュリティシステムの操作方法から緊急時の対応まで、スタッフ向け研修を実施。</p>
+            <ul class="service-features">
+              <li>システム操作研修</li>
+              <li>緊急時対応訓練</li>
+              <li>定期フォローアップ</li>
+            </ul>
+            <div class="service-price">¥50,000〜／回</div>
+            <button class="btn-primary" onclick="applyService(this, '研修・トレーニング')">申し込む</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-box">
+        <h2>お見積もり・ご相談は無料</h2>
+        <p>専門スタッフがお客様の施設に最適なセキュリティプランをご提案いたします</p>
+        <a href="/contact.html" class="btn-primary btn-large">お問い合わせ</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- フッター -->
+  <footer class="footer-new">
+    <div class="container">
+      <div class="footer-main">
+        <div class="footer-brand">
+          <img src="/images/logo.png" alt="SmartPolice" class="footer-logo-img">
+          <p class="footer-tagline">守る力を、あなたの手に。</p>
+        </div>
+        <div class="footer-links-grid">
+          <div class="footer-column">
+            <h4>サービス</h4>
+            <a href="/service.html">サービス一覧</a>
+          </div>
+          <div class="footer-column">
+            <h4>製品</h4>
+            <a href="/products.html">製品一覧</a>
+          </div>
+          <div class="footer-column">
+            <h4>サポート</h4>
+            <a href="/faq.html">よくある質問</a>
+          </div>
+          <div class="footer-column">
+            <h4>企業情報</h4>
+            <a href="/about.html">会社概要</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-bottom-content">
+          <p class="copyright">© 2026 SmartPolice. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/user-menu.js"></script>
+  <script>
+    function applyService(button, serviceName) {
+      const user = localStorage.getItem('currentUser');
+      if (!user) {
+        if (confirm('サービスの申し込みにはログインが必要です。\nログインページに移動しますか？')) {
+          window.location.href = '/login.html';
+        }
+        return;
+      }
+
+      button.textContent = '申し込み受付中...';
+      button.disabled = true;
+
+      setTimeout(() => {
+        alert(`「${serviceName}」の申し込みを受け付けました。\n担当者より24時間以内にご連絡いたします。`);
+        button.textContent = '申し込み完了';
+        button.classList.remove('btn-primary');
+        button.classList.add('btn-secondary');
+      }, 1000);
+    }
+  </script>
+</body>
+</html>

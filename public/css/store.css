@@ -2057,3 +2057,191 @@ body {
 .cta-text a:hover {
   text-decoration: underline;
 }
+
+/* ===== サービスページ ===== */
+.service-category {
+  margin-bottom: 80px;
+}
+
+.service-category-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.service-category-header h2 {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--color-text);
+}
+
+.service-category-header p {
+  font-size: 16px;
+  color: var(--color-text-secondary);
+}
+
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 32px;
+}
+
+.service-card {
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  padding: 32px;
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+}
+
+.service-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  transform: translateY(-4px);
+}
+
+.service-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, var(--color-primary), #0051a8);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.service-icon svg {
+  color: white;
+}
+
+.service-card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--color-text);
+}
+
+.service-card > p {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+  margin-bottom: 20px;
+  flex-grow: 1;
+}
+
+.service-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px 0;
+}
+
+.service-features li {
+  padding: 8px 0;
+  padding-left: 28px;
+  position: relative;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.service-features li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.service-price {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 20px;
+}
+
+.service-card .btn-primary {
+  width: 100%;
+}
+
+/* CTA Section */
+.cta-section {
+  padding: 80px 0;
+  background: linear-gradient(135deg, var(--color-primary), #0051a8);
+}
+
+.cta-box {
+  text-align: center;
+  color: white;
+}
+
+.cta-box h2 {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.cta-box p {
+  font-size: 18px;
+  margin-bottom: 32px;
+  opacity: 0.95;
+}
+
+.btn-large {
+  padding: 16px 48px;
+  font-size: 18px;
+  background: white;
+  color: var(--color-primary);
+}
+
+.btn-large:hover {
+  background: #f5f5f7;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .service-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .cta-box h2 {
+    font-size: 28px;
+  }
+  
+  .cta-box p {
+    font-size: 16px;
+  }
+}
+
+/* ===== マイページ ===== */
+.mypage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.mypage-card {
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: 32px;
+}
+
+.mypage-card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--color-text);
+}
+
+.mypage-card p {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+  margin-bottom: 20px;
+}
+
+.mypage-card .btn-secondary {
+  width: 100%;
+}
