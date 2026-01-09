@@ -3,199 +3,199 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="スマートポリスECショップ - 防犯グッズ・セキュリティアイテムの専門店">
-  <title>スマートポリスECショップ | 守る力を、あなたの手に。</title>
-  <link rel="stylesheet" href="/css/style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700&display=swap" rel="stylesheet">
+  <meta name="description" content="SmartPolice - プロフェッショナルグレードの防犯・セキュリティ製品">
+  <title>SmartPolice - 防犯・セキュリティ製品ストア</title>
+  <link rel="stylesheet" href="/css/store.css">
 </head>
 <body>
-  <!-- ヘッダー -->
-  <header>
-    <nav>
-      <a href="/" class="logo">
-        🛡️ スマートポリス
+  <!-- ナビゲーション -->
+  <nav class="nav">
+    <div class="nav-content">
+      <a href="/" class="nav-logo">
+        <img src="/images/logo.png" alt="SmartPolice">
+        <span class="nav-service-label">SERVICE & PRODUCTS</span>
       </a>
       <ul class="nav-links">
-        <li><a href="/">ホーム</a></li>
-        <li><a href="/products.html">商品一覧</a></li>
-        <li><a href="/about.html">会社情報</a></li>
-        <li><a href="/contact.html">お問い合わせ</a></li>
+        <li><a href="/products.html">製品</a></li>
+        <li><a href="/about.html">企業情報</a></li>
+        <li><a href="/contact.html">サポート</a></li>
       </ul>
-      <div class="cart-icon" onclick="location.href='/cart.html'">
-        🛒 <span class="cart-count" style="display:none;">0</span>
-      </div>
-    </nav>
-  </header>
-
-  <!-- ヒーローセクション -->
-  <section class="hero" style="background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%); color: white; padding: 4rem 2rem; text-align: center;">
-    <div class="container">
-      <h1 style="font-size: 3rem; margin-bottom: 1rem;">守る力を、あなたの手に。</h1>
-      <p style="font-size: 1.25rem; margin-bottom: 2rem;">24時間、あなたの安心を見守る防犯アイテム専門店</p>
-      <a href="/products.html" class="btn btn-primary" style="font-size: 1.125rem; padding: 1rem 2rem;">商品を見る</a>
+      <a href="/cart.html" class="nav-cart">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="9" cy="21" r="1"/>
+          <circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        </svg>
+      </a>
     </div>
-  </section>
+  </nav>
 
-  <!-- カテゴリーセクション -->
-  <section class="section">
-    <div class="container">
-      <h2 style="text-align: center; font-size: 2rem; margin-bottom: 2rem; color: var(--primary-color);">商品カテゴリー</h2>
-      <div class="product-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
-        <!-- 個人向け -->
-        <div class="card" onclick="location.href='/products.html?category=個人向け'" style="cursor: pointer;">
-          <div style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-            👤
-          </div>
-          <div style="padding: 1.5rem;">
-            <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">個人向けセキュリティ</h3>
-            <p style="color: var(--text-light);">防犯ブザー、護身グッズ、個人用防犯カメラなど</p>
-            <a href="/products.html?category=個人向け" class="btn btn-outline" style="margin-top: 1rem; width: 100%;">商品を見る →</a>
-          </div>
-        </div>
-
-        <!-- スマートホーム -->
-        <div class="card" onclick="location.href='/products.html?category=スマートホーム'" style="cursor: pointer;">
-          <div style="height: 200px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-            🏠
-          </div>
-          <div style="padding: 1.5rem;">
-            <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">スマートホームセキュリティ</h3>
-            <p style="color: var(--text-light);">スマートロック、防犯カメラ、センサーなど</p>
-            <a href="/products.html?category=スマートホーム" class="btn btn-outline" style="margin-top: 1rem; width: 100%;">商品を見る →</a>
-          </div>
-        </div>
-
-        <!-- 車両・バイク -->
-        <div class="card" onclick="location.href='/products.html?category=車両・バイク'" style="cursor: pointer;">
-          <div style="height: 200px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-            🚗
-          </div>
-          <div style="padding: 1.5rem;">
-            <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">車両・バイク防犯</h3>
-            <p style="color: var(--text-light);">GPS追跡デバイス、ハンドルロック、防犯アラームなど</p>
-            <a href="/products.html?category=車両・バイク" class="btn btn-outline" style="margin-top: 1rem; width: 100%;">商品を見る →</a>
-          </div>
-        </div>
+  <!-- ヒーロー -->
+  <section class="hero">
+    <video autoplay muted loop playsinline class="hero-video">
+      <source src="/videos/hero-bg.mp4" type="video/mp4">
+    </video>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1>最先端のテクノロジーで、あなたの大切なものを守る。</h1>
+      <p>個人から企業まで、幅広いニーズに応える防犯ソリューション</p>
+      <div class="hero-buttons">
+        <a href="/products.html" class="btn-primary">製品を見る</a>
+        <a href="#categories" class="btn-secondary">さらに詳しく</a>
       </div>
     </div>
   </section>
 
-  <!-- 人気商品セクション -->
-  <section class="section" style="background: white; padding: 3rem 0;">
+  <!-- カテゴリー -->
+  <section class="categories" id="categories">
     <div class="container">
-      <h2 style="text-align: center; font-size: 2rem; margin-bottom: 2rem; color: var(--primary-color);">人気商品</h2>
-      <div id="popular-products" class="product-grid">
-        <div class="loading"><div class="spinner"></div></div>
+      <div class="section-header">
+        <h2>製品カテゴリー</h2>
+        <p>用途に合わせた最適なセキュリティソリューションをご提案</p>
+      </div>
+
+      <div class="category-grid">
+        <!-- 企業・オフィス -->
+        <a href="/products.html?category=企業・オフィス" class="category-card">
+          <div class="category-image" style="background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80') center/cover;">
+          </div>
+          <div class="category-info">
+            <h3>企業・オフィス向け</h3>
+            <p>防犯カメラ、入退室管理、監視システム</p>
+            <span class="category-link">製品を見る →</span>
+          </div>
+        </a>
+
+        <!-- 学校・教育機関 -->
+        <a href="/products.html?category=学校・教育機関" class="category-card">
+          <div class="category-image" style="background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&q=80') center/cover;">
+          </div>
+          <div class="category-info">
+            <h3>学校・教育機関向け</h3>
+            <p>校門監視、不審者検知、緊急通報装置</p>
+            <span class="category-link">製品を見る →</span>
+          </div>
+        </a>
+
+        <!-- 個人・家庭 -->
+        <a href="/products.html?category=個人・家庭" class="category-card">
+          <div class="category-image" style="background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80') center/cover;">
+          </div>
+          <div class="category-info">
+            <h3>個人・家庭向け</h3>
+            <p>スマートホーム、防犯ブザー、個人用GPS</p>
+            <span class="category-link">製品を見る →</span>
+          </div>
+        </a>
+
+        <!-- 車両・物流 -->
+        <a href="/products.html?category=車両・物流" class="category-card">
+          <div class="category-image" style="background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=800&q=80') center/cover;">
+          </div>
+          <div class="category-info">
+            <h3>車両・物流向け</h3>
+            <p>GPS追跡、ドライブレコーダー、盗難防止</p>
+            <span class="category-link">製品を見る →</span>
+          </div>
+        </a>
+
+        <!-- 盗聴・盗撮対策 -->
+        <a href="/products.html?category=盗聴・盗撮対策" class="category-card">
+          <div class="category-image" style="background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?w=800&q=80') center/cover;">
+          </div>
+          <div class="category-info">
+            <h3>盗聴・盗撮対策</h3>
+            <p>盗聴器発見器、隠しカメラ探知機</p>
+            <span class="category-link">製品を見る →</span>
+          </div>
+        </a>
+
+        <!-- その他 -->
+        <a href="/products.html?category=その他" class="category-card">
+          <div class="category-image" style="background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80') center/cover;">
+          </div>
+          <div class="category-info">
+            <h3>その他・アクセサリー</h3>
+            <p>センサー、警告ステッカー、補助用品</p>
+            <span class="category-link">製品を見る →</span>
+          </div>
+        </a>
       </div>
     </div>
   </section>
 
-  <!-- 選ばれる理由 -->
-  <section class="section">
+  <!-- 特徴 -->
+  <section class="features">
     <div class="container">
-      <h2 style="text-align: center; font-size: 2rem; margin-bottom: 2rem; color: var(--primary-color);">スマートポリスが選ばれる理由</h2>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
-        <div style="text-align: center; padding: 2rem; background: white; border-radius: 10px; box-shadow: var(--shadow-sm);">
-          <div style="font-size: 3rem; margin-bottom: 1rem;">✅</div>
-          <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">品質保証</h3>
-          <p style="color: var(--text-light);">厳選された高品質な防犯アイテムのみを取り扱っています</p>
+      <div class="section-header">
+        <h2>SmartPoliceが選ばれる理由</h2>
+      </div>
+      <div class="features-grid">
+        <div class="feature">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+          </svg>
+          <h3>最短2日でお届け</h3>
+          <p>迅速な配送で、すぐに安全を手に入れられます</p>
         </div>
-        <div style="text-align: center; padding: 2rem; background: white; border-radius: 10px; box-shadow: var(--shadow-sm);">
-          <div style="font-size: 3rem; margin-bottom: 1rem;">🚚</div>
-          <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">迅速配送</h3>
-          <p style="color: var(--text-light);">ご注文から7〜15営業日でお届けします</p>
+        <div class="feature">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          <h3>品質保証</h3>
+          <p>厳選された高品質商品のみを取り扱い</p>
         </div>
-        <div style="text-align: center; padding: 2rem; background: white; border-radius: 10px; box-shadow: var(--shadow-sm);">
-          <div style="font-size: 3rem; margin-bottom: 1rem;">💳</div>
-          <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">安心決済</h3>
-          <p style="color: var(--text-light);">Stripe導入で安全・簡単にお支払いいただけます</p>
+        <div class="feature">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+            <line x1="1" y1="10" x2="23" y2="10"/>
+          </svg>
+          <h3>安全な決済</h3>
+          <p>Stripe決済で最高水準のセキュリティ</p>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="container">
+      <h2>今すぐ、安心を始めよう。</h2>
+      <a href="/products.html" class="btn-cta">製品を見る</a>
     </div>
   </section>
 
   <!-- フッター -->
-  <footer>
-    <div class="footer-content">
-      <div class="footer-section">
-        <h3>スマートポリス</h3>
-        <p>守る力を、あなたの手に。</p>
-        <p style="margin-top: 1rem; font-size: 0.875rem;">防犯グッズ・セキュリティアイテムの専門ECサイト</p>
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-logo">
+        <img src="/images/logo.png" alt="SmartPolice">
       </div>
-      <div class="footer-section">
-        <h3>ショップ</h3>
-        <ul class="footer-links">
-          <li><a href="/products.html">商品一覧</a></li>
-          <li><a href="/products.html?category=個人向け">個人向けセキュリティ</a></li>
-          <li><a href="/products.html?category=スマートホーム">スマートホーム</a></li>
-          <li><a href="/products.html?category=車両・バイク">車両・バイク防犯</a></li>
-        </ul>
+      <div class="footer-links">
+        <div class="footer-column">
+          <h4>製品</h4>
+          <a href="/products.html">すべての製品</a>
+          <a href="/products.html?category=企業・オフィス">企業・オフィス</a>
+          <a href="/products.html?category=学校・教育機関">学校・教育機関</a>
+        </div>
+        <div class="footer-column">
+          <h4>サポート</h4>
+          <a href="/about.html">企業情報</a>
+          <a href="/contact.html">お問い合わせ</a>
+          <a href="/terms.html">利用規約</a>
+        </div>
+        <div class="footer-column">
+          <h4>お問い合わせ</h4>
+          <p>order@smartpolice.net</p>
+          <p>shop.smartpolice.net</p>
+        </div>
       </div>
-      <div class="footer-section">
-        <h3>サポート</h3>
-        <ul class="footer-links">
-          <li><a href="/about.html">会社情報</a></li>
-          <li><a href="/contact.html">お問い合わせ</a></li>
-          <li><a href="/terms.html">特定商取引法</a></li>
-          <li><a href="/privacy.html">プライバシーポリシー</a></li>
-        </ul>
+      <div class="footer-bottom">
+        <p>© 2026 SmartPolice. All rights reserved.</p>
       </div>
-      <div class="footer-section">
-        <h3>お問い合わせ</h3>
-        <p>📧 order@smartpolice.net</p>
-        <p>🌐 https://shop.smartpolice.net</p>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p>&copy; 2026 スマートポリスECショップ. All rights reserved.</p>
     </div>
   </footer>
 
-  <script src="/js/api.js"></script>
-  <script>
-    // 人気商品を読み込み
-    async function loadPopularProducts() {
-      const container = document.getElementById('popular-products');
-      
-      try {
-        const data = await API.getProducts();
-        const products = data.products.slice(0, 6); // 最初の6つ
-        
-        if (products.length === 0) {
-          container.innerHTML = '<p style="text-align: center; color: var(--text-light);">商品がありません</p>';
-          return;
-        }
-        
-        container.innerHTML = products.map(product => `
-          <div class="card product-card" onclick="location.href='/product-detail.html?id=${product.id}'">
-            <div style="height: 250px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-              ${product.image_urls && product.image_urls[0] ? `<img src="/images/${product.image_urls[0]}" alt="${product.name}" class="product-image">` : '📦'}
-            </div>
-            <div class="product-info">
-              <div class="product-category">${product.category}</div>
-              <h3 class="product-name">${product.name}</h3>
-              <p style="color: var(--text-light); font-size: 0.875rem; margin: 0.5rem 0;">${product.description ? product.description.substring(0, 80) + '...' : ''}</p>
-              <div class="product-price">${formatPrice(product.price)}</div>
-              <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="event.stopPropagation(); addToCart(${product.id}, '${product.name}', ${product.price})">
-                カートに追加
-              </button>
-            </div>
-          </div>
-        `).join('');
-        
-      } catch (error) {
-        container.innerHTML = '<p style="text-align: center; color: var(--error-color);">商品の読み込みに失敗しました</p>';
-      }
-    }
-    
-    function addToCart(id, name, price) {
-      Cart.add({ id, name, price, image_urls: [''] }, 1);
-      Notification.success('カートに追加しました');
-    }
-    
-    // ページ読み込み時に実行
-    document.addEventListener('DOMContentLoaded', loadPopularProducts);
-  </script>
+  <script src="/js/cart.js"></script>
 </body>
 </html>

@@ -3,273 +3,110 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ショッピングカート | スマートポリスECショップ</title>
-  <link rel="stylesheet" href="/css/style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700&display=swap" rel="stylesheet">
+  <meta name="description" content="SmartPolice - ショッピングカート">
+  <title>カート | SmartPolice</title>
+  <link rel="stylesheet" href="/css/store.css">
 </head>
 <body>
-  <header>
-    <nav>
-      <a href="/" class="logo">🛡️ スマートポリス</a>
+  <!-- ナビゲーション -->
+  <nav class="nav">
+    <div class="nav-content">
+      <a href="/" class="nav-logo">
+        <img src="/images/logo.png" alt="SmartPolice">
+        <span class="nav-service-label">SERVICE & PRODUCTS</span>
+      </a>
       <ul class="nav-links">
-        <li><a href="/">ホーム</a></li>
-        <li><a href="/products.html">商品一覧</a></li>
-        <li><a href="/about.html">会社情報</a></li>
-        <li><a href="/contact.html">お問い合わせ</a></li>
+        <li><a href="/products.html">製品</a></li>
+        <li><a href="/about.html">企業情報</a></li>
+        <li><a href="/contact.html">サポート</a></li>
       </ul>
-      <div class="cart-icon" onclick="location.href='/cart.html'">
-        🛒 <span class="cart-count" style="display:none;">0</span>
-      </div>
-    </nav>
-  </header>
+      <a href="/cart.html" class="nav-cart active">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="9" cy="21" r="1"/>
+          <circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        </svg>
+      </a>
+    </div>
+  </nav>
 
-  <section class="page-header" style="background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%); color: white; padding: 3rem 2rem; text-align: center;">
+  <!-- ページヘッダー -->
+  <section class="page-header">
     <div class="container">
-      <h1 style="font-size: 2.5rem;">ショッピングカート</h1>
+      <h1>ショッピングカート</h1>
     </div>
   </section>
 
-  <section class="section">
+  <!-- カート内容 -->
+  <section class="cart-section">
     <div class="container">
-      <div id="cart-content">
-        <div class="loading"><div class="spinner"></div></div>
+      <div class="cart-layout">
+        <!-- カートアイテム -->
+        <div class="cart-items">
+          <div id="cart-content">
+            <div class="loading">カートを読み込み中...</div>
+          </div>
+        </div>
+
+        <!-- サマリー -->
+        <div class="cart-summary">
+          <h2>注文概要</h2>
+          <div class="summary-row">
+            <span>小計</span>
+            <span id="subtotal">¥0</span>
+          </div>
+          <div class="summary-row">
+            <span>配送料</span>
+            <span id="shipping">¥0</span>
+          </div>
+          <div class="summary-divider"></div>
+          <div class="summary-row total">
+            <span>合計</span>
+            <span id="total">¥0</span>
+          </div>
+          <button class="checkout-button" id="checkout-btn">
+            購入手続きへ
+          </button>
+          <a href="/products.html" class="continue-shopping">
+            買い物を続ける
+          </a>
+        </div>
       </div>
     </div>
   </section>
 
-  <footer>
-    <div class="footer-content">
-      <div class="footer-section">
-        <h3>スマートポリス</h3>
-        <p>守る力を、あなたの手に。</p>
+  <!-- フッター -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-logo">
+        <img src="/images/logo.png" alt="SmartPolice">
       </div>
-      <div class="footer-section">
-        <h3>サポート</h3>
-        <ul class="footer-links">
-          <li><a href="/about.html">会社情報</a></li>
-          <li><a href="/contact.html">お問い合わせ</a></li>
-        </ul>
+      <div class="footer-links">
+        <div class="footer-column">
+          <h4>製品</h4>
+          <a href="/products.html">すべての製品</a>
+          <a href="/products.html?category=企業・オフィス">企業・オフィス</a>
+          <a href="/products.html?category=学校・教育機関">学校・教育機関</a>
+        </div>
+        <div class="footer-column">
+          <h4>サポート</h4>
+          <a href="/about.html">企業情報</a>
+          <a href="/contact.html">お問い合わせ</a>
+          <a href="/terms.html">利用規約</a>
+        </div>
+        <div class="footer-column">
+          <h4>お問い合わせ</h4>
+          <p>order@smartpolice.net</p>
+          <p>shop.smartpolice.net</p>
+        </div>
       </div>
-    </div>
-    <div class="footer-bottom">
-      <p>&copy; 2026 スマートポリスECショップ. All rights reserved.</p>
+      <div class="footer-bottom">
+        <p>© 2026 SmartPolice. All rights reserved.</p>
+      </div>
     </div>
   </footer>
 
-  <script src="/js/api.js"></script>
-  <script>
-    function renderCart() {
-      const cart = Cart.get();
-      const container = document.getElementById('cart-content');
-      
-      if (cart.items.length === 0) {
-        container.innerHTML = `
-          <div style="text-align: center; padding: 4rem 2rem;">
-            <div style="font-size: 4rem; margin-bottom: 1rem;">🛒</div>
-            <h2 style="font-size: 1.5rem; margin-bottom: 1rem;">カートは空です</h2>
-            <p style="color: var(--text-light); margin-bottom: 2rem;">商品を追加してください</p>
-            <a href="/products.html" class="btn btn-primary">商品一覧を見る</a>
-          </div>
-        `;
-        return;
-      }
-      
-      container.innerHTML = `
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
-          <div>
-            ${cart.items.map((item, index) => `
-              <div class="card" style="display: flex; gap: 1.5rem; margin-bottom: 1rem; padding: 1.5rem;">
-                <div style="width: 120px; height: 120px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border-radius: 5px; flex-shrink: 0;">
-                  ${item.product.image_urls && item.product.image_urls[0] ? `<img src="/images/${item.product.image_urls[0]}" style="max-width: 100%; max-height: 100%; object-fit: contain;">` : '📦'}
-                </div>
-                <div style="flex: 1;">
-                  <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">${item.product.name}</h3>
-                  <p style="color: var(--text-light); margin-bottom: 1rem;">${item.product.description ? item.product.description.substring(0, 80) : ''}</p>
-                  <div style="display: flex; align-items: center; justify-content: space-between;">
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                      <button onclick="updateQuantity(${index}, ${item.quantity - 1})" class="btn" style="padding: 0.25rem 0.75rem;">-</button>
-                      <span style="font-size: 1.125rem; font-weight: 600;">${item.quantity}</span>
-                      <button onclick="updateQuantity(${index}, ${item.quantity + 1})" class="btn" style="padding: 0.25rem 0.75rem;">+</button>
-                    </div>
-                    <div style="text-align: right;">
-                      <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary-color);">${formatPrice(item.product.price * item.quantity)}</div>
-                      <button onclick="removeItem(${index})" style="color: var(--error-color); background: none; border: none; cursor: pointer; margin-top: 0.5rem;">削除</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            `).join('')}
-          </div>
-          
-          <div>
-            <div class="card" style="position: sticky; top: 2rem;">
-              <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem;">注文概要</h3>
-              
-              <!-- クーポンコード入力 -->
-              <div id="coupon-section" style="margin-bottom: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
-                <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
-                  <input type="text" id="coupon-code" placeholder="クーポンコード" 
-                         style="flex: 1; padding: 0.75rem; border: 2px solid #ddd; border-radius: 5px; text-transform: uppercase;">
-                  <button onclick="applyCoupon()" class="btn" style="padding: 0.75rem 1.5rem; white-space: nowrap;">適用</button>
-                </div>
-                <div id="coupon-message" style="font-size: 0.875rem; color: #666;"></div>
-                <div id="coupon-applied" style="display: none; margin-top: 0.5rem; padding: 0.5rem; background: #e8f5e9; border-left: 3px solid #4caf50; border-radius: 3px;">
-                  <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-size: 0.875rem; color: #2e7d32; font-weight: 600;" id="coupon-desc"></span>
-                    <button onclick="removeCoupon()" style="background: none; border: none; color: #666; cursor: pointer; padding: 0.25rem;">✕</button>
-                  </div>
-                </div>
-              </div>
-              
-              <div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #e0e0e0;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                  <span>小計</span>
-                  <span id="subtotal">${formatPrice(cart.total)}</span>
-                </div>
-                <div id="discount-row" style="display: none; justify-content: space-between; margin-bottom: 0.5rem; color: #4caf50;">
-                  <span>割引</span>
-                  <span id="discount-amount">-¥0</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                  <span>送料</span>
-                  <span id="shipping-fee">${cart.total >= 5000 ? '無料' : '¥500'}</span>
-                </div>
-              </div>
-              <div style="display: flex; justify-content: space-between; font-size: 1.25rem; font-weight: 700; margin-bottom: 2rem;">
-                <span>合計</span>
-                <span id="final-total" style="color: var(--primary-color);">${formatPrice(cart.total + (cart.total >= 5000 ? 0 : 500))}</span>
-              </div>
-              <button onclick="checkout()" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.125rem;">購入手続きへ</button>
-              <a href="/products.html" style="display: block; text-align: center; margin-top: 1rem; color: var(--primary-color);">買い物を続ける</a>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function updateQuantity(index, newQuantity) {
-      if (newQuantity <= 0) {
-        removeItem(index);
-        return;
-      }
-      Cart.updateQuantity(index, newQuantity);
-      renderCart();
-    }
-
-    function removeItem(index) {
-      Cart.remove(index);
-      Notification.success('商品を削除しました');
-      renderCart();
-    }
-
-    function checkout() {
-      location.href = '/checkout.html';
-    }
-
-    document.addEventListener('DOMContentLoaded', renderCart);
-  </script>
+  <script src="/js/cart.js"></script>
+  <script src="/js/cart-page.js"></script>
 </body>
 </html>
-
-<script>
-// クーポン機能
-let currentCoupon = null;
-
-// 初回購入チェック & 自動10%OFF適用
-function checkFirstTimePurchase() {
-  const hasOrdered = localStorage.getItem('has_ordered');
-  if (!hasOrdered && !currentCoupon) {
-    // 初回購入者に自動でFIRST10クーポンを適用
-    setTimeout(() => {
-      document.getElementById('coupon-code').value = 'FIRST10';
-      applyCoupon();
-      showNotification('🎉 初回購入特典10%OFFが自動適用されました！', 'success');
-    }, 1000);
-  }
-}
-
-async function applyCoupon() {
-  const code = document.getElementById('coupon-code').value.trim().toUpperCase();
-  const cart = Cart.get();
-  
-  if (!code) {
-    document.getElementById('coupon-message').textContent = 'クーポンコードを入力してください';
-    document.getElementById('coupon-message').style.color = '#f44336';
-    return;
-  }
-
-  try {
-    const response = await fetch('/api/coupons/validate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code, subtotal: cart.total })
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-      currentCoupon = data.data.coupon;
-      document.getElementById('coupon-message').textContent = '✓ ' + currentCoupon.description;
-      document.getElementById('coupon-message').style.color = '#4caf50';
-      document.getElementById('coupon-applied').style.display = 'block';
-      document.getElementById('coupon-desc').textContent = currentCoupon.description;
-      updatePricing();
-    } else {
-      document.getElementById('coupon-message').textContent = data.error;
-      document.getElementById('coupon-message').style.color = '#f44336';
-    }
-  } catch (error) {
-    console.error('Coupon error:', error);
-  }
-}
-
-function removeCoupon() {
-  currentCoupon = null;
-  document.getElementById('coupon-applied').style.display = 'none';
-  document.getElementById('coupon-message').textContent = '';
-  updatePricing();
-}
-
-function updatePricing() {
-  const cart = Cart.get();
-  const discount = currentCoupon ? currentCoupon.discount_amount : 0;
-  const shippingFee = cart.total >= 5000 ? 0 : 500;
-  const total = cart.total - discount + shippingFee;
-  
-  if (discount > 0) {
-    document.getElementById('discount-row').style.display = 'flex';
-    document.getElementById('discount-amount').textContent = '-' + formatPrice(discount);
-  }
-  
-  document.getElementById('final-total').textContent = formatPrice(total);
-}
-
-function showNotification(message, type = 'info') {
-  const notification = document.createElement('div');
-  const colors = {
-    success: '#4caf50',
-    error: '#f44336',
-    info: '#2196f3'
-  };
-  notification.style.cssText = `
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 1rem 1.5rem;
-    background: ${colors[type] || colors.info};
-    color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    z-index: 10000;
-  `;
-  notification.textContent = message;
-  document.body.appendChild(notification);
-  setTimeout(() => notification.remove(), 4000);
-}
-
-// ページ読み込み時に初回購入チェック
-window.addEventListener('DOMContentLoaded', () => {
-  renderCart();
-  checkFirstTimePurchase();
-});
-</script>

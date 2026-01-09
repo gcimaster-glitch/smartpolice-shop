@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="守る力を、あなたの手に。最先端の防犯・セキュリティアイテムを提供するスマートポリス。">
+  <title>スマートポリス | 守る力を、あなたの手に</title>
+  <link rel="stylesheet" href="/css/modern.css">
+</head>
+<body>
+  <!-- ヘッダー -->
+  <header>
+    <nav>
+      <a href="/" class="logo" style="display: flex; align-items: center; gap: 0.5rem;">
+        <svg width="180" height="50" viewBox="0 0 445 74" xmlns="http://www.w3.org/2000/svg" style="height: 40px; width: auto;">
+          <!-- Shield -->
+          <path d="M7 10.5C7 10.5 35.5 7 35.5 7C35.5 7 63 10.5 63 10.5L63 35C63 55 35.5 67 35.5 67C35.5 67 7 55 7 35Z" fill="#1d4ed8" stroke="none"/>
+          <path d="M35.5 10L35.5 67L7 55L7 35C7 35 7 10.5 35.5 10Z" fill="#ffffff" stroke="none"/>
+          <rect x="16" y="20" width="39" height="20" fill="#1d4ed8"/>
+          <rect x="35.5" y="20" width="19.5" height="20" fill="#ffffff"/>
+          <!-- Text SMART POLICE -->
+          <text x="85" y="45" font-family="Arial, sans-serif" font-size="28" font-weight="300" fill="#1d4ed8" letter-spacing="3">SMART POLICE</text>
+        </svg>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/" class="active">ホーム</a></li>
+        <li><a href="/products.html">商品</a></li>
+        <li><a href="/about.html">会社情報</a></li>
+        <li><a href="/contact.html">サポート</a></li>
+      </ul>
+      <a href="/cart.html" style="font-size: 1.25rem;">🛒</a>
+    </nav>
+  </header>
+
+  <!-- ヒーローセクション（動画背景付き） -->
+  <section class="hero" style="position: relative; overflow: hidden;">
+    <!-- 背景動画 -->
+    <video 
+      autoplay 
+      muted 
+      loop 
+      playsinline
+      style="
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        min-width: 100%;
+        min-height: 100%;
+        width: auto;
+        height: auto;
+        transform: translate(-50%, -50%);
+        object-fit: cover;
+        z-index: 0;
+      "
+    >
+      <source src="/videos/hero-bg.mp4" type="video/mp4">
+    </video>
+    
+    <!-- オーバーレイ（動画を暗くして文字を読みやすく） -->
+    <div style="
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 100%);
+      z-index: 1;
+    "></div>
+    
+    <!-- コンテンツ -->
+    <div class="container" style="position: relative; z-index: 2;">
+      <h1 class="hero-title fade-in" style="color: white; text-shadow: 0 4px 20px rgba(0,0,0,0.8), 0 2px 8px rgba(0,0,0,0.6);">
+        最先端のテクノロジーで、<br>あなたの大切なものを守る。
+      </h1>
+      <p class="hero-subtitle fade-in" style="color: white; text-shadow: 0 3px 12px rgba(0,0,0,0.7), 0 1px 6px rgba(0,0,0,0.5); font-weight: 500;">
+        個人から企業まで、幅広いニーズに応える防犯ソリューション。<br>
+        スマートな防犯が、新しい安心をつくる。
+      </p>
+      <div style="display: flex; gap: var(--space-4); justify-content: center; flex-wrap: wrap;">
+        <a href="/products.html" class="btn btn-primary btn-lg" style="box-shadow: 0 8px 24px rgba(0,0,0,0.3);">商品を見る</a>
+        <a href="#features" class="btn btn-outline btn-lg" style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border-color: rgba(255,255,255,0.4); color: white; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">詳しく知る</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- カテゴリーグリッド -->
+  <section class="section">
+    <div class="container">
+      <div class="text-center" style="margin-bottom: var(--space-16);">
+        <h2 style="font-size: var(--text-5xl); font-weight: var(--font-bold); margin-bottom: var(--space-4);">
+          あなたに合ったセキュリティを。
+        </h2>
+        <p style="font-size: var(--text-xl); color: var(--color-gray-600);">
+          個人から企業・学校まで、プロフェッショナルグレードの防犯ソリューション
+        </p>
+      </div>
+
+      <div class="grid grid-3">
+        <!-- 企業・オフィス向けカード -->
+        <a href="/products.html?category=企業・オフィス" class="card" style="text-decoration: none; cursor: pointer;">
+          <div style="height: 300px; background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23ffffff%22 fill-opacity=%220.05%22 width=%22100%22 height=%22100%22/><circle cx=%2220%22 cy=%2220%22 r=%2215%22 fill=%22%23ffffff%22 fill-opacity=%220.1%22/><circle cx=%2280%22 cy=%2280%22 r=%2220%22 fill=%22%23ffffff%22 fill-opacity=%220.1%22/></svg>'); opacity: 0.3;"></div>
+            <svg style="width: 120px; height: 120px; position: relative; z-index: 1;" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              <line x1="3" y1="9" x2="21" y2="9"/>
+              <line x1="9" y1="21" x2="9" y2="9"/>
+            </svg>
+          </div>
+          <div style="padding: var(--space-6);">
+            <h3 style="font-size: var(--text-2xl); font-weight: var(--font-semibold); margin-bottom: var(--space-3); color: var(--color-gray-900);">企業・オフィス</h3>
+            <p style="color: var(--color-gray-600); margin-bottom: var(--space-4); line-height: 1.6;">
+              オフィス、店舗、施設の総合セキュリティ。<br>
+              防犯カメラ、入退室管理、監視システム。
+            </p>
+            <span style="color: var(--color-primary); font-weight: var(--font-medium);">
+              商品を見る →
+            </span>
+          </div>
+        </a>
+
+        <!-- 学校・教育機関向けカード -->
+        <a href="/products.html?category=学校・教育機関" class="card" style="text-decoration: none; cursor: pointer;">
+          <div style="height: 300px; background: linear-gradient(135deg, #15803d 0%, #22c55e 100%); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23ffffff%22 fill-opacity=%220.05%22 width=%22100%22 height=%22100%22/><circle cx=%2230%22 cy=%2270%22 r=%2218%22 fill=%22%23ffffff%22 fill-opacity=%220.1%22/><circle cx=%2270%22 cy=%2230%22 r=%2225%22 fill=%22%23ffffff%22 fill-opacity=%220.1%22/></svg>'); opacity: 0.3;"></div>
+            <svg style="width: 120px; height: 120px; position: relative; z-index: 1;" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+              <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+            </svg>
+          </div>
+          <div style="padding: var(--space-6);">
+            <h3 style="font-size: var(--text-2xl); font-weight: var(--font-semibold); margin-bottom: var(--space-3); color: var(--color-gray-900);">学校・教育機関</h3>
+            <p style="color: var(--color-gray-600); margin-bottom: var(--space-4); line-height: 1.6;">
+              子どもたちの安全を守る学校向けシステム。<br>
+              校門監視、不審者検知、緊急通報装置。
+            </p>
+            <span style="color: var(--color-primary); font-weight: var(--font-medium);">
+              商品を見る →
+            </span>
+          </div>
+        </a>
+
+        <!-- 個人・家庭向けカード -->
+        <a href="/products.html?category=個人・家庭" class="card" style="text-decoration: none; cursor: pointer;">
+          <div style="height: 300px; background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23ffffff%22 fill-opacity=%220.05%22 width=%22100%22 height=%22100%22/><circle cx=%2250%22 cy=%2250%22 r=%2230%22 fill=%22%23ffffff%22 fill-opacity=%220.1%22/></svg>'); opacity: 0.3;"></div>
+            <svg style="width: 120px; height: 120px; position: relative; z-index: 1;" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+          </div>
+          <div style="padding: var(--space-6);">
+            <h3 style="font-size: var(--text-2xl); font-weight: var(--font-semibold); margin-bottom: var(--space-3); color: var(--color-gray-900);">個人・家庭</h3>
+            <p style="color: var(--color-gray-600); margin-bottom: var(--space-4); line-height: 1.6;">
+              あなたとご家族の安全を守る。<br>
+              スマートホーム、防犯ブザー、個人用GPS。
+            </p>
+            <span style="color: var(--color-primary); font-weight: var(--font-medium);">
+              商品を見る →
+            </span>
+          </div>
+        </a>
+      </div>
+
+      <!-- 追加カテゴリー（2行目） -->
+      <div class="grid grid-3" style="margin-top: var(--space-8);">
+        <!-- 車両・物流向けカード -->
+        <a href="/products.html?category=車両・物流" class="card" style="text-decoration: none; cursor: pointer;">
+          <div style="height: 300px; background: linear-gradient(135deg, #b91c1c 0%, #ef4444 100%); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23ffffff%22 fill-opacity=%220.05%22 width=%22100%22 height=%22100%22/><path d=%22M10,50 Q30,20 50,50 T90,50%22 stroke=%22%23ffffff%22 stroke-opacity=%220.1%22 stroke-width=%222%22 fill=%22none%22/></svg>'); opacity: 0.3;"></div>
+            <svg style="width: 120px; height: 120px; position: relative; z-index: 1;" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+              <path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.63A6 6 0 0 0 2 12.42V16h2"/>
+              <circle cx="6.5" cy="16.5" r="2.5"/>
+              <circle cx="16.5" cy="16.5" r="2.5"/>
+            </svg>
+          </div>
+          <div style="padding: var(--space-6);">
+            <h3 style="font-size: var(--text-2xl); font-weight: var(--font-semibold); margin-bottom: var(--space-3); color: var(--color-gray-900);">車両・物流</h3>
+            <p style="color: var(--color-gray-600); margin-bottom: var(--space-4); line-height: 1.6;">
+              車両・バイク・配送トラックの盗難対策。<br>
+              GPS追跡、ドライブレコーダー、盗難防止装置。
+            </p>
+            <span style="color: var(--color-primary); font-weight: var(--font-medium);">
+              商品を見る →
+            </span>
+          </div>
+        </a>
+
+        <!-- 盗聴・盗撮対策カード -->
+        <a href="/products.html?category=盗聴・盗撮対策" class="card" style="text-decoration: none; cursor: pointer;">
+          <div style="height: 300px; background: linear-gradient(135deg, #be123c 0%, #f43f5e 100%); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23ffffff%22 fill-opacity=%220.05%22 width=%22100%22 height=%22100%22/><line x1=%220%22 y1=%220%22 x2=%22100%22 y2=%22100%22 stroke=%22%23ffffff%22 stroke-opacity=%220.1%22 stroke-width=%222%22/></svg>'); opacity: 0.3;"></div>
+            <svg style="width: 120px; height: 120px; position: relative; z-index: 1;" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="M9 12l2 2 4-4"/>
+            </svg>
+          </div>
+          <div style="padding: var(--space-6);">
+            <h3 style="font-size: var(--text-2xl); font-weight: var(--font-semibold); margin-bottom: var(--space-3); color: var(--color-gray-900);">盗聴・盗撮対策</h3>
+            <p style="color: var(--color-gray-600); margin-bottom: var(--space-4); line-height: 1.6;">
+              プライバシーを守る専門機器。<br>
+              盗聴器発見器、隠しカメラ探知機、電波探知器。
+            </p>
+            <span style="color: var(--color-primary); font-weight: var(--font-medium);">
+              商品を見る →
+            </span>
+          </div>
+        </a>
+
+        <!-- その他・アクセサリーカード -->
+        <a href="/products.html?category=その他" class="card" style="text-decoration: none; cursor: pointer;">
+          <div style="height: 300px; background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23ffffff%22 fill-opacity=%220.05%22 width=%22100%22 height=%22100%22/><circle cx=%2225%22 cy=%2225%22 r=%2210%22 fill=%22%23ffffff%22 fill-opacity=%220.1%22/><circle cx=%2275%22 cy=%2275%22 r=%2215%22 fill=%22%23ffffff%22 fill-opacity=%220.1%22/></svg>'); opacity: 0.3;"></div>
+            <svg style="width: 120px; height: 120px; position: relative; z-index: 1;" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+          </div>
+          <div style="padding: var(--space-6);">
+            <h3 style="font-size: var(--text-2xl); font-weight: var(--font-semibold); margin-bottom: var(--space-3); color: var(--color-gray-900);">その他・アクセサリー</h3>
+            <p style="color: var(--color-gray-600); margin-bottom: var(--space-4); line-height: 1.6;">
+              防犯システムの拡張アイテム。<br>
+              センサー、警告ステッカー、補助用品。
+            </p>
+            <span style="color: var(--color-primary); font-weight: var(--font-medium);">
+              商品を見る →
+            </span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 特徴セクション -->
+  <section id="features" class="section" style="background: var(--color-gray-50);">
+    <div class="container">
+      <div class="text-center" style="margin-bottom: var(--space-16);">
+        <h2 style="font-size: var(--text-5xl); font-weight: var(--font-bold); margin-bottom: var(--space-4);">
+          なぜスマートポリスを選ぶのか。
+        </h2>
+      </div>
+
+      <div class="grid grid-3">
+        <!-- 特徴1 -->
+        <div style="text-align: center; padding: var(--space-8);">
+          <div style="font-size: 4rem; margin-bottom: var(--space-6);">⚡</div>
+          <h3 style="font-size: var(--text-xl); font-weight: var(--font-semibold); margin-bottom: var(--space-3);">
+            最短2日でお届け
+          </h3>
+          <p style="color: var(--color-gray-600);">
+            お急ぎの方も安心。迅速な配送で、すぐに安全を手に入れられます。
+          </p>
+        </div>
+
+        <!-- 特徴2 -->
+        <div style="text-align: center; padding: var(--space-8);">
+          <div style="font-size: 4rem; margin-bottom: var(--space-6);">🛡️</div>
+          <h3 style="font-size: var(--text-xl); font-weight: var(--font-semibold); margin-bottom: var(--space-3);">
+            安心の品質保証
+          </h3>
+          <p style="color: var(--color-gray-600);">
+            厳選された高品質商品のみを取り扱い。万全のサポート体制でお客様をバックアップ。
+          </p>
+        </div>
+
+        <!-- 特徴3 -->
+        <div style="text-align: center; padding: var(--space-8);">
+          <div style="font-size: 4rem; margin-bottom: var(--space-6);">💳</div>
+          <h3 style="font-size: var(--text-xl); font-weight: var(--font-semibold); margin-bottom: var(--space-3);">
+            安全な決済
+          </h3>
+          <p style="color: var(--color-gray-600);">
+            Stripe決済システムで、お客様の情報は最高水準のセキュリティで保護されます。
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA セクション -->
+  <section class="section">
+    <div class="container text-center">
+      <h2 style="font-size: var(--text-4xl); font-weight: var(--font-bold); margin-bottom: var(--space-6);">
+        今すぐ、安心を始めよう。
+      </h2>
+      <p style="font-size: var(--text-xl); color: var(--color-gray-600); margin-bottom: var(--space-8);">
+        初回購入で10%OFF。あなたにぴったりのセキュリティソリューションを見つけてください。
+      </p>
+      <a href="/products.html" class="btn btn-primary btn-lg">
+        商品を見る
+      </a>
+    </div>
+  </section>
+
+  <!-- フッター -->
+  <footer>
+    <div class="container">
+      <!-- フッターロゴ（モノクロ） -->
+      <div style="text-align: center; margin-bottom: var(--space-8);">
+        <svg width="180" height="50" viewBox="0 0 445 74" xmlns="http://www.w3.org/2000/svg" style="height: 50px; width: auto; opacity: 0.6; filter: grayscale(100%);">
+          <!-- Shield -->
+          <path d="M7 10.5C7 10.5 35.5 7 35.5 7C35.5 7 63 10.5 63 10.5L63 35C63 55 35.5 67 35.5 67C35.5 67 7 55 7 35Z" fill="#6b7280" stroke="none"/>
+          <path d="M35.5 10L35.5 67L7 55L7 35C7 35 7 10.5 35.5 10Z" fill="#ffffff" stroke="none"/>
+          <rect x="16" y="20" width="39" height="20" fill="#6b7280"/>
+          <rect x="35.5" y="20" width="19.5" height="20" fill="#ffffff"/>
+          <!-- Text SMART POLICE -->
+          <text x="85" y="45" font-family="Arial, sans-serif" font-size="28" font-weight="300" fill="#9ca3af" letter-spacing="3">SMART POLICE</text>
+        </svg>
+      </div>
+      
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>ショップ</h3>
+          <ul class="footer-links">
+            <li><a href="/products.html">すべての商品</a></li>
+            <li><a href="/products.html?category=個人向け">個人向け</a></li>
+            <li><a href="/products.html?category=スマートホーム">スマートホーム</a></li>
+            <li><a href="/products.html?category=車両・バイク">車両・バイク</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>サポート</h3>
+          <ul class="footer-links">
+            <li><a href="/about.html">会社情報</a></li>
+            <li><a href="/contact.html">お問い合わせ</a></li>
+            <li><a href="/terms.html">特定商取引法</a></li>
+            <li><a href="/privacy.html">プライバシーポリシー</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>アカウント</h3>
+          <ul class="footer-links">
+            <li><a href="/cart.html">カート</a></li>
+            <li><a href="/admin.html">管理画面</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>お問い合わせ</h3>
+          <p style="font-size: var(--text-sm); color: var(--color-gray-600); margin-bottom: var(--space-2);">
+            📧 order@smartpolice.net
+          </p>
+          <p style="font-size: var(--text-sm); color: var(--color-gray-600);">
+            🌐 shop.smartpolice.net
+          </p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 SmartPolice. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/cart.js"></script>
+  <script>
+    // カート件数表示
+    Cart.updateCartCount();
+  </script>
+</body>
+</html>
