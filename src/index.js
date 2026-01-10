@@ -13,6 +13,7 @@ import { requireAdmin, hashPassword, verifyPassword, generateAdminToken } from '
 import { isValidImageType, isValidImageSize } from './services/r2.js';
 import { successResponse } from './utils/response.js';
 import { scrapeAlibabaProduct, analyzeProductWithAI, downloadAndUploadImages } from './services/alibaba.js';
+import { registerUser, loginUser, getCurrentUser, logoutUser, requireAuth } from './routes/auth.js';
 
 export default {
   async fetch(request, env, ctx) {
@@ -26,6 +27,28 @@ export default {
     }
 
     try {
+      // ==================== 認証API ====================
+      
+      // POST /api/auth/register - ユーザー新規登録
+      if (path === '/api/auth/register' && method === 'POST') {
+        return await registerUser(request, env);
+      }
+
+      // POST /api/auth/login - ユーザーログイン
+      if (path === '/api/auth/login' && method === 'POST') {
+        return await loginUser(request, env);
+      }
+
+      // GET /api/auth/me - 現在のユーザー情報取得
+      if (path === '/api/auth/me' && method === 'GET') {
+        return await getCurrentUser(request, env);
+      }
+
+      // POST /api/auth/logout - ログアウト
+      if (path === '/api/auth/logout' && method === 'POST') {
+        return await logoutUser(request, env);
+      }
+
       // ==================== 商品API ====================
       
       // GET /api/products - 商品一覧取得

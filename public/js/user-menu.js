@@ -1,4 +1,4 @@
-// ユーザーメニュー管理
+// ユーザーメニュー管理 - JWT認証対応
 class UserMenu {
   constructor() {
     this.init();
@@ -9,20 +9,43 @@ class UserMenu {
     this.setupEventListeners();
   }
 
-  // ログイン状態を確認
-  checkLoginStatus() {
-    const user = this.getCurrentUser();
+  // ログイン状態を確認（JWT認証）
+  async checkLoginStatus() {
+    const token = localStorage.getItem('authToken');
     const navGuest = document.getElementById('nav-guest');
     const navUser = document.getElementById('nav-user');
     const userName = document.getElementById('user-name');
 
-    if (user) {
-      // ログイン済み
-      if (navGuest) navGuest.style.display = 'none';
-      if (navUser) navUser.style.display = 'flex';
-      if (userName) userName.textContent = user.name || user.email;
+    if (token) {
+      // トークンが存在する場合、サーバーで検証
+      try {
+        const response = await fetch('/api/auth/me', {
+          headers: { 
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const user = data.user;
+
+          // ユーザー情報を更新
+          localStorage.setItem('currentUser', JSON.stringify(user));
+
+          // UIを更新
+          if (navGuest) navGuest.style.display = 'none';
+          if (navUser) navUser.style.display = 'flex';
+          if (userName) userName.textContent = `${user.lastName} ${user.firstName}`;
+        } else {
+          // トークンが無効な場合、ログアウト
+          this.forceLogout();
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+        this.forceLogout();
+      }
     } else {
-      // 未ログイン
+      // トークンがない場合、未ログイン
       if (navGuest) navGuest.style.display = 'flex';
       if (navUser) navUser.style.display = 'none';
     }
@@ -31,7 +54,7 @@ class UserMenu {
     this.updateCartBadge();
   }
 
-  // 現在のユーザーを取得
+  // 現在のユーザーを取得（ローカルストレージから）
   getCurrentUser() {
     const userStr = localStorage.getItem('currentUser');
     if (!userStr) return null;
@@ -67,19 +90,47 @@ class UserMenu {
     // ログアウトボタン
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
-      logoutBtn.addEventListener('click', (e) => {
+      logoutBtn.addEventListener('click', async (e) => {
         e.preventDefault();
-        this.logout();
+        await this.logout();
       });
     }
   }
 
-  // ログアウト処理
-  logout() {
-    if (confirm('ログアウトしますか？')) {
-      localStorage.removeItem('currentUser');
-      window.location.href = '/';
+  // ログアウト処理（サーバー側でセッション削除）
+  async logout() {
+    if (!confirm('ログアウトしますか？')) {
+      return;
     }
+
+    try {
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          headers: { 
+            'Authorization': `Bearer ${token}`
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+
+    // ローカルデータをクリア
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('currentUser');
+    window.location.href = '/';
+  }
+
+  // 強制ログアウト（トークン無効時）
+  forceLogout() {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('currentUser');
+    const navGuest = document.getElementById('nav-guest');
+    const navUser = document.getElementById('nav-user');
+    if (navGuest) navGuest.style.display = 'flex';
+    if (navUser) navUser.style.display = 'none';
   }
 
   // カートバッジを更新

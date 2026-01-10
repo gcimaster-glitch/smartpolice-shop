@@ -1,4 +1,4 @@
-// 新規登録処理
+// 新規登録処理 - 本番実装（JWT認証）
 document.addEventListener('DOMContentLoaded', () => {
   const registerForm = document.getElementById('register-form');
 
@@ -22,30 +22,35 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // TODO: 実際のAPI呼び出しに置き換え
-      // 現在はデモ用のローカル登録
-      
       try {
-        const user = {
-          id: Date.now(),
-          lastName: formData.get('lastName'),
-          firstName: formData.get('firstName'),
-          name: `${formData.get('lastName')} ${formData.get('firstName')}`,
-          email: formData.get('email'),
-          phone: formData.get('phone'),
-          company: formData.get('company'),
-          createdAt: new Date().toISOString()
-        };
+        const response = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: formData.get('email'),
+            password: password,
+            firstName: formData.get('firstName'),
+            lastName: formData.get('lastName'),
+            phone: formData.get('phone'),
+            company: formData.get('company')
+          })
+        });
 
-        // ローカルストレージに保存
-        localStorage.setItem('currentUser', JSON.stringify(user));
+        const data = await response.json();
 
-        // 成功メッセージ
-        alert('アカウント作成に成功しました！');
+        if (response.ok && data.token) {
+          // トークンとユーザー情報を保存
+          localStorage.setItem('authToken', data.token);
+          localStorage.setItem('currentUser', JSON.stringify(data.user));
 
-        // トップページへリダイレクト
-        window.location.href = '/';
+          // 成功メッセージ
+          alert('アカウント作成に成功しました！');
 
+          // マイページへリダイレクト
+          window.location.href = '/mypage.html';
+        } else {
+          alert(data.error || '登録に失敗しました。');
+        }
       } catch (error) {
         console.error('Registration error:', error);
         alert('登録に失敗しました。もう一度お試しください。');

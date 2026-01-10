@@ -2245,3 +2245,218 @@ body {
 .mypage-card .btn-secondary {
   width: 100%;
 }
+
+/* ===== チェックアウトページ ===== */
+.checkout-section {
+  padding: 80px 0;
+  background: var(--color-bg-secondary);
+}
+
+.checkout-layout {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 48px;
+  align-items: start;
+}
+
+.checkout-form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.checkout-section-card {
+  background: white;
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.checkout-section-card h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: var(--color-text);
+}
+
+.payment-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.payment-method-option {
+  cursor: pointer;
+}
+
+.payment-method-option input[type="radio"] {
+  display: none;
+}
+
+.payment-method-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
+  transition: all 0.3s;
+}
+
+.payment-method-option input[type="radio"]:checked + .payment-method-card {
+  border-color: var(--color-primary);
+  background: rgba(0, 113, 227, 0.05);
+}
+
+.payment-method-card:hover {
+  border-color: var(--color-primary);
+}
+
+.stripe-card-element {
+  padding: 12px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: white;
+}
+
+.card-errors {
+  color: #dc2626;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.info-box {
+  padding: 20px;
+  background: var(--color-bg-secondary);
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.7;
+  margin-top: 16px;
+}
+
+.info-box p {
+  margin-bottom: 8px;
+}
+
+.info-box strong {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* 注文サマリー */
+.order-summary {
+  position: sticky;
+  top: 100px;
+}
+
+.order-summary-card {
+  background: white;
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.order-summary-card h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: var(--color-text);
+}
+
+.order-item {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.order-item:last-child {
+  border-bottom: none;
+}
+
+.order-item-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.order-item-details {
+  flex: 1;
+}
+
+.order-item-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 4px;
+}
+
+.order-item-quantity {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.order-item-price {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text);
+  text-align: right;
+}
+
+.order-summary-divider {
+  height: 1px;
+  background: var(--color-border);
+  margin: 16px 0;
+}
+
+.order-summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+  margin-bottom: 12px;
+  color: var(--color-text-secondary);
+}
+
+.order-summary-row span:last-child {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.order-total {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-top: 8px;
+}
+
+.order-total span {
+  color: var(--color-primary);
+}
+
+/* レスポンシブ */
+@media (max-width: 1024px) {
+  .checkout-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .order-summary {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .checkout-section {
+    padding: 40px 0;
+  }
+  
+  .checkout-section-card {
+    padding: 24px;
+  }
+  
+  .order-summary-card {
+    padding: 24px;
+  }
+}

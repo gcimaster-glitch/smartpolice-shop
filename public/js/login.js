@@ -1,4 +1,4 @@
-// ログイン処理
+// ログイン処理 - 本番実装（JWT認証）
 document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('login-form');
 
@@ -6,41 +6,36 @@ document.addEventListener('DOMContentLoaded', () => {
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const formData = new FormData(loginForm);
-      const email = formData.get('email');
-      const password = formData.get('password');
-      const remember = formData.get('remember');
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
 
-      // TODO: 実際のAPI呼び出しに置き換え
-      // 現在はデモ用のローカル認証
-      
+      if (!email || !password) {
+        alert('メールアドレスとパスワードを入力してください。');
+        return;
+      }
+
       try {
-        // デモ用: 任意のメールアドレスでログイン可能
-        const user = {
-          id: Date.now(),
-          email: email,
-          name: email.split('@')[0],
-          createdAt: new Date().toISOString()
-        };
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
 
-        // ローカルストレージに保存
-        localStorage.setItem('currentUser', JSON.stringify(user));
+        const data = await response.json();
 
-        if (remember) {
-          localStorage.setItem('rememberLogin', 'true');
-        }
+        if (response.ok && data.token) {
+          // トークンとユーザー情報を保存
+          localStorage.setItem('authToken', data.token);
+          localStorage.setItem('currentUser', JSON.stringify(data.user));
 
-        // 成功メッセージ
-        alert('ログインに成功しました！');
+          // 成功メッセージ
+          alert('ログインしました！');
 
-        // カートに商品がある場合はカートへ、なければトップへ
-        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        if (cart.length > 0) {
-          window.location.href = '/cart.html';
+          // マイページへリダイレクト
+          window.location.href = '/mypage.html';
         } else {
-          window.location.href = '/';
+          alert(data.error || 'ログインに失敗しました。');
         }
-
       } catch (error) {
         console.error('Login error:', error);
         alert('ログインに失敗しました。もう一度お試しください。');
@@ -53,6 +48,15 @@ document.addEventListener('DOMContentLoaded', () => {
   if (googleBtn) {
     googleBtn.addEventListener('click', () => {
       alert('Google ログインは準備中です。\n通常のログインをご利用ください。');
+    });
+  }
+
+  // パスワードリセット
+  const forgotPasswordLink = document.querySelector('.forgot-password');
+  if (forgotPasswordLink) {
+    forgotPasswordLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      alert('パスワードリセット機能は準備中です。\nサポートにお問い合わせください。');
     });
   }
 });

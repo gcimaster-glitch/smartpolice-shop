@@ -3,184 +3,297 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>購入手続き | スマートポリスECショップ</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <meta name="description" content="SmartPolice - お支払い・配送情報">
+  <title>お支払い | SmartPolice</title>
+  <link rel="stylesheet" href="/css/store.css">
   <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
-  <header>
-    <nav>
-      <a href="/" class="logo">🛡️ スマートポリス</a>
-    </nav>
-  </header>
+  <!-- ナビゲーション -->
+  <nav class="nav">
+    <div class="nav-content">
+      <a href="/" class="nav-logo">
+        <img src="/images/logo.png" alt="SmartPolice">
+        <span class="nav-service-label">SERVICE & PRODUCTS</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/info.html">INFO</a></li>
+        <li><a href="/service.html">SERVICE</a></li>
+        <li><a href="/products.html">PRODUCTS</a></li>
+        <li><a href="/faq.html">FAQ</a></li>
+        <li><a href="/support.html">SUPPORT</a></li>
+        <li><a href="/about.html">ABOUT US</a></li>
+        <li><a href="/contact.html">CONTACT</a></li>
+      </ul>
+      <div class="nav-actions">
+        <div class="nav-guest" id="nav-guest">
+          <a href="/login.html" class="nav-link-btn">ログイン</a>
+          <a href="/register.html" class="nav-link-btn primary">新規登録</a>
+        </div>
+        <div class="nav-user" id="nav-user" style="display: none;">
+          <div class="nav-user-menu">
+            <button class="nav-user-button" id="user-menu-button">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+              </svg>
+              <span id="user-name">ユーザー</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </button>
+            <div class="nav-user-dropdown" id="user-dropdown" style="display: none;">
+              <a href="/mypage.html" class="dropdown-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>マイページ</a>
+              <a href="/profile.html" class="dropdown-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>個人情報編集</a>
+              <a href="/orders.html" class="dropdown-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>購入履歴</a>
+              <a href="/nda.html" class="dropdown-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>NDA契約</a>
+              <a href="/customer-support.html" class="dropdown-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/></svg>サポート</a>
+              <a href="/chat.html" class="dropdown-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>チャット</a>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item logout-btn" id="logout-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>ログアウト</button>
+            </div>
+          </div>
+        </div>
+        <a href="/cart.html" class="nav-cart">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+          </svg>
+          <span class="cart-badge" id="cart-badge" style="display: none;">0</span>
+        </a>
+      </div>
+    </div>
+  </nav>
 
-  <section class="section">
-    <div class="container" style="max-width: 800px;">
-      <h1 style="text-align: center; margin-bottom: 2rem;">購入手続き</h1>
-      
-      <div id="checkout-form">
-        <div class="card" style="margin-bottom: 2rem;">
-          <h2 style="margin-bottom: 1.5rem;">お客様情報</h2>
-          <form id="customer-form">
-            <div style="margin-bottom: 1rem;">
-              <label>お名前 *</label>
-              <input type="text" id="name" required style="width: 100%; padding: 0.75rem; border: 2px solid #ddd; border-radius: 5px; margin-top: 0.5rem;">
+  <!-- ページヘッダー -->
+  <section class="page-header">
+    <div class="container">
+      <h1>お支払い・配送情報</h1>
+      <p>配送先とお支払い方法を入力してください</p>
+    </div>
+  </section>
+
+  <!-- チェックアウトフォーム -->
+  <section class="checkout-section">
+    <div class="container">
+      <div class="checkout-layout">
+        <!-- 左側: フォーム -->
+        <div class="checkout-form-container">
+          <form id="checkout-form">
+            
+            <!-- 配送先情報 -->
+            <div class="checkout-section-card">
+              <h2>配送先情報</h2>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="lastName">姓 *</label>
+                  <input type="text" id="lastName" required>
+                </div>
+                <div class="form-group">
+                  <label for="firstName">名 *</label>
+                  <input type="text" id="firstName" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="email">メールアドレス *</label>
+                <input type="email" id="email" required>
+                <small class="form-hint">注文確認メールをお送りします</small>
+              </div>
+              <div class="form-group">
+                <label for="phone">電話番号 *</label>
+                <input type="tel" id="phone" required>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="postalCode">郵便番号 *</label>
+                  <input type="text" id="postalCode" placeholder="123-4567" required>
+                </div>
+                <div class="form-group">
+                  <label for="prefecture">都道府県 *</label>
+                  <select id="prefecture" required>
+                    <option value="">選択してください</option>
+                    <option value="北海道">北海道</option>
+                    <option value="東京都">東京都</option>
+                    <option value="神奈川県">神奈川県</option>
+                    <option value="大阪府">大阪府</option>
+                    <option value="福岡県">福岡県</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="address">住所 *</label>
+                <input type="text" id="address" placeholder="市区町村・番地" required>
+              </div>
+              <div class="form-group">
+                <label for="building">建物名・部屋番号</label>
+                <input type="text" id="building" placeholder="マンション名・部屋番号">
+              </div>
+              <div class="form-group">
+                <label for="company">会社名・団体名（法人の場合）</label>
+                <input type="text" id="company">
+              </div>
             </div>
-            <div style="margin-bottom: 1rem;">
-              <label>メールアドレス *</label>
-              <input type="email" id="email" required style="width: 100%; padding: 0.75rem; border: 2px solid #ddd; border-radius: 5px; margin-top: 0.5rem;">
+
+            <!-- 配送日時指定 -->
+            <div class="checkout-section-card">
+              <h2>配送日時指定</h2>
+              <div class="form-group">
+                <label for="deliveryDate">配送希望日 *</label>
+                <input type="date" id="deliveryDate" required>
+                <small class="form-hint">3営業日以降の日付を指定してください</small>
+              </div>
+              <div class="form-group">
+                <label for="deliveryTime">配送時間帯</label>
+                <select id="deliveryTime">
+                  <option value="">指定なし</option>
+                  <option value="午前中">午前中（9:00-12:00）</option>
+                  <option value="12-14">12:00-14:00</option>
+                  <option value="14-16">14:00-16:00</option>
+                  <option value="16-18">16:00-18:00</option>
+                  <option value="18-20">18:00-20:00</option>
+                  <option value="19-21">19:00-21:00</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="notes">備考</label>
+                <textarea id="notes" rows="3" placeholder="配送に関する特記事項があればご記入ください"></textarea>
+              </div>
             </div>
-            <div style="margin-bottom: 1rem;">
-              <label>電話番号</label>
-              <input type="tel" id="phone" style="width: 100%; padding: 0.75rem; border: 2px solid #ddd; border-radius: 5px; margin-top: 0.5rem;">
+
+            <!-- お支払い方法 -->
+            <div class="checkout-section-card">
+              <h2>お支払い方法</h2>
+              <div class="payment-methods">
+                <label class="payment-method-option">
+                  <input type="radio" name="paymentMethod" value="stripe" checked>
+                  <div class="payment-method-card">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="2" y="5" width="20" height="14" rx="2"/>
+                      <line x1="2" y1="10" x2="22" y2="10"/>
+                    </svg>
+                    <span>クレジットカード（Stripe）</span>
+                  </div>
+                </label>
+                <label class="payment-method-option">
+                  <input type="radio" name="paymentMethod" value="bank">
+                  <div class="payment-method-card">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="2" y="7" width="20" height="14" rx="2"/>
+                      <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                    </svg>
+                    <span>銀行振込</span>
+                  </div>
+                </label>
+                <label class="payment-method-option">
+                  <input type="radio" name="paymentMethod" value="invoice">
+                  <div class="payment-method-card">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                      <polyline points="14 2 14 8 20 8"/>
+                      <line x1="16" y1="13" x2="8" y2="13"/>
+                      <line x1="16" y1="17" x2="8" y2="17"/>
+                    </svg>
+                    <span>請求書払い（法人のみ）</span>
+                  </div>
+                </label>
+              </div>
+
+              <!-- Stripeカード入力エリア -->
+              <div id="stripe-card-section" style="display: block;">
+                <div class="form-group">
+                  <label>カード情報</label>
+                  <div id="card-element" class="stripe-card-element"></div>
+                  <div id="card-errors" class="card-errors"></div>
+                </div>
+              </div>
+
+              <!-- 銀行振込情報 -->
+              <div id="bank-transfer-info" style="display: none;">
+                <div class="info-box">
+                  <p><strong>振込先情報</strong></p>
+                  <p>銀行名: ○○銀行<br>
+                  支店名: ○○支店<br>
+                  口座番号: 普通 1234567<br>
+                  口座名義: カ）スマートポリス</p>
+                  <small>※ご注文確認後、振込先情報をメールでお送りします</small>
+                </div>
+              </div>
+
+              <!-- 請求書払い情報 -->
+              <div id="invoice-info" style="display: none;">
+                <div class="info-box">
+                  <p>請求書を郵送またはメールでお送りします。<br>
+                  請求書記載の期日までにお振込みください。</p>
+                  <small>※法人のお客様のみご利用いただけます</small>
+                </div>
+              </div>
             </div>
-            <div style="margin-bottom: 1rem;">
-              <label>配送先住所 *</label>
-              <textarea id="address" required rows="3" style="width: 100%; padding: 0.75rem; border: 2px solid #ddd; border-radius: 5px; margin-top: 0.5rem;"></textarea>
-            </div>
+
+            <button type="submit" class="btn-primary btn-full btn-large" id="submit-button">
+              注文を確定する
+            </button>
           </form>
         </div>
 
-        <div class="card" style="margin-bottom: 2rem;">
-          <h2 style="margin-bottom: 1.5rem;">注文内容</h2>
-          <div id="order-summary"></div>
+        <!-- 右側: 注文サマリー -->
+        <div class="order-summary">
+          <div class="order-summary-card">
+            <h2>注文内容</h2>
+            <div id="order-items"></div>
+            <div class="order-summary-divider"></div>
+            <div class="order-summary-row">
+              <span>小計</span>
+              <span id="subtotal">¥0</span>
+            </div>
+            <div class="order-summary-row">
+              <span>配送料</span>
+              <span id="shipping">¥0</span>
+            </div>
+            <div class="order-summary-divider"></div>
+            <div class="order-summary-row order-total">
+              <span>合計</span>
+              <span id="total">¥0</span>
+            </div>
+          </div>
         </div>
-
-        <div class="card">
-          <h2 style="margin-bottom: 1.5rem;">お支払い方法</h2>
-          <div id="card-element" style="padding: 1rem; border: 2px solid #ddd; border-radius: 5px; margin-bottom: 1rem;"></div>
-          <div id="card-errors" style="color: var(--error-color); margin-bottom: 1rem;"></div>
-          <button id="submit-button" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.125rem;">注文を確定する</button>
-        </div>
-      </div>
-
-      <div id="success-message" style="display: none; text-align: center; padding: 4rem 2rem;">
-        <div style="font-size: 4rem; margin-bottom: 1rem;">✅</div>
-        <h2 style="font-size: 2rem; margin-bottom: 1rem;">ご注文ありがとうございます！</h2>
-        <p style="font-size: 1.125rem; color: var(--text-light); margin-bottom: 2rem;">注文番号: <strong id="order-number"></strong></p>
-        <p>確認メールをお送りしました。</p>
-        <a href="/" class="btn btn-primary" style="margin-top: 2rem;">トップページに戻る</a>
       </div>
     </div>
   </section>
 
-  <script src="/js/api.js"></script>
-  <script>
-    const stripe = Stripe('STRIPE_PUBLISHABLE_KEY_PLACEHOLDER');
-    const elements = stripe.elements();
-    const cardElement = elements.create('card');
-    cardElement.mount('#card-element');
-
-    let cart = null;
-
-    function renderOrderSummary() {
-      cart = Cart.get();
-      const container = document.getElementById('order-summary');
-      const shipping = cart.total >= 5000 ? 0 : 500;
-      const total = cart.total + shipping;
-
-      container.innerHTML = `
-        ${cart.items.map(item => `
-          <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-            <span>${item.product.name} × ${item.quantity}</span>
-            <span>${formatPrice(item.product.price * item.quantity)}</span>
+  <!-- フッター -->
+  <footer class="footer-new">
+    <div class="container">
+      <div class="footer-main">
+        <div class="footer-brand">
+          <img src="/images/logo.png" alt="SmartPolice" class="footer-logo-img">
+          <p class="footer-tagline">守る力を、あなたの手に。</p>
+        </div>
+        <div class="footer-links-grid">
+          <div class="footer-column">
+            <h4>サービス</h4>
+            <a href="/service.html">サービス一覧</a>
           </div>
-        `).join('')}
-        <div style="border-top: 2px solid #e0e0e0; margin: 1rem 0; padding-top: 1rem;">
-          <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-            <span>送料</span>
-            <span>${shipping === 0 ? '無料' : formatPrice(shipping)}</span>
+          <div class="footer-column">
+            <h4>製品</h4>
+            <a href="/products.html">製品一覧</a>
           </div>
-          <div style="display: flex; justify-content: space-between; font-size: 1.25rem; font-weight: 700; margin-top: 1rem;">
-            <span>合計</span>
-            <span style="color: var(--primary-color);">${formatPrice(total)}</span>
+          <div class="footer-column">
+            <h4>サポート</h4>
+            <a href="/faq.html">よくある質問</a>
+          </div>
+          <div class="footer-column">
+            <h4>企業情報</h4>
+            <a href="/about.html">会社概要</a>
           </div>
         </div>
-      `;
-    }
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-bottom-content">
+          <p class="copyright">© 2026 SmartPolice. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
 
-    document.getElementById('submit-button').addEventListener('click', async () => {
-      const button = document.getElementById('submit-button');
-      button.disabled = true;
-      button.textContent = '処理中...';
-
-      const name = document.getElementById('name').value;
-      const email = document.getElementById('email').value;
-      const phone = document.getElementById('phone').value;
-      const address = document.getElementById('address').value;
-
-      if (!name || !email || !address) {
-        Notification.error('必須項目を入力してください');
-        button.disabled = false;
-        button.textContent = '注文を確定する';
-        return;
-      }
-
-      try {
-        // PaymentIntentを作成
-        const shipping = cart.total >= 5000 ? 0 : 500;
-        const total = cart.total + shipping;
-        
-        const intentResponse = await fetch('/api/payment/intent', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            amount: total,
-            description: '商品購入',
-            metadata: { customer_email: email }
-          })
-        });
-        
-        const { clientSecret } = await intentResponse.json();
-
-        // Stripe決済
-        const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-          payment_method: {
-            card: cardElement,
-            billing_details: { name, email }
-          }
-        });
-
-        if (error) {
-          throw new Error(error.message);
-        }
-
-        // 注文を作成
-        const orderData = {
-          customer_name: name,
-          customer_email: email,
-          customer_phone: phone,
-          shipping_address: address,
-          items: cart.items,
-          total_amount: total,
-          stripe_payment_id: paymentIntent.id
-        };
-
-        const orderResponse = await API.createOrder(orderData);
-        
-        // カートをクリア
-        Cart.clear();
-
-        // 成功画面を表示
-        document.getElementById('checkout-form').style.display = 'none';
-        document.getElementById('success-message').style.display = 'block';
-        document.getElementById('order-number').textContent = orderResponse.order.order_number;
-
-      } catch (error) {
-        Notification.error('決済に失敗しました: ' + error.message);
-        button.disabled = false;
-        button.textContent = '注文を確定する';
-      }
-    });
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const cart = Cart.get();
-      if (cart.items.length === 0) {
-        location.href = '/cart.html';
-        return;
-      }
-      renderOrderSummary();
-    });
-  </script>
+  <script src="/js/user-menu.js"></script>
+  <script src="/js/checkout.js"></script>
 </body>
 </html>
