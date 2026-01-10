@@ -4,6 +4,7 @@
 
 import { generateJWT, verifyJWT, extractToken, hashPassword, verifyPassword } from '../utils/jwt.js';
 import { successResponse, errorResponse } from '../utils/response.js';
+import { sanitizeRequestBody, sanitizeEmail, sanitizeText } from '../utils/sanitize.js';
 
 /**
  * ユーザー新規登録
@@ -12,13 +13,20 @@ import { successResponse, errorResponse } from '../utils/response.js';
 export async function registerUser(request, env) {
   try {
     const body = await request.json();
-    const { email, password, firstName, lastName, phone, company } = body;
+    
+    // 入力サニタイズ
+    const sanitized = sanitizeRequestBody(body, {
+      email: { type: 'email', required: true },
+      password: { type: 'text', maxLength: 128, required: true },
+      firstName: { type: 'text', maxLength: 50, required: true },
+      lastName: { type: 'text', maxLength: 50, required: true },
+      phone: { type: 'phone' },
+      company: { type: 'text', maxLength: 100 }
+    });
 
-    // バリデーション
-    if (!email || !password || !firstName || !lastName) {
-      return errorResponse('必須項目を入力してください', 400);
-    }
+    const { email, password, firstName, lastName, phone, company } = sanitized;
 
+    // パスワード長チェック
     if (password.length < 8) {
       return errorResponse('パスワードは8文字以上にしてください', 400);
     }

@@ -152,6 +152,13 @@ export default {
 
       // ==================== 決済API（Stripe） ====================
 
+      // GET /api/stripe/config - Stripe公開キー取得
+      if (path === '/api/stripe/config' && method === 'GET') {
+        return successResponse({
+          publishableKey: env.STRIPE_PUBLISHABLE_KEY || 'pk_test_51234567890abcdef'
+        });
+      }
+
       // POST /api/payment/intent - PaymentIntent作成
       if (path === '/api/payment/intent' && method === 'POST') {
         const body = await request.json();

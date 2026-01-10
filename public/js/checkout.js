@@ -24,31 +24,52 @@ document.addEventListener('DOMContentLoaded', () => {
   today.setDate(today.getDate() + 3);
   document.getElementById('deliveryDate').min = today.toISOString().split('T')[0];
 
-  // Stripe初期化（デモ用公開キー - 本番では環境変数から取得）
-  const stripe = Stripe('pk_test_51234567890abcdef'); // デモキー
-  const elements = stripe.elements();
-  const cardElement = elements.create('card', {
-    style: {
-      base: {
-        fontSize: '16px',
-        color: '#1d1d1f',
-        '::placeholder': {
-          color: '#86868b',
+  // Stripe初期化（公開キーをサーバーから取得）
+  let stripe;
+  
+  // Stripe公開キーを取得
+  fetch('/api/stripe/config')
+    .then(res => res.json())
+    .then(data => {
+      if (data.publishableKey) {
+        stripe = Stripe(data.publishableKey);
+        initializeStripeElements(stripe);
+      }
+    })
+    .catch(err => {
+      console.error('Failed to load Stripe:', err);
+      alert('決済システムの初期化に失敗しました。');
+    });
+  
+  function initializeStripeElements(stripeInstance) {
+    const elements = stripeInstance.elements();
+    const cardElement = elements.create('card', {
+      style: {
+        base: {
+          fontSize: '16px',
+          color: '#1d1d1f',
+          '::placeholder': {
+            color: '#86868b',
+          },
         },
       },
-    },
-  });
-  cardElement.mount('#card-element');
-
-  // カードエラー表示
-  cardElement.on('change', (event) => {
-    const displayError = document.getElementById('card-errors');
-    if (event.error) {
-      displayError.textContent = event.error.message;
-    } else {
-      displayError.textContent = '';
-    }
-  });
+    });
+    cardElement.mount('#card-element');
+    
+    // カードエラー表示
+    cardElement.on('change', (event) => {
+      const displayError = document.getElementById('card-errors');
+      if (event.error) {
+        displayError.textContent = event.error.message;
+      } else {
+        displayError.textContent = '';
+      }
+    });
+    
+    // カードエレメントをグローバルに保存
+    window.stripeCardElement = cardElement;
+    window.stripeInstance = stripeInstance;
+  }
 
   // 注文サマリーを表示
   displayOrderSummary();
@@ -119,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // 支払い方法に応じた処理
       if (paymentMethod === 'stripe') {
         // Stripe決済処理
-        const result = await processStripePayment(stripe, cardElement, orderData);
+        const result = await processStripePayment(window.stripeInstance, window.stripeCardElement, orderData);
         if (!result.success) {
           throw new Error(result.error);
         }
