@@ -5,7 +5,7 @@
 
 import { corsResponse, errorResponse } from './utils/response.js';
 import { getProducts, getProductById, createProduct, updateProduct, deleteProduct } from './routes/products.js';
-import { createOrder, getOrderByNumber, getAllOrders, updateOrderStatus } from './routes/orders.js';
+import { createOrder, getOrderByNumber, getUserOrders, getAllOrders, updateOrderStatus } from './routes/orders.js';
 import { createPaymentIntent, verifyWebhookSignature, handleWebhookEvent } from './services/stripe.js';
 import { sendShippingNotificationEmail } from './services/resend.js';
 import { uploadImage, getImage } from './services/r2.js';
@@ -14,6 +14,7 @@ import { isValidImageType, isValidImageSize } from './services/r2.js';
 import { successResponse } from './utils/response.js';
 import { scrapeAlibabaProduct, analyzeProductWithAI, downloadAndUploadImages } from './services/alibaba.js';
 import { registerUser, loginUser, getCurrentUser, logoutUser, requireAuth } from './routes/auth.js';
+import { getServices, getServiceById, createServiceApplication, getUserServiceApplications, getAllServiceApplications, updateServiceApplicationStatus } from './routes/services.js';
 
 export default {
   async fetch(request, env, ctx) {
@@ -47,6 +48,41 @@ export default {
       // POST /api/auth/logout - ログアウト
       if (path === '/api/auth/logout' && method === 'POST') {
         return await logoutUser(request, env);
+      }
+
+      // ==================== サービスAPI ====================
+
+      // GET /api/services - サービス一覧取得
+      if (path === '/api/services' && method === 'GET') {
+        return await getServices(request, env);
+      }
+
+      // GET /api/services/:id - サービス詳細取得
+      if (path.match(/^\/api\/services\/\d+$/) && method === 'GET') {
+        const serviceId = path.split('/').pop();
+        return await getServiceById(serviceId, env);
+      }
+
+      // POST /api/services/apply - サービス申込み
+      if (path === '/api/services/apply' && method === 'POST') {
+        return await createServiceApplication(request, env);
+      }
+
+      // GET /api/services/applications/user/:userId - ユーザーの申込み履歴
+      if (path.match(/^\/api\/services\/applications\/user\/\d+$/) && method === 'GET') {
+        const userId = path.split('/').pop();
+        return await getUserServiceApplications(userId, env);
+      }
+
+      // GET /api/admin/services/applications - 全申込み取得（管理者用）
+      if (path === '/api/admin/services/applications' && method === 'GET') {
+        return await getAllServiceApplications(request, env);
+      }
+
+      // PUT /api/admin/services/applications/:id - 申込みステータス更新（管理者用）
+      if (path.match(/^\/api\/admin\/services\/applications\/\d+$/) && method === 'PUT') {
+        const applicationId = path.split('/').pop();
+        return await updateServiceApplicationStatus(applicationId, request, env);
       }
 
       // ==================== 商品API ====================
@@ -134,9 +170,15 @@ export default {
       }
 
       // GET /api/orders/:orderNumber - 注文詳細取得
-      if (path.match(/^\/api\/orders\/SP-/) && method === 'GET') {
+      if (path.match(/^\/api\/orders\/SP\d+$/) && method === 'GET') {
         const orderNumber = path.split('/').pop();
         return await getOrderByNumber(orderNumber, env);
+      }
+
+      // GET /api/orders/user/:userId - ユーザーの注文履歴取得
+      if (path.match(/^\/api\/orders\/user\/\d+$/) && method === 'GET') {
+        const userId = path.split('/').pop();
+        return await getUserOrders(userId, env);
       }
 
       // GET /api/admin/orders - 全注文取得（管理者用）
