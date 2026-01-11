@@ -69,6 +69,7 @@
         <button class="admin-tab" onclick="switchTab('ai-register')">🤖 AI商品登録（ベータ）</button>
         <button class="admin-tab" onclick="switchTab('products')">📦 商品管理</button>
         <button class="admin-tab" onclick="switchTab('orders')">📋 注文管理</button>
+        <button class="admin-tab" onclick="switchTab('services')">🎯 サービス申込み管理</button>
       </div>
 
       <!-- 手動商品登録タブ -->
@@ -200,8 +201,28 @@
 
       <!-- 注文管理タブ -->
       <div id="orders-tab" class="tab-content">
-        <h2>注文管理</h2>
-        <p>開発中...</p>
+        <h2>📋 注文管理</h2>
+        <p style="color: #718096; margin-bottom: 30px;">全ての注文を確認・管理できます</p>
+        
+        <div id="orders-list">
+          <div style="text-align: center; padding: 60px 20px;">
+            <div class="spinner" style="margin: 0 auto 20px;"></div>
+            <p style="color: #718096;">注文を読み込み中...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- サービス申込み管理タブ -->
+      <div id="services-tab" class="tab-content">
+        <h2>🎯 サービス申込み管理</h2>
+        <p style="color: #718096; margin-bottom: 30px;">全てのサービス申込みを確認・管理できます</p>
+        
+        <div id="service-applications-list">
+          <div style="text-align: center; padding: 60px 20px;">
+            <div class="spinner" style="margin: 0 auto 20px;"></div>
+            <p style="color: #718096;">サービス申込みを読み込み中...</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -215,6 +236,8 @@
   </div>
 
   <script src="/js/api.js"></script>
+  <script src="/js/toast.js"></script>
+  <script src="/js/admin-management.js"></script>
   <script>
     let adminToken = null;
     let analyzedProduct = null;
@@ -307,6 +330,13 @@
       
       event.target.classList.add('active');
       document.getElementById(tabName + '-tab').classList.add('active');
+      
+      // タブ切り替え時にデータをロード
+      if (tabName === 'orders') {
+        loadOrders();
+      } else if (tabName === 'services') {
+        loadServiceApplications();
+      }
     }
 
     // 手動商品登録関数
