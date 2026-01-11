@@ -2805,3 +2805,346 @@ body {
   font-weight: 600;
   color: #2d3748;
 }
+
+/* ==================== モバイルナビゲーション ==================== */
+
+/* ハンバーガーメニューボタン */
+.mobile-menu-button {
+  display: none;
+  position: relative;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 10001;
+}
+
+.hamburger-line {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: #1d1d1f;
+  margin: 5px auto;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 2px;
+}
+
+.mobile-menu-button-active .hamburger-line:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.mobile-menu-button-active .hamburger-line:nth-child(2) {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+.mobile-menu-button-active .hamburger-line:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* モバイルメニューオーバーレイ */
+.mobile-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mobile-menu-overlay.mobile-menu-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.mobile-menu-content {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 85%;
+  max-width: 360px;
+  height: 100%;
+  background: white;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+}
+
+.mobile-menu-open .mobile-menu-content {
+  transform: translateX(0);
+}
+
+/* メニューヘッダー */
+.mobile-menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 1;
+}
+
+.mobile-menu-close {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: #f7fafc;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4a5568;
+  transition: all 0.2s;
+}
+
+.mobile-menu-close:hover {
+  background: #e2e8f0;
+  color: #2d3748;
+}
+
+/* メニューナビゲーション */
+.mobile-menu-nav {
+  padding: 10px 0;
+}
+
+.mobile-menu-link {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  color: #2d3748;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.2s;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.mobile-menu-link:hover,
+.mobile-menu-link:active {
+  background: #f7fafc;
+  color: #007aff;
+}
+
+.mobile-menu-link svg {
+  flex-shrink: 0;
+  color: #718096;
+  transition: color 0.2s;
+}
+
+.mobile-menu-link:hover svg {
+  color: #007aff;
+}
+
+/* 区切り線 */
+.mobile-menu-divider {
+  height: 1px;
+  background: #e2e8f0;
+  margin: 10px 0;
+}
+
+/* ユーザー情報 */
+.mobile-menu-user {
+  padding: 0 0 20px;
+}
+
+.mobile-user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: #f7fafc;
+  margin-bottom: 10px;
+}
+
+.mobile-user-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #007aff 0%, #0051d5 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.mobile-user-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.mobile-user-name {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #2d3748;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobile-user-email {
+  margin: 0;
+  font-size: 13px;
+  color: #718096;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* アクションボタン */
+.mobile-menu-actions {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mobile-menu-btn {
+  display: block;
+  padding: 14px 20px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+.mobile-menu-btn-primary {
+  background: linear-gradient(135deg, #007aff 0%, #0051d5 100%);
+  color: white;
+}
+
+.mobile-menu-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3);
+}
+
+.mobile-menu-btn-outline {
+  background: white;
+  color: #007aff;
+  border: 2px solid #007aff;
+}
+
+.mobile-menu-btn-outline:hover {
+  background: #007aff;
+  color: white;
+}
+
+/* タッチ操作最適化 */
+@media (hover: none) and (pointer: coarse) {
+  .mobile-menu-link {
+    padding: 18px 20px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .mobile-menu-button {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* レスポンシブ - モバイルメニュー表示 */
+@media (max-width: 768px) {
+  .mobile-menu-button {
+    display: block;
+  }
+  
+  /* デスクトップメニューを非表示 */
+  .nav-menu {
+    display: none !important;
+  }
+  
+  .nav-actions {
+    display: none !important;
+  }
+}
+
+/* ==================== モバイル最適化（全体） ==================== */
+
+/* タッチターゲットのサイズ最適化 */
+@media (max-width: 768px) {
+  /* ボタンのタッチ領域を拡大 */
+  button,
+  .btn,
+  .btn-primary,
+  .btn-outline,
+  a[href] {
+    min-height: 44px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* フォーム要素のタッチ最適化 */
+  input,
+  select,
+  textarea {
+    font-size: 16px !important; /* iOS zoom防止 */
+    min-height: 44px;
+  }
+  
+  /* カードのタッチ最適化 */
+  .product-card,
+  .order-card {
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(0, 122, 255, 0.1);
+  }
+  
+  /* ヘッダーの高さ調整 */
+  .header-new {
+    height: 60px;
+  }
+  
+  .header-content {
+    padding: 0 16px;
+  }
+  
+  .logo img {
+    height: 36px;
+  }
+  
+  /* テーブルをカードレイアウトに */
+  .orders-table table,
+  .applications-table table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* トースト通知のレスポンシブ調整 */
+  .toast-container {
+    top: 70px; /* ヘッダーの下に表示 */
+  }
+}
+
+/* 小さいモバイル（375px以下） */
+@media (max-width: 375px) {
+  .mobile-menu-content {
+    width: 90%;
+  }
+  
+  .toast {
+    font-size: 13px;
+    padding: 12px 16px;
+  }
+}
