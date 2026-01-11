@@ -245,6 +245,193 @@ export async function logoutUser(request, env) {
 }
 
 /**
+ * ユーザー情報更新
+ * PUT /api/users/:id
+ */
+export async function updateUser(request, env) {
+  try {
+    // 認証チェック
+    const currentUser = await requireAuth(request, env);
+    if (!currentUser) {
+      return errorResponse('認証が必要です', 401);
+    }
+
+    const url = new URL(request.url);
+    const userId = parseInt(url.pathname.split('/').pop());
+
+    // 自分のプロフィールのみ編集可能
+    if (currentUser.userId !== userId) {
+      return errorResponse('他のユーザーのプロフィールは編集できません', 403);
+    }
+
+    const body = await request.json();
+    
+    // 入力サニタイズ
+    const sanitized = sanitizeRequestBody(body, {
+      firstName: { type: 'text', maxLength: 50 },
+      lastName: { type: 'text', maxLength: 50 },
+      phone: { type: 'phone' },
+      company: { type: 'text', maxLength: 100 },
+      postalCode: { type: 'text', maxLength: 10 },
+      prefecture: { type: 'text', maxLength: 20 },
+      address: { type: 'text', maxLength: 200 },
+      building: { type: 'text', maxLength: 100 }
+    });
+
+    // 更新するフィールドを動的に構築
+    const updates = [];
+    const values = [];
+    
+    if (sanitized.firstName !== undefined) {
+      updates.push('first_name = ?');
+      values.push(sanitized.firstName);
+    }
+    if (sanitized.lastName !== undefined) {
+      updates.push('last_name = ?');
+      values.push(sanitized.lastName);
+    }
+    if (sanitized.phone !== undefined) {
+      updates.push('phone = ?');
+      values.push(sanitized.phone || null);
+    }
+    if (sanitized.company !== undefined) {
+      updates.push('company = ?');
+      values.push(sanitized.company || null);
+    }
+    if (sanitized.postalCode !== undefined) {
+      updates.push('postal_code = ?');
+      values.push(sanitized.postalCode || null);
+    }
+    if (sanitized.prefecture !== undefined) {
+      updates.push('prefecture = ?');
+      values.push(sanitized.prefecture || null);
+    }
+    if (sanitized.address !== undefined) {
+      updates.push('address = ?');
+      values.push(sanitized.address || null);
+    }
+    if (sanitized.building !== undefined) {
+      updates.push('building = ?');
+      values.push(sanitized.building || null);
+    }
+
+    if (updates.length === 0) {
+      return errorResponse('更新する項目がありません', 400);
+    }
+
+    // updated_atを追加
+    updates.push('updated_at = CURRENT_TIMESTAMP');
+    values.push(userId);
+
+    // SQL実行
+    await env.DB.prepare(`
+      UPDATE users 
+      SET ${updates.join(', ')}
+      WHERE id = ?
+    `).bind(...values).run();
+
+    // 更新後のユーザー情報取得
+    const user = await env.DB.prepare(
+      'SELECT * FROM users WHERE id = ?'
+    ).bind(userId).first();
+
+    return successResponse({
+      message: 'プロフィールを更新しました',
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        phone: user.phone,
+        company: user.company,
+        postalCode: user.postal_code,
+        prefecture: user.prefecture,
+        address: user.address,
+        building: user.building
+      }
+    });
+  } catch (error) {
+    console.error('Update user error:', error);
+    return errorResponse('プロフィールの更新に失敗しました', 500);
+  }
+}
+
+/**
+ * パスワード変更
+ * PUT /api/users/:id/password
+ */
+export async function updatePassword(request, env) {
+  try {
+    // 認証チェック
+    const currentUser = await requireAuth(request, env);
+    if (!currentUser) {
+      return errorResponse('認証が必要です', 401);
+    }
+
+    const url = new URL(request.url);
+    const pathParts = url.pathname.split('/');
+    const userId = parseInt(pathParts[pathParts.length - 2]);
+
+    // 自分のパスワードのみ変更可能
+    if (currentUser.userId !== userId) {
+      return errorResponse('他のユーザーのパスワードは変更できません', 403);
+    }
+
+    const body = await request.json();
+    const { currentPassword, newPassword, confirmPassword } = body;
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return errorResponse('すべての項目を入力してください', 400);
+    }
+
+    if (newPassword !== confirmPassword) {
+      return errorResponse('新しいパスワードが一致しません', 400);
+    }
+
+    if (newPassword.length < 8) {
+      return errorResponse('新しいパスワードは8文字以上にしてください', 400);
+    }
+
+    // 現在のユーザー情報取得
+    const user = await env.DB.prepare(
+      'SELECT * FROM users WHERE id = ?'
+    ).bind(userId).first();
+
+    if (!user) {
+      return errorResponse('ユーザーが見つかりません', 404);
+    }
+
+    // 現在のパスワード検証
+    const isValid = await verifyPassword(currentPassword, user.password_hash);
+    if (!isValid) {
+      return errorResponse('現在のパスワードが正しくありません', 401);
+    }
+
+    // 新しいパスワードをハッシュ化
+    const newPasswordHash = await hashPassword(newPassword);
+
+    // パスワード更新
+    await env.DB.prepare(`
+      UPDATE users 
+      SET password_hash = ?, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `).bind(newPasswordHash, userId).run();
+
+    // 既存セッションを全て削除（再ログイン必須）
+    await env.DB.prepare(
+      'DELETE FROM user_sessions WHERE user_id = ?'
+    ).bind(userId).run();
+
+    return successResponse({
+      message: 'パスワードを変更しました。再度ログインしてください。'
+    });
+  } catch (error) {
+    console.error('Update password error:', error);
+    return errorResponse('パスワードの変更に失敗しました', 500);
+  }
+}
+
+/**
  * 認証ミドルウェア（他のAPIで使用）
  */
 export async function requireAuth(request, env) {

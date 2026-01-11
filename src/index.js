@@ -13,7 +13,7 @@ import { requireAdmin, hashPassword, verifyPassword, generateAdminToken } from '
 import { isValidImageType, isValidImageSize } from './services/r2.js';
 import { successResponse } from './utils/response.js';
 import { scrapeAlibabaProduct, analyzeProductWithAI, downloadAndUploadImages } from './services/alibaba.js';
-import { registerUser, loginUser, getCurrentUser, logoutUser, requireAuth } from './routes/auth.js';
+import { registerUser, loginUser, getCurrentUser, logoutUser, requireAuth, updateUser, updatePassword } from './routes/auth.js';
 import { getServices, getServiceById, createServiceApplication, getUserServiceApplications, getAllServiceApplications, updateServiceApplicationStatus } from './routes/services.js';
 
 export default {
@@ -48,6 +48,16 @@ export default {
       // POST /api/auth/logout - ログアウト
       if (path === '/api/auth/logout' && method === 'POST') {
         return await logoutUser(request, env);
+      }
+
+      // PUT /api/users/:id - ユーザー情報更新
+      if (path.match(/^\/api\/users\/\d+$/) && method === 'PUT') {
+        return await updateUser(request, env);
+      }
+
+      // PUT /api/users/:id/password - パスワード変更
+      if (path.match(/^\/api\/users\/\d+\/password$/) && method === 'PUT') {
+        return await updatePassword(request, env);
       }
 
       // ==================== サービスAPI ====================
