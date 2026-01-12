@@ -15,6 +15,7 @@ import { successResponse } from './utils/response.js';
 import { scrapeAlibabaProduct, analyzeProductWithAI, downloadAndUploadImages } from './services/alibaba.js';
 import { registerUser, loginUser, getCurrentUser, logoutUser, requireAuth, updateUser, updatePassword } from './routes/auth.js';
 import { getServices, getServiceById, createServiceApplication, getUserServiceApplications, getAllServiceApplications, updateServiceApplicationStatus } from './routes/services.js';
+import { getDashboardStats, getSalesTrend, getSalesByCategory, getOrderStatus, getPopularProducts, getRecentActivity } from './routes/dashboard.js';
 
 export default {
   async fetch(request, env, ctx) {
@@ -322,6 +323,62 @@ export default {
       if (path.startsWith('/images/') && method === 'GET') {
         const filename = path.replace('/images/', '');
         return await getImage(filename, env.IMAGES);
+      }
+
+      // ==================== ダッシュボードAPI ====================
+
+      // GET /api/admin/dashboard/stats - ダッシュボード統計情報
+      if (path === '/api/admin/dashboard/stats' && method === 'GET') {
+        const admin = requireAdmin(request);
+        if (!admin) {
+          return errorResponse('認証が必要です', 401);
+        }
+        return await getDashboardStats(env);
+      }
+
+      // GET /api/admin/dashboard/sales-trend - 売上推移
+      if (path === '/api/admin/dashboard/sales-trend' && method === 'GET') {
+        const admin = requireAdmin(request);
+        if (!admin) {
+          return errorResponse('認証が必要です', 401);
+        }
+        return await getSalesTrend(env);
+      }
+
+      // GET /api/admin/dashboard/sales-by-category - カテゴリ別売上
+      if (path === '/api/admin/dashboard/sales-by-category' && method === 'GET') {
+        const admin = requireAdmin(request);
+        if (!admin) {
+          return errorResponse('認証が必要です', 401);
+        }
+        return await getSalesByCategory(env);
+      }
+
+      // GET /api/admin/dashboard/order-status - 注文ステータス分布
+      if (path === '/api/admin/dashboard/order-status' && method === 'GET') {
+        const admin = requireAdmin(request);
+        if (!admin) {
+          return errorResponse('認証が必要です', 401);
+        }
+        return await getOrderStatus(env);
+      }
+
+      // GET /api/admin/dashboard/popular-products - 人気商品ランキング
+      if (path === '/api/admin/dashboard/popular-products' && method === 'GET') {
+        const admin = requireAdmin(request);
+        if (!admin) {
+          return errorResponse('認証が必要です', 401);
+        }
+        return await getPopularProducts(env);
+      }
+
+      // GET /api/admin/dashboard/recent-activity - 最近のアクティビティ
+      if (path === '/api/admin/dashboard/recent-activity' && method === 'GET') {
+        const admin = requireAdmin(request);
+        if (!admin) {
+          return errorResponse('認証が必要です', 401);
+        }
+        return await getRecentActivity(env);
       }
 
       // ==================== 管理者認証API ====================

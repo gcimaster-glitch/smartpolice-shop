@@ -1,276 +1,243 @@
-// 管理画面用JavaScript
-class AdminAPI {
-    static async login(email, password) {
-        const response = await fetch('/api/admin/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email, password })
-        });
-        
-        const data = await response.json();
-        if (data.success) {
-            localStorage.setItem('adminToken', data.data.token);
-            return data.data;
-        } else {
-            throw new Error(data.error || 'ログインに失敗しました');
-        }
+/**
+ * 管理画面メイン制御
+ */
+
+let dashboard = null;
+
+/**
+ * ログイン処理
+ */
+async function handleLogin(event) {
+  event.preventDefault();
+  
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+
+  if (!email || !password) {
+    window.toast.error('メールアドレスとパスワードを入力してください');
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'ログインに失敗しました');
     }
 
-    static async getProducts() {
-        const token = localStorage.getItem('adminToken');
-        const response = await fetch('/api/products', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-        
-        const data = await response.json();
-        if (data.success) {
-            return data.data;
-        } else {
-            throw new Error(data.error || '商品の取得に失敗しました');
-        }
-    }
-
-    static async createProduct(productData) {
-        const token = localStorage.getItem('adminToken');
-        const response = await fetch('/api/admin/products', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(productData)
-        });
-        
-        const data = await response.json();
-        if (data.success) {
-            return data.data;
-        } else {
-            throw new Error(data.error || '商品の登録に失敗しました');
-        }
-    }
-
-    static async updateProduct(productId, productData) {
-        const token = localStorage.getItem('adminToken');
-        const response = await fetch(`/api/admin/products/${productId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(productData)
-        });
-        
-        const data = await response.json();
-        if (data.success) {
-            return data.data;
-        } else {
-            throw new Error(data.error || '商品の更新に失敗しました');
-        }
-    }
-
-    static async deleteProduct(productId) {
-        const token = localStorage.getItem('adminToken');
-        const response = await fetch(`/api/admin/products/${productId}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-        
-        const data = await response.json();
-        if (data.success) {
-            return data.data;
-        } else {
-            throw new Error(data.error || '商品の削除に失敗しました');
-        }
-    }
-
-    static async analyzeAlibabaProduct(alibabaUrl, profitMargin) {
-        const token = localStorage.getItem('adminToken');
-        showLoading('商品情報を分析中...');
-        
-        try {
-            const response = await fetch('/api/admin/alibaba/analyze', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    alibaba_url: alibabaUrl,
-                    profit_margin: parseFloat(profitMargin)
-                })
-            });
-            
-            const data = await response.json();
-            hideLoading();
-            
-            if (data.success) {
-                return data.data;
-            } else {
-                throw new Error(data.error || '商品の分析に失敗しました');
-            }
-        } catch (error) {
-            hideLoading();
-            throw error;
-        }
-    }
-
-    static async getOrders() {
-        const token = localStorage.getItem('adminToken');
-        const response = await fetch('/api/admin/orders', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-        
-        const data = await response.json();
-        if (data.success) {
-            return data.data;
-        } else {
-            throw new Error(data.error || '注文の取得に失敗しました');
-        }
-    }
-
-    static async updateOrderStatus(orderId, status) {
-        const token = localStorage.getItem('adminToken');
-        const response = await fetch(`/api/admin/orders/${orderId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ status })
-        });
-        
-        const data = await response.json();
-        if (data.success) {
-            return data.data;
-        } else {
-            throw new Error(data.error || '注文ステータスの更新に失敗しました');
-        }
-    }
-
-    static async uploadImage(file) {
-        const token = localStorage.getItem('adminToken');
-        const formData = new FormData();
-        formData.append('image', file);
-        
-        const response = await fetch('/api/admin/images/upload', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            body: formData
-        });
-        
-        const data = await response.json();
-        if (data.success) {
-            return data.data;
-        } else {
-            throw new Error(data.error || '画像のアップロードに失敗しました');
-        }
-    }
-}
-
-// ローディング表示
-function showLoading(message = '処理中...') {
-    const loadingDiv = document.createElement('div');
-    loadingDiv.id = 'loading-overlay';
-    loadingDiv.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.7);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 10000;
-    `;
+    const data = await response.json();
     
-    loadingDiv.innerHTML = `
-        <div style="background: white; padding: 2rem; border-radius: 8px; text-align: center;">
-            <div style="width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem;"></div>
-            <p style="margin: 0; font-size: 1.2rem; color: #333;">${message}</p>
-        </div>
-    `;
+    // トークンとユーザー情報を保存
+    localStorage.setItem('admin_token', data.token);
+    localStorage.setItem('admin', JSON.stringify(data.admin));
+
+    // ログイン画面を非表示にしてメイン画面を表示
+    document.getElementById('login-screen').classList.add('hidden');
     
-    document.body.appendChild(loadingDiv);
-    
-    // スピンアニメーション
-    const style = document.createElement('style');
-    style.textContent = '@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }';
-    document.head.appendChild(style);
+    // 管理画面初期化
+    await initAdmin();
+
+    window.toast.success('ログインしました');
+
+  } catch (error) {
+    console.error('Login error:', error);
+    window.toast.error(error.message || 'ログインに失敗しました');
+  }
 }
 
-function hideLoading() {
-    const loadingDiv = document.getElementById('loading-overlay');
-    if (loadingDiv) {
-        loadingDiv.remove();
-    }
-}
-
-// 通知表示
-function showNotification(message, type = 'success') {
-    const notification = document.createElement('div');
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 1rem 1.5rem;
-        background: ${type === 'success' ? '#28a745' : '#dc3545'};
-        color: white;
-        border-radius: 4px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        z-index: 10000;
-        animation: slideIn 0.3s ease-out;
-    `;
-    
-    notification.textContent = message;
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease-out';
-        setTimeout(() => notification.remove(), 300);
-    }, 3000);
-}
-
-// 価格フォーマット
-function formatPrice(price) {
-    return new Intl.NumberFormat('ja-JP', {
-        style: 'currency',
-        currency: 'JPY'
-    }).format(price);
-}
-
-// 日付フォーマット
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('ja-JP', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
-    }).format(date);
-}
-
-// ログインチェック
-function checkLogin() {
-    const token = localStorage.getItem('adminToken');
-    if (!token) {
-        window.location.href = '/admin-login.html';
-    }
-}
-
-// ログアウト
+/**
+ * ログアウト処理
+ */
 function logout() {
-    localStorage.removeItem('adminToken');
-    window.location.href = '/admin-login.html';
+  if (!confirm('ログアウトしますか？')) {
+    return;
+  }
+
+  localStorage.removeItem('admin_token');
+  localStorage.removeItem('admin');
+  
+  // ダッシュボードクリーンアップ
+  if (dashboard) {
+    dashboard.destroy();
+    dashboard = null;
+  }
+  
+  // ログイン画面表示
+  document.getElementById('login-screen').classList.remove('hidden');
+  
+  window.toast.success('ログアウトしました');
 }
+
+/**
+ * ページ切り替え
+ */
+function switchPage(pageName) {
+  // すべてのページとナビゲーションアイテムを非アクティブ化
+  document.querySelectorAll('.page').forEach(page => {
+    page.classList.remove('active');
+  });
+  
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.remove('active');
+  });
+
+  // 指定されたページとナビゲーションアイテムをアクティブ化
+  const page = document.getElementById(`page-${pageName}`);
+  if (page) {
+    page.classList.add('active');
+  }
+
+  const navItem = document.querySelector(`.nav-item[data-page="${pageName}"]`);
+  if (navItem) {
+    navItem.classList.add('active');
+  }
+
+  // ページごとの初期化処理
+  switch (pageName) {
+    case 'dashboard':
+      if (dashboard) {
+        dashboard.refresh();
+      }
+      break;
+    case 'orders':
+      if (window.OrdersManager) {
+        window.ordersManager = new window.OrdersManager();
+        window.ordersManager.init();
+      }
+      break;
+    case 'services':
+      if (window.ServicesManager) {
+        window.servicesManager = new window.ServicesManager();
+        window.servicesManager.init();
+      }
+      break;
+  }
+}
+
+/**
+ * 管理画面初期化
+ */
+async function initAdmin() {
+  try {
+    // 管理者情報を表示
+    const admin = JSON.parse(localStorage.getItem('admin'));
+    if (admin) {
+      document.getElementById('admin-name').textContent = admin.name;
+      document.getElementById('admin-email').textContent = admin.email;
+      
+      // アバターのイニシャル
+      const avatar = document.querySelector('.admin-avatar');
+      if (avatar && admin.name) {
+        avatar.textContent = admin.name.charAt(0).toUpperCase();
+      }
+    }
+
+    // ダッシュボード初期化
+    dashboard = new window.AdminDashboard();
+    await dashboard.init();
+
+    // ナビゲーションイベントリスナー
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.preventDefault();
+        const pageName = item.getAttribute('data-page');
+        switchPage(pageName);
+      });
+    });
+
+  } catch (error) {
+    console.error('Admin init error:', error);
+    window.toast.error('管理画面の初期化に失敗しました');
+  }
+}
+
+/**
+ * 注文エクスポート
+ */
+async function exportOrders() {
+  try {
+    window.toast.loading('エクスポート中...');
+    
+    const token = localStorage.getItem('admin_token');
+    if (!token) {
+      throw new Error('認証トークンがありません');
+    }
+
+    const response = await fetch('/api/admin/orders', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('注文データの取得に失敗しました');
+    }
+
+    const data = await response.json();
+    const orders = data.orders || [];
+
+    // CSVデータ作成
+    const headers = ['注文番号', '顧客名', 'メール', '電話番号', '金額', 'ステータス', '配送日', '注文日'];
+    const rows = orders.map(order => [
+      order.order_number,
+      order.customer_name,
+      order.customer_email,
+      order.customer_phone,
+      order.total_amount,
+      order.status,
+      order.delivery_date,
+      new Date(order.created_at).toLocaleString('ja-JP')
+    ]);
+
+    let csv = headers.join(',') + '\n';
+    rows.forEach(row => {
+      csv += row.map(cell => `"${cell}"`).join(',') + '\n';
+    });
+
+    // ダウンロード
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `orders_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+
+    window.toast.removeLoading();
+    window.toast.success('エクスポートが完了しました');
+
+  } catch (error) {
+    console.error('Export error:', error);
+    window.toast.removeLoading();
+    window.toast.error('エクスポートに失敗しました');
+  }
+}
+
+/**
+ * 商品追加モーダル表示
+ */
+function showAddProductModal() {
+  window.toast.info('商品追加機能は準備中です');
+}
+
+/**
+ * ページロード時の初期化
+ */
+document.addEventListener('DOMContentLoaded', () => {
+  // トークンチェック
+  const token = localStorage.getItem('admin_token');
+  
+  if (token) {
+    // トークンがあればログイン画面を非表示にして管理画面を表示
+    document.getElementById('login-screen').classList.add('hidden');
+    initAdmin();
+  } else {
+    // トークンがなければログイン画面を表示
+    document.getElementById('login-screen').classList.remove('hidden');
+  }
+});

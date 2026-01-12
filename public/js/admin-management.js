@@ -1,123 +1,284 @@
 /**
- * 管理画面 - 注文管理・サービス申込み管理
+ * 注文管理クラス
  */
+class OrdersManager {
+  constructor() {
+    this.orders = [];
+  }
 
-// 注文管理
-async function loadOrders() {
-  try {
-    const token = localStorage.getItem('adminToken');
-    const response = await fetch('/api/admin/orders', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
+  async init() {
+    try {
+      await this.loadOrders();
+      this.setupEventListeners();
+    } catch (error) {
+      console.error('Orders manager init error:', error);
+      window.toast.error('注文管理の初期化に失敗しました');
+    }
+  }
 
-    if (!response.ok) {
-      throw new Error('注文の取得に失敗しました');
+  setupEventListeners() {
+    // 検索
+    const searchInput = document.getElementById('order-search');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        this.filterOrders(e.target.value);
+      });
     }
 
-    const data = await response.json();
-    displayOrders(data.orders || []);
-  } catch (error) {
-    console.error('注文取得エラー:', error);
-    toast.error('注文の取得に失敗しました');
+    // ステータスフィルター
+    const statusFilter = document.getElementById('order-status-filter');
+    if (statusFilter) {
+      statusFilter.addEventListener('change', (e) => {
+        this.filterOrders(null, e.target.value);
+      });
+    }
+
+    // 全選択
+    const selectAll = document.getElementById('select-all-orders');
+    if (selectAll) {
+      selectAll.addEventListener('change', (e) => {
+        this.selectAllOrders(e.target.checked);
+      });
+    }
+  }
+
+  async loadOrders() {
+    try {
+      const token = localStorage.getItem('admin_token');
+      if (!token) {
+        throw new Error('認証トークンがありません');
+      }
+
+      const response = await fetch('/api/admin/orders', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('注文の取得に失敗しました');
+      }
+
+      const data = await response.json();
+      this.orders = data.orders || [];
+      this.displayOrders(this.orders);
+
+    } catch (error) {
+      console.error('Load orders error:', error);
+      throw error;
+    }
+  }
+
+  displayOrders(orders) {
+    const tbody = document.getElementById('orders-table-body');
+    if (!tbody) return;
+
+    if (orders.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="8" class="no-data">注文がありません</td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = orders.map(order => `
+      <tr>
+        <td><input type="checkbox" class="order-checkbox" data-id="${order.id}"></td>
+        <td><strong>${order.order_number}</strong></td>
+        <td>${order.customer_name}</td>
+        <td>¥${order.total_amount.toLocaleString()}</td>
+        <td>${order.delivery_date || '-'}</td>
+        <td>
+          <select class="filter-select" onchange="updateOrderStatus(${order.id}, this.value)">
+            <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>保留中</option>
+            <option value="paid" ${order.status === 'paid' ? 'selected' : ''}>支払済</option>
+            <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>処理中</option>
+            <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>発送済</option>
+            <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>配達完了</option>
+            <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>キャンセル</option>
+          </select>
+        </td>
+        <td>${new Date(order.created_at).toLocaleDateString('ja-JP')}</td>
+        <td>
+          <button class="btn-primary" onclick="viewOrderDetails('${order.order_number}')" style="padding: 6px 12px; font-size: 13px;">
+            <i class="fas fa-eye"></i>
+          </button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  filterOrders(searchTerm = null, status = null) {
+    let filtered = [...this.orders];
+
+    // 検索フィルター
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      filtered = filtered.filter(order => 
+        order.order_number.toLowerCase().includes(term) ||
+        order.customer_name.toLowerCase().includes(term)
+      );
+    }
+
+    // ステータスフィルター
+    const statusFilter = document.getElementById('order-status-filter');
+    const selectedStatus = status || (statusFilter ? statusFilter.value : '');
+    if (selectedStatus) {
+      filtered = filtered.filter(order => order.status === selectedStatus);
+    }
+
+    this.displayOrders(filtered);
+  }
+
+  selectAllOrders(checked) {
+    document.querySelectorAll('.order-checkbox').forEach(checkbox => {
+      checkbox.checked = checked;
+    });
   }
 }
 
-function displayOrders(orders) {
-  const container = document.getElementById('orders-list');
-  if (!orders || orders.length === 0) {
-    container.innerHTML = `
-      <div style="text-align: center; padding: 60px 20px; color: #718096;">
-        <p style="font-size: 16px;">注文はまだありません</p>
-      </div>
-    `;
-    return;
+/**
+ * サービス申込み管理クラス
+ */
+class ServicesManager {
+  constructor() {
+    this.applications = [];
   }
 
-  container.innerHTML = `
-    <div class="orders-table">
-      <table style="width: 100%; border-collapse: collapse;">
-        <thead>
-          <tr style="background: #f7fafc; border-bottom: 2px solid #e2e8f0;">
-            <th style="padding: 12px; text-align: left; font-weight: 600;">注文番号</th>
-            <th style="padding: 12px; text-align: left; font-weight: 600;">顧客名</th>
-            <th style="padding: 12px; text-align: left; font-weight: 600;">メール</th>
-            <th style="padding: 12px; text-align: right; font-weight: 600;">金額</th>
-            <th style="padding: 12px; text-align: center; font-weight: 600;">配送日</th>
-            <th style="padding: 12px; text-align: center; font-weight: 600;">ステータス</th>
-            <th style="padding: 12px; text-align: center; font-weight: 600;">操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${orders.map(order => `
-            <tr style="border-bottom: 1px solid #e2e8f0;">
-              <td style="padding: 12px; font-family: monospace;">${order.order_number}</td>
-              <td style="padding: 12px;">${escapeHtml(order.customer_name || '-')}</td>
-              <td style="padding: 12px;">${escapeHtml(order.customer_email || '-')}</td>
-              <td style="padding: 12px; text-align: right; font-weight: 600;">¥${(order.total_amount || 0).toLocaleString()}</td>
-              <td style="padding: 12px; text-align: center;">${order.delivery_date || '-'}</td>
-              <td style="padding: 12px; text-align: center;">
-                ${getStatusBadge(order.status)}
-              </td>
-              <td style="padding: 12px; text-align: center;">
-                <select 
-                  onchange="updateOrderStatus(${order.id}, this.value)"
-                  style="padding: 6px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; cursor: pointer;"
-                >
-                  <option value="">変更...</option>
-                  <option value="pending">保留中</option>
-                  <option value="paid">支払済</option>
-                  <option value="processing">処理中</option>
-                  <option value="shipped">発送済</option>
-                  <option value="delivered">配達完了</option>
-                  <option value="cancelled">キャンセル</option>
-                </select>
-                <button 
-                  onclick="viewOrderDetail(${order.id})"
-                  style="margin-left: 8px; padding: 6px 12px; background: #007aff; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px;"
-                >
-                  詳細
-                </button>
-              </td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
-  `;
+  async init() {
+    try {
+      await this.loadApplications();
+      this.setupEventListeners();
+    } catch (error) {
+      console.error('Services manager init error:', error);
+      window.toast.error('サービス管理の初期化に失敗しました');
+    }
+  }
+
+  setupEventListeners() {
+    // 検索
+    const searchInput = document.getElementById('service-search');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        this.filterApplications(e.target.value);
+      });
+    }
+
+    // ステータスフィルター
+    const statusFilter = document.getElementById('service-status-filter');
+    if (statusFilter) {
+      statusFilter.addEventListener('change', (e) => {
+        this.filterApplications(null, e.target.value);
+      });
+    }
+  }
+
+  async loadApplications() {
+    try {
+      const token = localStorage.getItem('admin_token');
+      if (!token) {
+        throw new Error('認証トークンがありません');
+      }
+
+      const response = await fetch('/api/admin/services/applications', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('申込みの取得に失敗しました');
+      }
+
+      const data = await response.json();
+      this.applications = data.applications || [];
+      this.displayApplications(this.applications);
+
+    } catch (error) {
+      console.error('Load applications error:', error);
+      throw error;
+    }
+  }
+
+  displayApplications(applications) {
+    const tbody = document.getElementById('services-table-body');
+    if (!tbody) return;
+
+    if (applications.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" class="no-data">申込みがありません</td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = applications.map(app => `
+      <tr>
+        <td>${app.id}</td>
+        <td>${app.service_name || '-'}</td>
+        <td>${app.user_name || '-'}</td>
+        <td>${app.user_email || '-'}</td>
+        <td>${new Date(app.created_at).toLocaleDateString('ja-JP')}</td>
+        <td>
+          <select class="filter-select" onchange="updateApplicationStatus(${app.id}, this.value)">
+            <option value="pending" ${app.status === 'pending' ? 'selected' : ''}>保留中</option>
+            <option value="reviewing" ${app.status === 'reviewing' ? 'selected' : ''}>審査中</option>
+            <option value="approved" ${app.status === 'approved' ? 'selected' : ''}>承認済</option>
+            <option value="rejected" ${app.status === 'rejected' ? 'selected' : ''}>却下</option>
+          </select>
+        </td>
+        <td>
+          <button class="btn-primary" onclick="viewApplicationDetails(${app.id})" style="padding: 6px 12px; font-size: 13px;">
+            <i class="fas fa-eye"></i>
+          </button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  filterApplications(searchTerm = null, status = null) {
+    let filtered = [...this.applications];
+
+    // 検索フィルター
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      filtered = filtered.filter(app => 
+        (app.service_name && app.service_name.toLowerCase().includes(term)) ||
+        (app.user_name && app.user_name.toLowerCase().includes(term)) ||
+        (app.user_email && app.user_email.toLowerCase().includes(term))
+      );
+    }
+
+    // ステータスフィルター
+    const statusFilter = document.getElementById('service-status-filter');
+    const selectedStatus = status || (statusFilter ? statusFilter.value : '');
+    if (selectedStatus) {
+      filtered = filtered.filter(app => app.status === selectedStatus);
+    }
+
+    this.displayApplications(filtered);
+  }
 }
 
-function getStatusBadge(status) {
-  const statusMap = {
-    pending: { label: '保留中', color: '#fbbf24' },
-    paid: { label: '支払済', color: '#10b981' },
-    processing: { label: '処理中', color: '#3b82f6' },
-    shipped: { label: '発送済', color: '#8b5cf6' },
-    delivered: { label: '配達完了', color: '#059669' },
-    cancelled: { label: 'キャンセル', color: '#ef4444' }
-  };
-  
-  const s = statusMap[status] || { label: status, color: '#6b7280' };
-  return `<span style="display: inline-block; padding: 4px 12px; background: ${s.color}20; color: ${s.color}; border-radius: 12px; font-size: 12px; font-weight: 600;">${s.label}</span>`;
-}
-
+/**
+ * 注文ステータス更新
+ */
 async function updateOrderStatus(orderId, newStatus) {
-  if (!newStatus) return;
-  
-  if (!confirm(`注文のステータスを「${newStatus}」に変更しますか？`)) {
-    return;
-  }
-
-  const loadingToast = toast.loading('ステータスを更新中...');
-
   try {
-    const token = localStorage.getItem('adminToken');
+    window.toast.loading('ステータスを更新中...');
+
+    const token = localStorage.getItem('admin_token');
+    if (!token) {
+      throw new Error('認証トークンがありません');
+    }
+
     const response = await fetch(`/api/admin/orders/${orderId}`, {
       method: 'PUT',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({ status: newStatus })
     });
@@ -126,136 +287,38 @@ async function updateOrderStatus(orderId, newStatus) {
       throw new Error('ステータスの更新に失敗しました');
     }
 
-    toast.removeLoading(loadingToast);
-    toast.success('ステータスを更新しました');
-    
-    // 注文リストを再読み込み
-    await loadOrders();
-  } catch (error) {
-    console.error('ステータス更新エラー:', error);
-    toast.removeLoading(loadingToast);
-    toast.error(error.message || 'ステータスの更新に失敗しました');
-  }
-}
+    window.toast.removeLoading();
+    window.toast.success('ステータスを更新しました');
 
-function viewOrderDetail(orderId) {
-  alert(`注文詳細ページは今後実装予定です。注文ID: ${orderId}`);
-}
-
-// サービス申込み管理
-async function loadServiceApplications() {
-  try {
-    const token = localStorage.getItem('adminToken');
-    const response = await fetch('/api/admin/services/applications', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error('サービス申込みの取得に失敗しました');
+    // リストを再読み込み
+    if (window.ordersManager) {
+      await window.ordersManager.loadOrders();
     }
 
-    const data = await response.json();
-    displayServiceApplications(data.applications || []);
   } catch (error) {
-    console.error('サービス申込み取得エラー:', error);
-    toast.error('サービス申込みの取得に失敗しました');
+    console.error('Update order status error:', error);
+    window.toast.removeLoading();
+    window.toast.error('ステータスの更新に失敗しました');
   }
 }
 
-function displayServiceApplications(applications) {
-  const container = document.getElementById('service-applications-list');
-  if (!applications || applications.length === 0) {
-    container.innerHTML = `
-      <div style="text-align: center; padding: 60px 20px; color: #718096;">
-        <p style="font-size: 16px;">サービス申込みはまだありません</p>
-      </div>
-    `;
-    return;
-  }
-
-  container.innerHTML = `
-    <div class="applications-table">
-      <table style="width: 100%; border-collapse: collapse;">
-        <thead>
-          <tr style="background: #f7fafc; border-bottom: 2px solid #e2e8f0;">
-            <th style="padding: 12px; text-align: left; font-weight: 600;">申込ID</th>
-            <th style="padding: 12px; text-align: left; font-weight: 600;">サービス名</th>
-            <th style="padding: 12px; text-align: left; font-weight: 600;">申込者</th>
-            <th style="padding: 12px; text-align: left; font-weight: 600;">メール</th>
-            <th style="padding: 12px; text-align: center; font-weight: 600;">申込日</th>
-            <th style="padding: 12px; text-align: center; font-weight: 600;">ステータス</th>
-            <th style="padding: 12px; text-align: center; font-weight: 600;">操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${applications.map(app => `
-            <tr style="border-bottom: 1px solid #e2e8f0;">
-              <td style="padding: 12px; font-family: monospace;">#${app.id}</td>
-              <td style="padding: 12px; font-weight: 600;">${escapeHtml(app.service_name || '-')}</td>
-              <td style="padding: 12px;">${escapeHtml(app.company_name || app.customer_name || '-')}</td>
-              <td style="padding: 12px;">${escapeHtml(app.email || '-')}</td>
-              <td style="padding: 12px; text-align: center;">${formatDate(app.created_at)}</td>
-              <td style="padding: 12px; text-align: center;">
-                ${getApplicationStatusBadge(app.status)}
-              </td>
-              <td style="padding: 12px; text-align: center;">
-                <select 
-                  onchange="updateApplicationStatus(${app.id}, this.value)"
-                  style="padding: 6px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; cursor: pointer;"
-                >
-                  <option value="">変更...</option>
-                  <option value="pending">保留中</option>
-                  <option value="reviewing">審査中</option>
-                  <option value="approved">承認済</option>
-                  <option value="rejected">却下</option>
-                  <option value="completed">完了</option>
-                </select>
-                <button 
-                  onclick="viewApplicationDetail(${app.id})"
-                  style="margin-left: 8px; padding: 6px 12px; background: #007aff; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px;"
-                >
-                  詳細
-                </button>
-              </td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
-  `;
-}
-
-function getApplicationStatusBadge(status) {
-  const statusMap = {
-    pending: { label: '保留中', color: '#fbbf24' },
-    reviewing: { label: '審査中', color: '#3b82f6' },
-    approved: { label: '承認済', color: '#10b981' },
-    rejected: { label: '却下', color: '#ef4444' },
-    completed: { label: '完了', color: '#059669' }
-  };
-  
-  const s = statusMap[status] || { label: status, color: '#6b7280' };
-  return `<span style="display: inline-block; padding: 4px 12px; background: ${s.color}20; color: ${s.color}; border-radius: 12px; font-size: 12px; font-weight: 600;">${s.label}</span>`;
-}
-
+/**
+ * サービス申込みステータス更新
+ */
 async function updateApplicationStatus(applicationId, newStatus) {
-  if (!newStatus) return;
-  
-  if (!confirm(`申込みのステータスを「${newStatus}」に変更しますか？`)) {
-    return;
-  }
-
-  const loadingToast = toast.loading('ステータスを更新中...');
-
   try {
-    const token = localStorage.getItem('adminToken');
+    window.toast.loading('ステータスを更新中...');
+
+    const token = localStorage.getItem('admin_token');
+    if (!token) {
+      throw new Error('認証トークンがありません');
+    }
+
     const response = await fetch(`/api/admin/services/applications/${applicationId}`, {
       method: 'PUT',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({ status: newStatus })
     });
@@ -264,32 +327,35 @@ async function updateApplicationStatus(applicationId, newStatus) {
       throw new Error('ステータスの更新に失敗しました');
     }
 
-    toast.removeLoading(loadingToast);
-    toast.success('ステータスを更新しました');
-    
-    // サービス申込みリストを再読み込み
-    await loadServiceApplications();
+    window.toast.removeLoading();
+    window.toast.success('ステータスを更新しました');
+
+    // リストを再読み込み
+    if (window.servicesManager) {
+      await window.servicesManager.loadApplications();
+    }
+
   } catch (error) {
-    console.error('ステータス更新エラー:', error);
-    toast.removeLoading(loadingToast);
-    toast.error(error.message || 'ステータスの更新に失敗しました');
+    console.error('Update application status error:', error);
+    window.toast.removeLoading();
+    window.toast.error('ステータスの更新に失敗しました');
   }
 }
 
-function viewApplicationDetail(applicationId) {
-  alert(`申込み詳細ページは今後実装予定です。申込みID: ${applicationId}`);
+/**
+ * 注文詳細表示
+ */
+function viewOrderDetails(orderNumber) {
+  window.toast.info(`注文詳細: ${orderNumber}（準備中）`);
 }
 
-// ユーティリティ関数
-function formatDate(dateString) {
-  if (!dateString) return '-';
-  const date = new Date(dateString);
-  return date.toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' });
+/**
+ * サービス申込み詳細表示
+ */
+function viewApplicationDetails(applicationId) {
+  window.toast.info(`申込み詳細: ID ${applicationId}（準備中）`);
 }
 
-function escapeHtml(text) {
-  if (!text) return '';
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
-}
+// グローバルに公開
+window.OrdersManager = OrdersManager;
+window.ServicesManager = ServicesManager;
