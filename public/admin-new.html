@@ -33,6 +33,18 @@
         <i class="fas fa-concierge-bell"></i>
         <span>サービス申込み</span>
       </a>
+      <a href="#quotes" class="nav-item" data-page="quotes">
+        <i class="fas fa-file-invoice"></i>
+        <span>見積管理</span>
+      </a>
+      <a href="#invoices" class="nav-item" data-page="invoices">
+        <i class="fas fa-receipt"></i>
+        <span>請求書管理</span>
+      </a>
+      <a href="#subscriptions" class="nav-item" data-page="subscriptions">
+        <i class="fas fa-sync-alt"></i>
+        <span>継続課金</span>
+      </a>
       <a href="#users" class="nav-item" data-page="users">
         <i class="fas fa-users"></i>
         <span>ユーザー管理</span>
@@ -379,6 +391,193 @@
   <script src="/js/toast.js"></script>
   <script src="/js/admin-dashboard.js"></script>
   <script src="/js/admin-management.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>
+
+    <!-- 見積管理ページ -->
+    <div id="page-quotes" class="page">
+      <div class="page-header">
+        <h1 class="page-title">見積管理</h1>
+        <p class="page-subtitle">見積書の作成・管理・注文化</p>
+      </div>
+
+      <div class="filter-bar">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" id="quote-search" placeholder="見積番号、顧客名で検索...">
+        </div>
+        <select id="quote-status-filter" class="filter-select">
+          <option value="">すべてのステータス</option>
+          <option value="draft">下書き</option>
+          <option value="sent">送信済</option>
+          <option value="accepted">承認済</option>
+          <option value="rejected">却下</option>
+          <option value="expired">期限切れ</option>
+        </select>
+        <button class="btn-primary" onclick="showCreateQuoteModal()">
+          <i class="fas fa-plus"></i>
+          見積書作成
+        </button>
+      </div>
+
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>見積番号</th>
+              <th>顧客名</th>
+              <th>会社名</th>
+              <th>金額</th>
+              <th>有効期限</th>
+              <th>ステータス</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="quotes-table-body">
+            <tr>
+              <td colspan="7" class="loading-row">
+                <div class="spinner"></div>
+                読み込み中...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 請求書管理ページ -->
+    <div id="page-invoices" class="page">
+      <div class="page-header">
+        <h1 class="page-title">請求書管理</h1>
+        <p class="page-subtitle">請求書の発行・支払管理</p>
+      </div>
+
+      <div class="filter-bar">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" id="invoice-search" placeholder="請求書番号、顧客名で検索...">
+        </div>
+        <select id="invoice-status-filter" class="filter-select">
+          <option value="">すべてのステータス</option>
+          <option value="pending">未払い</option>
+          <option value="paid">支払済</option>
+          <option value="overdue">期限切れ</option>
+          <option value="cancelled">キャンセル</option>
+        </select>
+        <button class="btn-primary" onclick="showCreateInvoiceModal()">
+          <i class="fas fa-plus"></i>
+          請求書作成
+        </button>
+      </div>
+
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>請求書番号</th>
+              <th>顧客名</th>
+              <th>会社名</th>
+              <th>金額</th>
+              <th>支払期限</th>
+              <th>ステータス</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="invoices-table-body">
+            <tr>
+              <td colspan="7" class="loading-row">
+                <div class="spinner"></div>
+                読み込み中...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 継続課金管理ページ -->
+    <div id="page-subscriptions" class="page">
+      <div class="page-header">
+        <h1 class="page-title">継続課金管理</h1>
+        <p class="page-subtitle">サブスクリプション・継続型商品の管理</p>
+      </div>
+
+      <div class="filter-bar">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" id="subscription-search" placeholder="継続課金番号、商品名で検索...">
+        </div>
+        <select id="subscription-status-filter" class="filter-select">
+          <option value="">すべてのステータス</option>
+          <option value="active">有効</option>
+          <option value="paused">一時停止</option>
+          <option value="cancelled">キャンセル</option>
+          <option value="expired">期限切れ</option>
+        </select>
+        <button class="btn-primary" onclick="showCreateSubscriptionModal()">
+          <i class="fas fa-plus"></i>
+          継続課金作成
+        </button>
+      </div>
+
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>継続課金番号</th>
+              <th>商品名</th>
+              <th>顧客メール</th>
+              <th>金額</th>
+              <th>課金周期</th>
+              <th>次回請求日</th>
+              <th>ステータス</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="subscriptions-table-body">
+            <tr>
+              <td colspan="8" class="loading-row">
+                <div class="spinner"></div>
+                読み込み中...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- ログイン画面 -->
+  <div id="login-screen" class="login-screen">
+    <div class="login-container">
+      <div class="login-card">
+        <div class="login-header">
+          <img src="/images/logo.png" alt="SmartPolice" class="login-logo">
+          <h2 class="login-title">管理者ログイン</h2>
+          <p class="login-subtitle">SmartPolice 管理画面へようこそ</p>
+        </div>
+        <form class="login-form" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label>メールアドレス</label>
+            <input type="email" id="login-email" required placeholder="admin@smartpolice.net">
+          </div>
+          <div class="form-group">
+            <label>パスワード</label>
+            <input type="password" id="login-password" required placeholder="••••••••">
+          </div>
+          <button type="submit" class="btn-login">
+            ログイン
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/toast.js"></script>
+  <script src="/js/admin-dashboard.js"></script>
+  <script src="/js/admin-management.js"></script>
+  <script src="/js/admin-financial.js"></script>
   <script src="/js/admin.js"></script>
 </body>
 </html>

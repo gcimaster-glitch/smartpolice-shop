@@ -118,6 +118,24 @@ function switchPage(pageName) {
         window.servicesManager.init();
       }
       break;
+    case 'quotes':
+      if (window.QuotesManager) {
+        window.quotesManager = new window.QuotesManager();
+        window.quotesManager.init();
+      }
+      break;
+    case 'invoices':
+      if (window.InvoicesManager) {
+        window.invoicesManager = new window.InvoicesManager();
+        window.invoicesManager.init();
+      }
+      break;
+    case 'subscriptions':
+      if (window.SubscriptionsManager) {
+        window.subscriptionsManager = new window.SubscriptionsManager();
+        window.subscriptionsManager.init();
+      }
+      break;
   }
 }
 

@@ -16,6 +16,7 @@ import { scrapeAlibabaProduct, analyzeProductWithAI, downloadAndUploadImages } f
 import { registerUser, loginUser, getCurrentUser, logoutUser, requireAuth, updateUser, updatePassword } from './routes/auth.js';
 import { getServices, getServiceById, createServiceApplication, getUserServiceApplications, getAllServiceApplications, updateServiceApplicationStatus } from './routes/services.js';
 import { getDashboardStats, getSalesTrend, getSalesByCategory, getOrderStatus, getPopularProducts, getRecentActivity } from './routes/dashboard.js';
+import { createQuote, getQuotes, getQuoteById, updateQuoteStatus, convertQuoteToOrder, createInvoice, getInvoices, payInvoice, getReceipts, createSubscription, getSubscriptions, updateSubscriptionStatus, getPaymentTransactions } from './routes/financial.js';
 
 export default {
   async fetch(request, env, ctx) {
@@ -430,6 +431,99 @@ export default {
         }
 
         return successResponse({ admin });
+      }
+
+      // ==================== 財務管理API ====================
+
+      // 見積書API
+      if (path === '/api/admin/quotes' && method === 'POST') {
+        const admin = requireAdmin(request);
+        if (!admin) return errorResponse('認証が必要です', 401);
+        return await createQuote(request, env);
+      }
+
+      if (path === '/api/admin/quotes' && method === 'GET') {
+        const admin = requireAdmin(request);
+        if (!admin) return errorResponse('認証が必要です', 401);
+        const status = url.searchParams.get('status');
+        return await getQuotes(env, status);
+      }
+
+      if (path.match(/^\/api\/admin\/quotes\/\d+$/) && method === 'GET') {
+        const admin = requireAdmin(request);
+        if (!admin) return errorResponse('認証が必要です', 401);
+        const quoteId = path.split('/').pop();
+        return await getQuoteById(quoteId, env);
+      }
+
+      if (path.match(/^\/api\/admin\/quotes\/\d+\/status$/) && method === 'PUT') {
+        const admin = requireAdmin(request);
+        if (!admin) return errorResponse('認証が必要です', 401);
+        const quoteId = path.split('/')[4];
+        return await updateQuoteStatus(quoteId, request, env);
+      }
+
+      if (path.match(/^\/api\/admin\/quotes\/\d+\/convert$/) && method === 'POST') {
+        const admin = requireAdmin(request);
+        if (!admin) return errorResponse('認証が必要です', 401);
+        const quoteId = path.split('/')[4];
+        return await convertQuoteToOrder(quoteId, env);
+      }
+
+      // 請求書API
+      if (path === '/api/admin/invoices' && method === 'POST') {
+        const admin = requireAdmin(request);
+        if (!admin) return errorResponse('認証が必要です', 401);
+        return await createInvoice(request, env);
+      }
+
+      if (path === '/api/admin/invoices' && method === 'GET') {
+        const admin = requireAdmin(request);
+        if (!admin) return errorResponse('認証が必要です', 401);
+        const payment_status = url.searchParams.get('payment_status');
+        return await getInvoices(env, payment_status);
+      }
+
+      if (path.match(/^\/api\/admin\/invoices\/\d+\/pay$/) && method === 'POST') {
+        const admin = requireAdmin(request);
+        if (!admin) return errorResponse('認証が必要です', 401);
+        const invoiceId = path.split('/')[4];
+        return await payInvoice(invoiceId, request, env);
+      }
+
+      // 領収書API
+      if (path === '/api/admin/receipts' && method === 'GET') {
+        const admin = requireAdmin(request);
+        if (!admin) return errorResponse('認証が必要です', 401);
+        return await getReceipts(env);
+      }
+
+      // 継続課金API
+      if (path === '/api/admin/subscriptions' && method === 'POST') {
+        const admin = requireAdmin(request);
+        if (!admin) return errorResponse('認証が必要です', 401);
+        return await createSubscription(request, env);
+      }
+
+      if (path === '/api/admin/subscriptions' && method === 'GET') {
+        const admin = requireAdmin(request);
+        if (!admin) return errorResponse('認証が必要です', 401);
+        const status = url.searchParams.get('status');
+        return await getSubscriptions(env, status);
+      }
+
+      if (path.match(/^\/api\/admin\/subscriptions\/\d+\/status$/) && method === 'PUT') {
+        const admin = requireAdmin(request);
+        if (!admin) return errorResponse('認証が必要です', 401);
+        const subscriptionId = path.split('/')[4];
+        return await updateSubscriptionStatus(subscriptionId, request, env);
+      }
+
+      // 決済履歴API
+      if (path === '/api/admin/payment-transactions' && method === 'GET') {
+        const admin = requireAdmin(request);
+        if (!admin) return errorResponse('認証が必要です', 401);
+        return await getPaymentTransactions(env);
       }
 
       // ==================== クーポンAPI ====================
