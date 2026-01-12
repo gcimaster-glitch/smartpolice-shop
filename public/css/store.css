@@ -3148,3 +3148,411 @@ body {
     padding: 12px 16px;
   }
 }
+
+/* ==================== ヘッダー改善（洗練版） ==================== */
+
+/* ナビゲーション全体 */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 72px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  z-index: 9999;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+}
+
+.nav-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+}
+
+/* ロゴ */
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.nav-logo:hover {
+  opacity: 0.7;
+}
+
+.nav-logo img {
+  height: 48px;
+  width: auto;
+}
+
+.nav-service-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+/* ナビリンク */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links li {
+  margin: 0;
+}
+
+.nav-links a {
+  display: inline-block;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1d1d1f;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.nav-links a:hover {
+  background: rgba(0, 122, 255, 0.08);
+  color: #007aff;
+}
+
+/* ナビアクション（ログイン/登録ボタンエリア） */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ゲストユーザー向けボタン */
+.nav-guest {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-link-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 10px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+/* ログインボタン（アウトライン） */
+.nav-link-btn:not(.primary) {
+  color: #1d1d1f;
+  background: transparent;
+  border: 1.5px solid rgba(0, 0, 0, 0.12);
+}
+
+.nav-link-btn:not(.primary):hover {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+}
+
+/* 新規登録ボタン（プライマリ） */
+.nav-link-btn.primary {
+  color: white;
+  background: linear-gradient(135deg, #007aff 0%, #0051d5 100%);
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.2);
+}
+
+.nav-link-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 122, 255, 0.3);
+}
+
+/* ログイン後のユーザーメニュー */
+.nav-user {
+  position: relative;
+}
+
+.nav-user-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1.5px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1d1d1f;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.nav-user-button:hover {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.nav-user-button svg:first-child {
+  color: #6b7280;
+}
+
+.nav-user-button svg:last-child {
+  color: #9ca3af;
+  transition: transform 0.2s;
+}
+
+.nav-user-button[aria-expanded="true"] svg:last-child {
+  transform: rotate(180deg);
+}
+
+/* ドロップダウンメニュー */
+.nav-user-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 220px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 
+    0 0 0 1px rgba(0, 0, 0, 0.05),
+    0 10px 40px rgba(0, 0, 0, 0.15);
+  padding: 8px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+}
+
+.nav-user-dropdown[style*="display: block"] {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1d1d1f;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.15s;
+}
+
+.dropdown-item:hover {
+  background: rgba(0, 122, 255, 0.08);
+  color: #007aff;
+}
+
+.dropdown-item svg {
+  flex-shrink: 0;
+  color: #6b7280;
+  transition: color 0.15s;
+}
+
+.dropdown-item:hover svg {
+  color: #007aff;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.08);
+  margin: 8px 0;
+}
+
+.dropdown-item.danger {
+  color: #ef4444;
+}
+
+.dropdown-item.danger:hover {
+  background: rgba(239, 68, 68, 0.08);
+  color: #dc2626;
+}
+
+.dropdown-item.danger svg {
+  color: #ef4444;
+}
+
+/* カートバッジ */
+.nav-cart {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  border: 1.5px solid rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+  color: #1d1d1f;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.nav-cart:hover {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+}
+
+.nav-cart svg {
+  color: #1d1d1f;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: linear-gradient(135deg, #007aff 0%, #0051d5 100%);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+}
+
+/* モバイル対応 */
+@media (max-width: 1024px) {
+  .nav-links {
+    gap: 4px;
+  }
+  
+  .nav-links a {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav {
+    height: 64px;
+  }
+  
+  .nav-content {
+    padding: 0 16px;
+  }
+  
+  .nav-logo img {
+    height: 40px;
+  }
+  
+  .nav-service-label {
+    display: none;
+  }
+  
+  /* モバイルではナビリンクを非表示 */
+  .nav-links {
+    display: none;
+  }
+  
+  /* モバイルボタンを改善 */
+  .nav-guest {
+    gap: 8px;
+  }
+  
+  .nav-link-btn {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+  
+  .nav-user-button {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+  
+  .nav-user-button span {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  /* ドロップダウンを右端に合わせる */
+  .nav-user-dropdown {
+    right: 0;
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* 小さいスマホではさらにコンパクトに */
+  .nav-link-btn {
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+  
+  .nav-link-btn:not(.primary) span {
+    display: none;
+  }
+  
+  .nav-link-btn:not(.primary)::after {
+    content: 'ログイン';
+  }
+  
+  .nav-link-btn.primary span {
+    display: none;
+  }
+  
+  .nav-link-btn.primary::after {
+    content: '登録';
+  }
+}
+
+/* アニメーション */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.nav-user-dropdown[style*="display: block"] {
+  animation: fadeInDown 0.2s ease-out;
+}
+
+/* フォーカススタイル（アクセシビリティ） */
+.nav-link-btn:focus-visible,
+.nav-user-button:focus-visible {
+  outline: 2px solid #007aff;
+  outline-offset: 2px;
+}
+
+.dropdown-item:focus-visible {
+  outline: 2px solid #007aff;
+  outline-offset: -2px;
+}

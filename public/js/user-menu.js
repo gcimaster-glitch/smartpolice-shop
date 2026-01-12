@@ -76,6 +76,10 @@ class UserMenu {
       userMenuButton.addEventListener('click', (e) => {
         e.stopPropagation();
         const isVisible = userDropdown.style.display === 'block';
+        
+        // aria-expanded属性を更新（アクセシビリティ）
+        userMenuButton.setAttribute('aria-expanded', !isVisible);
+        
         userDropdown.style.display = isVisible ? 'none' : 'block';
       });
 
@@ -83,6 +87,16 @@ class UserMenu {
       document.addEventListener('click', (e) => {
         if (!e.target.closest('.nav-user-menu')) {
           userDropdown.style.display = 'none';
+          userMenuButton.setAttribute('aria-expanded', 'false');
+        }
+      });
+      
+      // ESCキーで閉じる
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && userDropdown.style.display === 'block') {
+          userDropdown.style.display = 'none';
+          userMenuButton.setAttribute('aria-expanded', 'false');
+          userMenuButton.focus();
         }
       });
     }
