@@ -106,6 +106,26 @@ class AdminDashboard {
     // サービス申込み数
     document.getElementById('month-applications').textContent = 
       data.thisMonth.applications;
+
+    // MRR/ARR（継続課金収益）
+    if (data.recurring) {
+      document.getElementById('mrr-value').textContent = 
+        `¥${data.recurring.mrr.toLocaleString()}`;
+      document.getElementById('arr-value').textContent = 
+        `¥${data.recurring.arr.toLocaleString()}`;
+      document.getElementById('active-subscriptions').textContent = 
+        data.recurring.activeSubscriptions;
+      document.getElementById('churn-rate').textContent = 
+        `${data.recurring.churnRate}%`;
+      
+      // MRR成長率
+      if (data.growth.mrr !== undefined) {
+        document.getElementById('mrr-growth').textContent = 
+          `${data.growth.mrr >= 0 ? '+' : ''}${data.growth.mrr}%`;
+        document.getElementById('mrr-growth').className = 
+          `growth ${data.growth.mrr >= 0 ? 'positive' : 'negative'}`;
+      }
+    }
   }
 
   /**
@@ -145,6 +165,27 @@ class AdminDashboard {
       });
       const productsData = await productsResponse.json();
       this.renderPopularProducts(productsData.products);
+
+      // MRR推移グラフ
+      const mrrTrendResponse = await fetch('/api/admin/dashboard/mrr-trend', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const mrrTrendData = await mrrTrendResponse.json();
+      this.renderMrrTrendChart(mrrTrendData.trend);
+
+      // 継続課金統計
+      const subscriptionStatsResponse = await fetch('/api/admin/dashboard/subscription-stats', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const subscriptionStatsData = await subscriptionStatsResponse.json();
+      this.renderSubscriptionStats(subscriptionStatsData);
+
+      // 財務レポート
+      const financialReportResponse = await fetch('/api/admin/dashboard/financial-report', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const financialReportData = await financialReportResponse.json();
+      this.renderFinancialReport(financialReportData);
 
     } catch (error) {
       console.error('Load charts error:', error);
@@ -466,6 +507,197 @@ class AdminDashboard {
     Object.values(this.charts).forEach(chart => {
       if (chart) chart.destroy();
     });
+  }
+
+  /**
+   * MRR推移グラフ描画
+   */
+  renderMrrTrendChart(trend) {
+    const ctx = document.getElementById('mrrTrendChart');
+    if (!ctx) return;
+
+    if (this.charts.mrrTrend) {
+      this.charts.mrrTrend.destroy();
+    }
+
+    const labels = trend.map(d => d.month);
+    const data = trend.map(d => d.mrr);
+
+    this.charts.mrrTrend = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'MRR（月次経常収益）',
+          data: data,
+          borderColor: '#5856d6',
+          backgroundColor: 'rgba(88, 86, 214, 0.1)',
+          borderWidth: 3,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 4,
+          pointHoverRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top'
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return `MRR: ¥${context.parsed.y.toLocaleString()}`;
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function(value) {
+                return '¥' + value.toLocaleString();
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  /**
+   * 継続課金統計表示
+   */
+  renderSubscriptionStats(data) {
+    const container = document.getElementById('subscription-stats');
+    if (!container) return;
+
+    const plans = data.plans || [];
+    const monthlyPlan = plans.find(p => p.billing_cycle === 'monthly') || { count: 0, total_revenue: 0 };
+    const yearlyPlan = plans.find(p => p.billing_cycle === 'yearly') || { count: 0, total_revenue: 0 };
+
+    container.innerHTML = `
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">月額プラン</div>
+          <div class="stat-value">${monthlyPlan.count}件</div>
+          <div class="stat-amount">¥${monthlyPlan.total_revenue.toLocaleString()}/月</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">年額プラン</div>
+          <div class="stat-value">${yearlyPlan.count}件</div>
+          <div class="stat-amount">¥${yearlyPlan.total_revenue.toLocaleString()}/年</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">今月の新規</div>
+          <div class="stat-value positive">${data.thisMonth.new}件</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">今月の解約</div>
+          <div class="stat-value negative">${data.thisMonth.cancelled}件</div>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * 財務レポート表示
+   */
+  renderFinancialReport(data) {
+    const container = document.getElementById('financial-report');
+    if (!container) return;
+
+    container.innerHTML = `
+      <div class="financial-grid">
+        <div class="financial-card">
+          <h3>📋 見積書</h3>
+          <div class="financial-stats">
+            <div class="stat-row">
+              <span>総数</span>
+              <strong>${data.quotes.total}件</strong>
+            </div>
+            <div class="stat-row">
+              <span>送信済</span>
+              <strong>${data.quotes.sent}件</strong>
+            </div>
+            <div class="stat-row">
+              <span>承認済</span>
+              <strong class="positive">${data.quotes.accepted}件</strong>
+            </div>
+            <div class="stat-row">
+              <span>却下</span>
+              <strong class="negative">${data.quotes.rejected}件</strong>
+            </div>
+            <div class="stat-row highlight">
+              <span>コンバージョン率</span>
+              <strong class="positive">${data.kpis.conversionRate}%</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="financial-card">
+          <h3>💳 請求書</h3>
+          <div class="financial-stats">
+            <div class="stat-row">
+              <span>総数</span>
+              <strong>${data.invoices.total}件</strong>
+            </div>
+            <div class="stat-row">
+              <span>未払い</span>
+              <strong>${data.invoices.pending}件</strong>
+            </div>
+            <div class="stat-row">
+              <span>支払済</span>
+              <strong class="positive">${data.invoices.paid}件</strong>
+            </div>
+            <div class="stat-row">
+              <span>延滞</span>
+              <strong class="negative">${data.invoices.overdue}件</strong>
+            </div>
+            <div class="stat-row highlight">
+              <span>回収率</span>
+              <strong class="positive">${data.kpis.collectionRate}%</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="financial-card">
+          <h3>📄 領収書</h3>
+          <div class="financial-stats">
+            <div class="stat-row">
+              <span>総数</span>
+              <strong>${data.receipts.total}件</strong>
+            </div>
+            <div class="stat-row highlight">
+              <span>合計金額</span>
+              <strong>¥${data.receipts.totalAmount.toLocaleString()}</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="financial-card">
+          <h3>💰 KPI</h3>
+          <div class="financial-stats">
+            <div class="stat-row highlight">
+              <span>平均取引額</span>
+              <strong>¥${data.kpis.avgTransactionValue.toLocaleString()}</strong>
+            </div>
+            <div class="stat-row">
+              <span>請求総額</span>
+              <strong>¥${data.invoices.totalAmount.toLocaleString()}</strong>
+            </div>
+            <div class="stat-row">
+              <span>回収済額</span>
+              <strong class="positive">¥${data.invoices.paidAmount.toLocaleString()}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
   }
 }
 

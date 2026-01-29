@@ -15,7 +15,7 @@ import { successResponse } from './utils/response.js';
 import { scrapeAlibabaProduct, analyzeProductWithAI, downloadAndUploadImages } from './services/alibaba.js';
 import { registerUser, loginUser, getCurrentUser, logoutUser, requireAuth, updateUser, updatePassword } from './routes/auth.js';
 import { getServices, getServiceById, createServiceApplication, getUserServiceApplications, getAllServiceApplications, updateServiceApplicationStatus } from './routes/services.js';
-import { getDashboardStats, getSalesTrend, getSalesByCategory, getOrderStatus, getPopularProducts, getRecentActivity } from './routes/dashboard.js';
+import { getDashboardStats, getSalesTrend, getSalesByCategory, getOrderStatus, getPopularProducts, getRecentActivity, getMrrTrend, getSubscriptionStats, getFinancialReport } from './routes/dashboard.js';
 import { createQuote, getQuotes, getQuoteById, updateQuoteStatus, convertQuoteToOrder, createInvoice, getInvoices, payInvoice, getReceipts, createSubscription, getSubscriptions, updateSubscriptionStatus, getPaymentTransactions } from './routes/financial.js';
 
 export default {
@@ -380,6 +380,33 @@ export default {
           return errorResponse('認証が必要です', 401);
         }
         return await getRecentActivity(env);
+      }
+
+      // GET /api/admin/dashboard/mrr-trend - MRR推移（過去12ヶ月）
+      if (path === '/api/admin/dashboard/mrr-trend' && method === 'GET') {
+        const admin = requireAdmin(request);
+        if (!admin) {
+          return errorResponse('認証が必要です', 401);
+        }
+        return await getMrrTrend(env);
+      }
+
+      // GET /api/admin/dashboard/subscription-stats - 継続課金統計
+      if (path === '/api/admin/dashboard/subscription-stats' && method === 'GET') {
+        const admin = requireAdmin(request);
+        if (!admin) {
+          return errorResponse('認証が必要です', 401);
+        }
+        return await getSubscriptionStats(env);
+      }
+
+      // GET /api/admin/dashboard/financial-report - 財務レポート
+      if (path === '/api/admin/dashboard/financial-report' && method === 'GET') {
+        const admin = requireAdmin(request);
+        if (!admin) {
+          return errorResponse('認証が必要です', 401);
+        }
+        return await getFinancialReport(env);
       }
 
       // ==================== 管理者認証API ====================

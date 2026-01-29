@@ -101,6 +101,51 @@ export async function getDashboardStats(env) {
       ? ((thisMonthUsers.count - lastMonthUsers.count) / lastMonthUsers.count * 100).toFixed(1)
       : 100;
 
+    // MRR（月次経常収益）計算
+    // アクティブな継続課金からの月次収益を計算
+    const mrrData = await env.DB.prepare(`
+      SELECT 
+        SUM(CASE 
+          WHEN billing_cycle = 'monthly' THEN amount
+          WHEN billing_cycle = 'yearly' THEN amount / 12
+          ELSE 0
+        END) as mrr,
+        COUNT(*) as active_subscriptions
+      FROM subscriptions 
+      WHERE status = 'active'
+    `).first();
+
+    const mrr = Math.floor(mrrData.mrr || 0);
+    const arr = mrr * 12; // ARR（年次経常収益）
+
+    // 前月のMRR（成長率計算用）
+    const lastMonthMrrData = await env.DB.prepare(`
+      SELECT 
+        SUM(CASE 
+          WHEN billing_cycle = 'monthly' THEN amount
+          WHEN billing_cycle = 'yearly' THEN amount / 12
+          ELSE 0
+        END) as mrr
+      FROM subscriptions 
+      WHERE status = 'active' AND created_at < ?
+    `).bind(lastMonthEnd).first();
+
+    const lastMonthMrr = Math.floor(lastMonthMrrData.mrr || 0);
+    const mrrGrowth = lastMonthMrr > 0 
+      ? ((mrr - lastMonthMrr) / lastMonthMrr * 100).toFixed(1)
+      : 100;
+
+    // チャーン率計算（今月解約 / 先月アクティブ）
+    const churnData = await env.DB.prepare(`
+      SELECT 
+        (SELECT COUNT(*) FROM subscriptions WHERE status = 'cancelled' AND updated_at >= ? AND updated_at < ?) as cancelled_this_month,
+        (SELECT COUNT(*) FROM subscriptions WHERE status = 'active' AND created_at < ?) as active_last_month
+    `).bind(thisMonthStart, now.toISOString(), thisMonthStart).first();
+
+    const churnRate = churnData.active_last_month > 0
+      ? ((churnData.cancelled_this_month / churnData.active_last_month) * 100).toFixed(1)
+      : 0;
+
     return successResponse({
       today: {
         sales: todaySales.total,
@@ -115,10 +160,17 @@ export async function getDashboardStats(env) {
       growth: {
         sales: parseFloat(salesGrowth),
         orders: parseFloat(ordersGrowth),
-        users: parseFloat(usersGrowth)
+        users: parseFloat(usersGrowth),
+        mrr: parseFloat(mrrGrowth)
       },
       total: {
         users: totalUsers.count
+      },
+      recurring: {
+        mrr,
+        arr,
+        activeSubscriptions: mrrData.active_subscriptions,
+        churnRate: parseFloat(churnRate)
       }
     });
 
@@ -311,5 +363,199 @@ export async function getRecentActivity(env) {
   } catch (error) {
     console.error('Recent activity error:', error);
     return errorResponse('アクティビティの取得に失敗しました', 500, error.message);
+  }
+}
+
+/**
+ * MRR推移データ取得（過去12ヶ月）
+ * GET /api/admin/dashboard/mrr-trend
+ */
+export async function getMrrTrend(env) {
+  try {
+    const months = [];
+    const now = new Date();
+    
+    // 過去12ヶ月の月初日を生成
+    for (let i = 11; i >= 0; i--) {
+      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.push({
+        month: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`,
+        label: `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}`
+      });
+    }
+
+    // 各月のMRRを計算
+    const mrrData = await Promise.all(
+      months.map(async ({ month, label }) => {
+        const nextMonth = new Date(month + '-01');
+        nextMonth.setMonth(nextMonth.getMonth() + 1);
+        const nextMonthStr = nextMonth.toISOString().split('T')[0];
+
+        const result = await env.DB.prepare(`
+          SELECT 
+            SUM(CASE 
+              WHEN billing_cycle = 'monthly' THEN amount
+              WHEN billing_cycle = 'yearly' THEN amount / 12
+              ELSE 0
+            END) as mrr
+          FROM subscriptions 
+          WHERE status = 'active' 
+            AND created_at < ?
+            AND (cancelled_at IS NULL OR cancelled_at >= ?)
+        `).bind(nextMonthStr, month + '-01').first();
+
+        return {
+          month: label,
+          mrr: Math.floor(result.mrr || 0)
+        };
+      })
+    );
+
+    return successResponse({ trend: mrrData });
+
+  } catch (error) {
+    console.error('MRR trend error:', error);
+    return errorResponse('MRR推移データの取得に失敗しました', 500, error.message);
+  }
+}
+
+/**
+ * 継続課金プラン別統計
+ * GET /api/admin/dashboard/subscription-stats
+ */
+export async function getSubscriptionStats(env) {
+  try {
+    // プラン別の売上とアクティブ数
+    const planStats = await env.DB.prepare(`
+      SELECT 
+        billing_cycle,
+        COUNT(*) as count,
+        SUM(amount) as total_revenue
+      FROM subscriptions 
+      WHERE status = 'active'
+      GROUP BY billing_cycle
+    `).all();
+
+    // 今月の新規継続課金数
+    const now = new Date();
+    const thisMonthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+    
+    const newSubscriptions = await env.DB.prepare(`
+      SELECT COUNT(*) as count
+      FROM subscriptions 
+      WHERE created_at >= ?
+    `).bind(thisMonthStart).first();
+
+    // 今月の解約数
+    const cancelledSubscriptions = await env.DB.prepare(`
+      SELECT COUNT(*) as count
+      FROM subscriptions 
+      WHERE status = 'cancelled' AND updated_at >= ?
+    `).bind(thisMonthStart).first();
+
+    return successResponse({
+      plans: planStats.results || [],
+      thisMonth: {
+        new: newSubscriptions.count,
+        cancelled: cancelledSubscriptions.count
+      }
+    });
+
+  } catch (error) {
+    console.error('Subscription stats error:', error);
+    return errorResponse('継続課金統計の取得に失敗しました', 500, error.message);
+  }
+}
+
+/**
+ * 財務レポート（見積書・請求書・領収書）
+ * GET /api/admin/dashboard/financial-report
+ */
+export async function getFinancialReport(env) {
+  try {
+    const now = new Date();
+    const thisMonthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+
+    // 見積書統計
+    const quoteStats = await env.DB.prepare(`
+      SELECT 
+        COUNT(*) as total,
+        SUM(CASE WHEN status = 'sent' THEN 1 ELSE 0 END) as sent,
+        SUM(CASE WHEN status = 'accepted' THEN 1 ELSE 0 END) as accepted,
+        SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) as rejected,
+        SUM(total_amount) as total_amount
+      FROM quotes
+      WHERE created_at >= ?
+    `).bind(thisMonthStart).first();
+
+    // 請求書統計
+    const invoiceStats = await env.DB.prepare(`
+      SELECT 
+        COUNT(*) as total,
+        SUM(CASE WHEN payment_status = 'pending' THEN 1 ELSE 0 END) as pending,
+        SUM(CASE WHEN payment_status = 'paid' THEN 1 ELSE 0 END) as paid,
+        SUM(CASE WHEN payment_status = 'overdue' THEN 1 ELSE 0 END) as overdue,
+        SUM(total_amount) as total_amount,
+        SUM(CASE WHEN payment_status = 'paid' THEN total_amount ELSE 0 END) as paid_amount
+      FROM invoices
+      WHERE created_at >= ?
+    `).bind(thisMonthStart).first();
+
+    // 領収書統計
+    const receiptStats = await env.DB.prepare(`
+      SELECT 
+        COUNT(*) as total,
+        SUM(amount) as total_amount
+      FROM receipts
+      WHERE created_at >= ?
+    `).bind(thisMonthStart).first();
+
+    // 見積書コンバージョン率
+    const conversionRate = quoteStats.sent > 0
+      ? ((quoteStats.accepted / quoteStats.sent) * 100).toFixed(1)
+      : 0;
+
+    // 請求書回収率
+    const collectionRate = invoiceStats.total_amount > 0
+      ? ((invoiceStats.paid_amount / invoiceStats.total_amount) * 100).toFixed(1)
+      : 0;
+
+    // 平均取引額
+    const avgTransactionValue = quoteStats.total > 0
+      ? Math.floor(quoteStats.total_amount / quoteStats.total)
+      : 0;
+
+    return successResponse({
+      quotes: {
+        total: quoteStats.total,
+        sent: quoteStats.sent,
+        accepted: quoteStats.accepted,
+        rejected: quoteStats.rejected,
+        totalAmount: quoteStats.total_amount,
+        conversionRate: parseFloat(conversionRate)
+      },
+      invoices: {
+        total: invoiceStats.total,
+        pending: invoiceStats.pending,
+        paid: invoiceStats.paid,
+        overdue: invoiceStats.overdue,
+        totalAmount: invoiceStats.total_amount,
+        paidAmount: invoiceStats.paid_amount,
+        collectionRate: parseFloat(collectionRate)
+      },
+      receipts: {
+        total: receiptStats.total,
+        totalAmount: receiptStats.total_amount
+      },
+      kpis: {
+        conversionRate: parseFloat(conversionRate),
+        collectionRate: parseFloat(collectionRate),
+        avgTransactionValue
+      }
+    });
+
+  } catch (error) {
+    console.error('Financial report error:', error);
+    return errorResponse('財務レポートの取得に失敗しました', 500, error.message);
   }
 }
