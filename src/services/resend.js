@@ -3,6 +3,56 @@
  * Resend APIとの連携処理
  */
 
+import { generateQuoteEmail, generateInvoiceEmail, generateReceiptEmail, generateSubscriptionRenewalEmail } from '../utils/email-templates.js';
+
+/**
+ * 見積書送信メール
+ */
+export async function sendQuoteEmail(quote, resendApiKey, fromEmail) {
+  const emailContent = generateQuoteEmail(quote);
+  return await sendEmail({
+    to: quote.customer_email,
+    subject: emailContent.subject,
+    html: emailContent.html
+  }, resendApiKey, fromEmail);
+}
+
+/**
+ * 請求書送信メール
+ */
+export async function sendInvoiceEmail(invoice, resendApiKey, fromEmail) {
+  const emailContent = generateInvoiceEmail(invoice);
+  return await sendEmail({
+    to: invoice.customer_email,
+    subject: emailContent.subject,
+    html: emailContent.html
+  }, resendApiKey, fromEmail);
+}
+
+/**
+ * 領収書送信メール
+ */
+export async function sendReceiptEmail(receipt, resendApiKey, fromEmail) {
+  const emailContent = generateReceiptEmail(receipt);
+  return await sendEmail({
+    to: receipt.customer_email,
+    subject: emailContent.subject,
+    html: emailContent.html
+  }, resendApiKey, fromEmail);
+}
+
+/**
+ * 継続課金更新通知メール
+ */
+export async function sendSubscriptionRenewalEmail(subscription, resendApiKey, fromEmail) {
+  const emailContent = generateSubscriptionRenewalEmail(subscription);
+  return await sendEmail({
+    to: subscription.customer_email,
+    subject: emailContent.subject,
+    html: emailContent.html
+  }, resendApiKey, fromEmail);
+}
+
 /**
  * 注文確認メールを送信
  * @param {Object} params

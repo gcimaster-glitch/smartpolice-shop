@@ -5,6 +5,7 @@
 
 import { successResponse, errorResponse } from '../utils/response.js';
 import { createCustomer, createPrice, createSubscription as createStripeSubscription, cancelSubscription as cancelStripeSubscription, getSubscription as getStripeSubscription } from '../services/stripe.js';
+import { sendQuoteEmail, sendInvoiceEmail, sendReceiptEmail, sendSubscriptionRenewalEmail, sendPaymentFailureEmail } from '../services/resend.js';
 
 /**
  * 見積番号生成
@@ -96,9 +97,37 @@ export async function createQuote(request, env) {
       valid_until, notes, terms
     ).run();
 
+    const quote_id = result.meta.last_row_id;
+
+    // メール送信（エラーがあっても処理を続行）
+    try {
+      await sendQuoteEmail(customer_email, {
+        quote_number,
+        customer_name,
+        customer_company,
+        items,
+        subtotal,
+        tax_rate,
+        tax_amount,
+        total_amount,
+        valid_until,
+        notes,
+        terms
+      }, env);
+      
+      // メール送信後、ステータスを'sent'に更新
+      await env.DB.prepare(`
+        UPDATE quotes SET status = 'sent', updated_at = CURRENT_TIMESTAMP WHERE id = ?
+      `).bind(quote_id).run();
+      
+    } catch (emailError) {
+      console.error('Quote email sending failed:', emailError);
+      // メール送信失敗してもエラーを返さない（見積書作成は成功）
+    }
+
     return successResponse({
       message: '見積書を作成しました',
-      quote_id: result.meta.last_row_id,
+      quote_id,
       quote_number
     });
 
@@ -284,9 +313,35 @@ export async function createInvoice(request, env) {
       billing_period_start, billing_period_end, notes
     ).run();
 
+    const invoice_id = result.meta.last_row_id;
+
+    // メール送信（エラーがあっても処理を続行）
+    try {
+      await sendInvoiceEmail(customer_email, {
+        invoice_number,
+        customer_name,
+        customer_company,
+        customer_address,
+        items,
+        subtotal,
+        tax_rate,
+        tax_amount,
+        total_amount,
+        payment_due_date,
+        issue_date: issue_date || new Date().toISOString().split('T')[0],
+        billing_period_start,
+        billing_period_end,
+        notes
+      }, env);
+      
+    } catch (emailError) {
+      console.error('Invoice email sending failed:', emailError);
+      // メール送信失敗してもエラーを返さない（請求書作成は成功）
+    }
+
     return successResponse({
       message: '請求書を作成しました',
-      invoice_id: result.meta.last_row_id,
+      invoice_id,
       invoice_number
     });
 
@@ -349,7 +404,7 @@ export async function payInvoice(invoiceId, request, env) {
 
     if (invoice) {
       const receipt_number = generateReceiptNumber();
-      await env.DB.prepare(`
+      const receiptResult = await env.DB.prepare(`
         INSERT INTO receipts (
           receipt_number, invoice_id, order_id, customer_name,
           customer_company, amount, payment_method, issue_date,
@@ -361,6 +416,27 @@ export async function payInvoice(invoiceId, request, env) {
         new Date().toISOString().split('T')[0],
         new Date().toISOString().split('T')[0]
       ).run();
+
+      const receipt_id = receiptResult.meta.last_row_id;
+
+      // 領収書メール送信（エラーがあっても処理を続行）
+      try {
+        await sendReceiptEmail(invoice.customer_email, {
+          receipt_number,
+          customer_name: invoice.customer_name,
+          customer_company: invoice.customer_company,
+          amount: paid_amount,
+          payment_method,
+          issue_date: new Date().toISOString().split('T')[0],
+          received_date: new Date().toISOString().split('T')[0],
+          purpose: '品代として',
+          invoice_number: invoice.invoice_number
+        }, env);
+        
+      } catch (emailError) {
+        console.error('Receipt email sending failed:', emailError);
+        // メール送信失敗してもエラーを返さない（領収書作成は成功）
+      }
     }
 
     return successResponse({ message: '支払いを記録しました' });

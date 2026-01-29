@@ -3,6 +3,8 @@
  * Stripe APIとの連携処理
  */
 
+import { sendSubscriptionRenewalEmail, sendPaymentFailureEmail } from './resend.js';
+
 /**
  * Stripe PaymentIntentを作成
  * @param {Object} params
@@ -173,6 +175,28 @@ export async function handleWebhookEvent(event, env) {
       };
 
     case 'invoice.payment_succeeded':
+      // 継続課金更新成功時にメール送信
+      try {
+        // DBから継続課金情報を取得
+        const subscription = await env.DB.prepare(`
+          SELECT * FROM subscriptions WHERE stripe_subscription_id = ?
+        `).bind(object.subscription).first();
+
+        if (subscription && subscription.customer_email) {
+          await sendSubscriptionRenewalEmail(subscription.customer_email, {
+            subscription_number: subscription.subscription_number,
+            customer_name: subscription.customer_name,
+            product_name: subscription.product_name,
+            amount: object.amount_paid / 100, // cents to JPY
+            billing_cycle: subscription.billing_cycle,
+            next_billing_date: new Date(object.period_end * 1000).toISOString().split('T')[0],
+            payment_method: subscription.payment_method || 'クレジットカード'
+          }, env);
+        }
+      } catch (emailError) {
+        console.error('Subscription renewal email failed:', emailError);
+      }
+
       return {
         type: 'invoice_payment_succeeded',
         invoiceId: object.id,
@@ -182,6 +206,28 @@ export async function handleWebhookEvent(event, env) {
       };
 
     case 'invoice.payment_failed':
+      // 決済失敗時にメール送信
+      try {
+        // DBから継続課金情報を取得
+        const subscription = await env.DB.prepare(`
+          SELECT * FROM subscriptions WHERE stripe_subscription_id = ?
+        `).bind(object.subscription).first();
+
+        if (subscription && subscription.customer_email) {
+          await sendPaymentFailureEmail(subscription.customer_email, {
+            subscription_number: subscription.subscription_number,
+            customer_name: subscription.customer_name,
+            product_name: subscription.product_name,
+            amount: object.amount_due / 100, // cents to JPY
+            failed_at: new Date().toISOString().split('T')[0],
+            retry_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            error_message: object.last_finalization_error?.message || '決済処理中にエラーが発生しました'
+          }, env);
+        }
+      } catch (emailError) {
+        console.error('Payment failure email failed:', emailError);
+      }
+
       return {
         type: 'invoice_payment_failed',
         invoiceId: object.id,
