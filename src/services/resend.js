@@ -3,54 +3,70 @@
  * Resend APIとの連携処理
  */
 
-import { generateQuoteEmail, generateInvoiceEmail, generateReceiptEmail, generateSubscriptionRenewalEmail } from '../utils/email-templates.js';
+import { generateQuoteEmail, generateInvoiceEmail, generateReceiptEmail, generateSubscriptionRenewalEmail, generatePaymentFailureEmail } from '../utils/email-templates.js';
 
 /**
  * 見積書送信メール
  */
-export async function sendQuoteEmail(quote, resendApiKey, fromEmail) {
-  const emailContent = generateQuoteEmail(quote);
+export async function sendQuoteEmail(to, data, env) {
+  const emailContent = generateQuoteEmail(data);
   return await sendEmail({
-    to: quote.customer_email,
+    to,
     subject: emailContent.subject,
     html: emailContent.html
-  }, resendApiKey, fromEmail);
+  }, env.RESEND_API_KEY, env.RESEND_FROM_EMAIL);
 }
 
 /**
  * 請求書送信メール
  */
-export async function sendInvoiceEmail(invoice, resendApiKey, fromEmail) {
-  const emailContent = generateInvoiceEmail(invoice);
+export async function sendInvoiceEmail(to, data, env) {
+  const emailContent = generateInvoiceEmail(data);
   return await sendEmail({
-    to: invoice.customer_email,
+    to,
     subject: emailContent.subject,
     html: emailContent.html
-  }, resendApiKey, fromEmail);
+  }, env.RESEND_API_KEY, env.RESEND_FROM_EMAIL);
 }
 
 /**
  * 領収書送信メール
  */
-export async function sendReceiptEmail(receipt, resendApiKey, fromEmail) {
-  const emailContent = generateReceiptEmail(receipt);
+export async function sendReceiptEmail(to, data, env) {
+  const emailContent = generateReceiptEmail(data);
   return await sendEmail({
-    to: receipt.customer_email,
+    to,
     subject: emailContent.subject,
     html: emailContent.html
-  }, resendApiKey, fromEmail);
+  }, env.RESEND_API_KEY, env.RESEND_FROM_EMAIL);
 }
 
 /**
  * 継続課金更新通知メール
  */
-export async function sendSubscriptionRenewalEmail(subscription, resendApiKey, fromEmail) {
-  const emailContent = generateSubscriptionRenewalEmail(subscription);
+export async function sendSubscriptionRenewalEmail(to, data, env) {
+  const emailContent = generateSubscriptionRenewalEmail(data);
   return await sendEmail({
-    to: subscription.customer_email,
+    to,
     subject: emailContent.subject,
     html: emailContent.html
-  }, resendApiKey, fromEmail);
+  }, env.RESEND_API_KEY, env.RESEND_FROM_EMAIL);
+}
+
+/**
+ * 決済失敗通知メールを送信
+ * @param {string} to - 送信先メールアドレス
+ * @param {Object} data - 決済失敗情報
+ * @param {Object} env - 環境変数
+ * @returns {Promise<Object>}
+ */
+export async function sendPaymentFailureEmail(to, data, env) {
+  const emailContent = generatePaymentFailureEmail(data);
+  return await sendEmail({
+    to,
+    subject: emailContent.subject,
+    html: emailContent.html
+  }, env.RESEND_API_KEY, env.RESEND_FROM_EMAIL);
 }
 
 /**

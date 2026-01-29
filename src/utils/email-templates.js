@@ -788,3 +788,224 @@ https://shop.smartpolice.net
     `
   };
 }
+
+/**
+ * 決済失敗通知メールテンプレート
+ */
+export function generatePaymentFailureEmail(data) {
+  const {
+    subscription_number,
+    customer_name,
+    product_name,
+    amount,
+    failed_at,
+    retry_date,
+    error_message
+  } = data;
+
+  return {
+    subject: `【重要】SmartPolice お支払いエラーのお知らせ - ${subscription_number}`,
+    html: `
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>お支払いエラーのお知らせ</title>
+  <style>
+    body {
+      font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Segoe UI', sans-serif;
+      line-height: 1.8;
+      color: #1d1d1f;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f7;
+    }
+    .container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+      color: white;
+      padding: 40px 30px;
+      text-align: center;
+    }
+    .header h1 {
+      margin: 0 0 10px 0;
+      font-size: 28px;
+      font-weight: 600;
+    }
+    .header p {
+      margin: 0;
+      font-size: 15px;
+      opacity: 0.95;
+    }
+    .content {
+      padding: 40px 30px;
+    }
+    .alert-box {
+      background: #fff3e0;
+      border-left: 4px solid #ff9800;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 25px 0;
+    }
+    .info-table {
+      width: 100%;
+      margin: 25px 0;
+      border-collapse: collapse;
+    }
+    .info-table td {
+      padding: 12px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .info-table td:first-child {
+      font-weight: 600;
+      color: #666;
+      width: 140px;
+    }
+    .button {
+      display: inline-block;
+      background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+      color: white;
+      padding: 14px 32px;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: transform 0.2s;
+    }
+    .button:hover {
+      transform: translateY(-2px);
+    }
+    .footer {
+      background: #f8f8f8;
+      padding: 25px 30px;
+      text-align: center;
+      font-size: 13px;
+      color: #666;
+      border-top: 1px solid #e0e0e0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>⚠️ お支払いエラーのお知らせ</h1>
+      <p>決済処理に失敗しました</p>
+    </div>
+    
+    <div class="content">
+      <p>${customer_name} 様</p>
+      
+      <p>いつもSmartPoliceをご利用いただき、誠にありがとうございます。</p>
+      
+      <div class="alert-box">
+        <strong>⚠️ 重要なお知らせ</strong><br>
+        ${new Date(failed_at).toLocaleDateString('ja-JP')} に実施された継続課金のお支払い処理が、以下の理由により完了できませんでした。
+        <br><br>
+        <strong>エラー内容:</strong> ${error_message}
+      </div>
+      
+      <h2 style="color: #d32f2f; font-size: 18px; margin-top: 30px;">📋 課金情報</h2>
+      <table class="info-table">
+        <tr>
+          <td>契約番号</td>
+          <td><strong>${subscription_number}</strong></td>
+        </tr>
+        <tr>
+          <td>プラン名</td>
+          <td>${product_name}</td>
+        </tr>
+        <tr>
+          <td>請求金額</td>
+          <td><strong style="color: #d32f2f; font-size: 20px;">¥${amount.toLocaleString()}</strong></td>
+        </tr>
+        <tr>
+          <td>再試行予定日</td>
+          <td>${new Date(retry_date).toLocaleDateString('ja-JP')}</td>
+        </tr>
+      </table>
+      
+      <h2 style="color: #d32f2f; font-size: 18px; margin-top: 30px;">💳 必要なアクション</h2>
+      <p style="background: #fff3e0; padding: 15px; border-radius: 8px; border-left: 4px solid #ff9800;">
+        <strong>お支払い方法の確認・更新をお願いいたします</strong><br>
+        ${new Date(retry_date).toLocaleDateString('ja-JP')} に再度決済処理を実施いたします。<br>
+        それまでに、マイページよりお支払い方法の確認・更新をお願いいたします。
+      </p>
+      
+      <div style="text-align: center; margin: 40px 0;">
+        <a href="https://shop.smartpolice.net/mypage.html" class="button">
+          お支払い方法を更新する
+        </a>
+      </div>
+      
+      <h2 style="color: #d32f2f; font-size: 18px; margin-top: 30px;">❓ よくある原因</h2>
+      <ul style="background: #f8f8f8; padding: 20px 20px 20px 40px; border-radius: 8px;">
+        <li>クレジットカードの有効期限切れ</li>
+        <li>クレジットカードの利用限度額超過</li>
+        <li>クレジットカード情報の変更</li>
+        <li>口座残高不足</li>
+      </ul>
+      
+      <p style="background: #ffebee; padding: 15px; border-radius: 8px; border-left: 4px solid #d32f2f;">
+        <strong>ご注意:</strong><br>
+        再試行後も決済が完了しない場合、サービスが一時停止される可能性がございます。<br>
+        お早めのご対応をお願いいたします。
+      </p>
+      
+      <p>ご不明な点がございましたら、お気軽にお問い合わせください。</p>
+    </div>
+    
+    <div class="footer">
+      <strong>SmartPolice株式会社</strong><br>
+      〒100-0001 東京都千代田区千代田1-1<br>
+      TEL: 03-1234-5678 / Email: order@smartpolice.net<br>
+      <a href="https://shop.smartpolice.net" style="color: #d32f2f;">https://shop.smartpolice.net</a>
+    </div>
+  </div>
+</body>
+</html>
+    `,
+    text: `
+【重要】SmartPolice お支払いエラーのお知らせ
+
+${customer_name} 様
+
+いつもSmartPoliceをご利用いただき、誠にありがとうございます。
+
+⚠️ 重要なお知らせ
+${new Date(failed_at).toLocaleDateString('ja-JP')} に実施された継続課金のお支払い処理が、以下の理由により完了できませんでした。
+
+エラー内容: ${error_message}
+
+【課金情報】
+契約番号: ${subscription_number}
+プラン名: ${product_name}
+請求金額: ¥${amount.toLocaleString()}
+再試行予定日: ${new Date(retry_date).toLocaleDateString('ja-JP')}
+
+【必要なアクション】
+お支払い方法の確認・更新をお願いいたします。
+${new Date(retry_date).toLocaleDateString('ja-JP')} に再度決済処理を実施いたします。
+それまでに、マイページよりお支払い方法の確認・更新をお願いいたします。
+
+お支払い方法を更新: https://shop.smartpolice.net/mypage.html
+
+【よくある原因】
+- クレジットカードの有効期限切れ
+- クレジットカードの利用限度額超過
+- クレジットカード情報の変更
+- 口座残高不足
+
+ご注意: 再試行後も決済が完了しない場合、サービスが一時停止される可能性がございます。
+
+SmartPolice株式会社
+TEL: 03-1234-5678 / Email: order@smartpolice.net
+https://shop.smartpolice.net
+    `
+  };
+}
