@@ -147,10 +147,218 @@ export async function handleWebhookEvent(event, env) {
         paymentIntentId: object.id
       };
 
+    // サブスクリプション関連イベント
+    case 'customer.subscription.created':
+      return {
+        type: 'subscription_created',
+        subscriptionId: object.id,
+        customerId: object.customer,
+        status: object.status,
+        currentPeriodEnd: object.current_period_end
+      };
+
+    case 'customer.subscription.updated':
+      return {
+        type: 'subscription_updated',
+        subscriptionId: object.id,
+        status: object.status,
+        currentPeriodEnd: object.current_period_end
+      };
+
+    case 'customer.subscription.deleted':
+      return {
+        type: 'subscription_deleted',
+        subscriptionId: object.id,
+        customerId: object.customer
+      };
+
+    case 'invoice.payment_succeeded':
+      return {
+        type: 'invoice_payment_succeeded',
+        invoiceId: object.id,
+        subscriptionId: object.subscription,
+        amountPaid: object.amount_paid,
+        customerId: object.customer
+      };
+
+    case 'invoice.payment_failed':
+      return {
+        type: 'invoice_payment_failed',
+        invoiceId: object.id,
+        subscriptionId: object.subscription,
+        customerId: object.customer,
+        error: object.last_finalization_error?.message
+      };
+
     default:
       return {
         type: 'unhandled',
         eventType: type
       };
   }
+}
+
+/**
+ * Stripe Customerを作成
+ * @param {Object} params
+ * @param {string} params.email - メールアドレス
+ * @param {string} params.name - 顧客名
+ * @param {Object} params.metadata - メタデータ
+ * @param {string} stripeSecretKey
+ * @returns {Promise<Object>}
+ */
+export async function createCustomer({ email, name, metadata = {} }, stripeSecretKey) {
+  const response = await fetch('https://api.stripe.com/v1/customers', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${stripeSecretKey}`,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: new URLSearchParams({
+      email,
+      name,
+      ...Object.entries(metadata).reduce((acc, [key, value]) => {
+        acc[`metadata[${key}]`] = value;
+        return acc;
+      }, {})
+    })
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(`Stripe API Error: ${error.error?.message || 'Unknown error'}`);
+  }
+
+  return await response.json();
+}
+
+/**
+ * Stripe Priceを作成
+ * @param {Object} params
+ * @param {number} params.amount - 金額（円）
+ * @param {string} params.currency - 通貨
+ * @param {string} params.interval - 請求サイクル（month/year）
+ * @param {string} params.productName - 商品名
+ * @param {string} stripeSecretKey
+ * @returns {Promise<Object>}
+ */
+export async function createPrice({ amount, currency = 'jpy', interval, productName }, stripeSecretKey) {
+  // まず商品を作成
+  const productResponse = await fetch('https://api.stripe.com/v1/products', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${stripeSecretKey}`,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: new URLSearchParams({
+      name: productName
+    })
+  });
+
+  if (!productResponse.ok) {
+    const error = await productResponse.json();
+    throw new Error(`Stripe API Error: ${error.error?.message || 'Unknown error'}`);
+  }
+
+  const product = await productResponse.json();
+
+  // 価格を作成
+  const priceResponse = await fetch('https://api.stripe.com/v1/prices', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${stripeSecretKey}`,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: new URLSearchParams({
+      product: product.id,
+      unit_amount: amount.toString(),
+      currency,
+      'recurring[interval]': interval
+    })
+  });
+
+  if (!priceResponse.ok) {
+    const error = await priceResponse.json();
+    throw new Error(`Stripe API Error: ${error.error?.message || 'Unknown error'}`);
+  }
+
+  return await priceResponse.json();
+}
+
+/**
+ * Stripe Subscriptionを作成
+ * @param {Object} params
+ * @param {string} params.customerId - Stripe Customer ID
+ * @param {string} params.priceId - Stripe Price ID
+ * @param {Object} params.metadata - メタデータ
+ * @param {string} stripeSecretKey
+ * @returns {Promise<Object>}
+ */
+export async function createSubscription({ customerId, priceId, metadata = {} }, stripeSecretKey) {
+  const response = await fetch('https://api.stripe.com/v1/subscriptions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${stripeSecretKey}`,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: new URLSearchParams({
+      customer: customerId,
+      'items[0][price]': priceId,
+      ...Object.entries(metadata).reduce((acc, [key, value]) => {
+        acc[`metadata[${key}]`] = value;
+        return acc;
+      }, {})
+    })
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(`Stripe API Error: ${error.error?.message || 'Unknown error'}`);
+  }
+
+  return await response.json();
+}
+
+/**
+ * Stripe Subscriptionをキャンセル
+ * @param {string} subscriptionId
+ * @param {string} stripeSecretKey
+ * @returns {Promise<Object>}
+ */
+export async function cancelSubscription(subscriptionId, stripeSecretKey) {
+  const response = await fetch(`https://api.stripe.com/v1/subscriptions/${subscriptionId}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${stripeSecretKey}`
+    }
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(`Stripe API Error: ${error.error?.message || 'Unknown error'}`);
+  }
+
+  return await response.json();
+}
+
+/**
+ * Stripe Subscriptionを取得
+ * @param {string} subscriptionId
+ * @param {string} stripeSecretKey
+ * @returns {Promise<Object>}
+ */
+export async function getSubscription(subscriptionId, stripeSecretKey) {
+  const response = await fetch(`https://api.stripe.com/v1/subscriptions/${subscriptionId}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${stripeSecretKey}`
+    }
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(`Stripe API Error: ${error.error?.message || 'Unknown error'}`);
+  }
+
+  return await response.json();
 }

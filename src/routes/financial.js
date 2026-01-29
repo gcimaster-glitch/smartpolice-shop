@@ -4,6 +4,7 @@
  */
 
 import { successResponse, errorResponse } from '../utils/response.js';
+import { createCustomer, createPrice, createSubscription as createStripeSubscription, cancelSubscription as cancelStripeSubscription, getSubscription as getStripeSubscription } from '../services/stripe.js';
 
 /**
  * 見積番号生成
@@ -403,6 +404,8 @@ export async function createSubscription(request, env) {
     const data = await request.json();
     const {
       customer_id,
+      customer_name,
+      customer_email,
       product_id,
       service_id,
       product_name,
@@ -414,7 +417,7 @@ export async function createSubscription(request, env) {
       payment_method
     } = data;
 
-    if (!customer_id || !product_name || !amount || !billing_cycle) {
+    if (!customer_name || !customer_email || !product_name || !amount || !billing_cycle) {
       return errorResponse('必須項目が不足しています', 400);
     }
 
@@ -428,23 +431,71 @@ export async function createSubscription(request, env) {
       nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
     }
 
+    // Stripe統合: Customer作成 → Price作成 → Subscription作成
+    let stripeCustomerId = null;
+    let stripePriceId = null;
+    let stripeSubscriptionId = null;
+
+    try {
+      // Stripe Customer作成
+      const stripeCustomer = await createCustomer({
+        email: customer_email,
+        name: customer_name,
+        metadata: {
+          subscription_number,
+          internal_customer_id: customer_id?.toString() || 'new'
+        }
+      }, env.STRIPE_SECRET_KEY);
+      stripeCustomerId = stripeCustomer.id;
+
+      // Stripe Price作成
+      const intervalMap = { 'monthly': 'month', 'yearly': 'year', 'weekly': 'week' };
+      const stripePrice = await createPrice({
+        amount: Math.floor(amount),
+        currency: 'jpy',
+        interval: intervalMap[billing_cycle] || 'month',
+        productName: product_name
+      }, env.STRIPE_SECRET_KEY);
+      stripePriceId = stripePrice.id;
+
+      // Stripe Subscription作成
+      const stripeSubscription = await createStripeSubscription({
+        customerId: stripeCustomerId,
+        priceId: stripePriceId,
+        metadata: {
+          subscription_number,
+          billing_cycle,
+          product_name
+        }
+      }, env.STRIPE_SECRET_KEY);
+      stripeSubscriptionId = stripeSubscription.id;
+
+    } catch (stripeError) {
+      console.error('Stripe subscription creation error:', stripeError);
+      return errorResponse(`Stripe連携エラー: ${stripeError.message}`, 500);
+    }
+
+    // データベースに保存
     const result = await env.DB.prepare(`
       INSERT INTO subscriptions (
         subscription_number, customer_id, product_id, service_id,
         product_name, product_description, amount, billing_cycle,
-        billing_day, start_date, next_billing_date, payment_method, status
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')
+        billing_day, start_date, next_billing_date, payment_method, status,
+        stripe_customer_id, stripe_price_id, stripe_subscription_id
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', ?, ?, ?)
     `).bind(
       subscription_number, customer_id, product_id, service_id,
       product_name, product_description, amount, billing_cycle,
       billing_day, startDate.toISOString().split('T')[0],
-      nextBillingDate.toISOString().split('T')[0], payment_method
+      nextBillingDate.toISOString().split('T')[0], payment_method,
+      stripeCustomerId, stripePriceId, stripeSubscriptionId
     ).run();
 
     return successResponse({
-      message: '継続課金を作成しました',
+      message: '継続課金を作成しました（Stripe連携完了）',
       subscription_id: result.meta.last_row_id,
-      subscription_number
+      subscription_number,
+      stripe_subscription_id: stripeSubscriptionId
     });
 
   } catch (error) {
